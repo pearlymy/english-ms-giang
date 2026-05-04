@@ -89,7 +89,7 @@ export const LoginPage = () => {
         <div className={styles.formCard}>
           {/* Header */}
           <div className={styles.formHeader}>
-            <h2 className={styles.formTitle}>Chào mừng trở lại 👋</h2>
+            <h2 className={styles.formTitle}>Chào mừng trở lại</h2>
             <p className={styles.formSub}>Đăng nhập để tiếp tục học tập.</p>
           </div>
 

@@ -118,7 +118,7 @@ export const Dashboard = () => {
           <Stack gap="xs">
             <Text as="p" size="sm" weight="medium"
               style={{ margin: 0, color: 'rgba(255,255,255,0.72)' }}>
-              {getGreeting()}, {firstName}! 👋
+              {getGreeting()}, {firstName}!
             </Text>
             <Text as="h1" weight="bold"
               style={{

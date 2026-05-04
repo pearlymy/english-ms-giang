@@ -135,7 +135,7 @@ export const AdminDashboard = () => {
       <div className={styles.hero}>
         <div className={styles.heroContent}>
           <p className={styles.heroDate}>{todayStr}</p>
-          <h1 className={styles.heroTitle}>Xin chào, {user?.name ?? 'cô'}! 👋</h1>
+          <h1 className={styles.heroTitle}>Xin chào, {user?.name ?? 'cô'}!</h1>
           <p className={styles.heroSub}>Đây là tổng quan lớp học hôm nay.</p>
         </div>
         <div className={styles.heroBadge}>

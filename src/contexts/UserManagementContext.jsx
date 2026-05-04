@@ -1,137 +1,111 @@
 /**
  * UserManagementContext.jsx
- * Manages Classes and Student accounts for admin (Phase 1 — localStorage).
- * Replace with Supabase calls in Phase 2.
+ * Phase 1: Classes → Supabase ✅
+ * Phase 2: Students → Supabase ✅
  */
-import React, { createContext, useContext, useState, useCallback } from 'react';
-import {
-  CLASSES,
-  CLASSES_STORAGE_KEY,
-  loadClasses,
-  saveClasses,
-  generateClassCode,
-} from '../data/classData';
-import {
-  STUDENTS_SEED,
-  STUDENTS_STORAGE_KEY,
-  loadStudents,
-  saveStudents,
-} from '../data/teacherData';
+import React, { createContext, useContext, useState, useCallback, useEffect } from 'react';
+import { classApi }   from '../services/api/classApi';
+import { studentApi } from '../services/api/studentApi';
 
 const UserManagementContext = createContext(null);
 
-/* ── ID generators ─────────────────────────────────────────────────────── */
-const nextId = (items, prefix) => {
-  const nums = items
-    .map((i) => parseInt(i.id.replace(prefix, ''), 10))
-    .filter((n) => !isNaN(n));
-  const max = nums.length ? Math.max(...nums) : 0;
-  return `${prefix}${max + 1}`;
-};
-
-/* ── Provider ──────────────────────────────────────────────────────────── */
+/* ── Provider ────────────────────────────────────────────────────────────── */
 export const UserManagementProvider = ({ children }) => {
-  const [classes,  setClasses]  = useState(() => loadClasses());
-  const [students, setStudents] = useState(() => loadStudents());
 
-  /* ── Class CRUD ── */
-  const createClass = useCallback((data) => {
+  /* ── Students — Supabase ─────────────────────────────────────────────── */
+  const [students,        setStudents]        = useState([]);
+  const [studentsLoading, setStudentsLoading] = useState(true);
+
+  const refreshStudents = useCallback(async () => {
+    try {
+      const data = await studentApi.getStudents();
+      setStudents(data);
+    } catch (err) {
+      console.error('Failed to load students:', err);
+    }
+  }, []);
+
+  useEffect(() => {
+    studentApi.getStudents()
+      .then(setStudents)
+      .catch((err) => console.error('Failed to load students:', err))
+      .finally(() => setStudentsLoading(false));
+  }, []);
+
+  /* ── Classes — Supabase ─────────────────────────────────────────────── */
+  const [classes,       setClasses]       = useState([]);
+  const [classesLoading, setClassesLoading] = useState(true);
+
+  useEffect(() => {
+    classApi.getClasses()
+      .then(setClasses)
+      .catch((err) => console.error('Failed to load classes:', err))
+      .finally(() => setClassesLoading(false));
+  }, []);
+
+  /* ── Class CRUD ─────────────────────────────────────────────────────── */
+  const createClass = useCallback(async (data) => {
     const { gradeLevel, name, courseId } = data;
-    const code = generateClassCode(gradeLevel, classes);
-    const year = new Date().getFullYear();
-    const sameGroup = classes.filter(
+    const year     = new Date().getFullYear();
+    const code     = classApi.generateClassCode(gradeLevel, classes);
+    const sequence = classes.filter(
       (c) => c.year === year && c.gradeLevel === Number(gradeLevel)
-    );
-    const newClass = {
-      id: nextId(classes, 'cls-'),
-      code,
-      name,
+    ).length + 1;
+
+    const newClass = await classApi.createClass({
+      id: `cls-${Date.now()}`,
+      code, name,
       gradeLevel: Number(gradeLevel),
-      year,
-      sequence: sameGroup.length + 1,
-      courseId,
-      createdAt: new Date().toISOString().slice(0, 10),
-    };
-    const updated = [...classes, newClass];
-    setClasses(updated);
-    saveClasses(updated);
+      year, sequence,
+      courseId: courseId ?? null,
+    });
+    setClasses((prev) => [...prev, newClass]);
     return newClass;
   }, [classes]);
 
-  const deleteClass = useCallback((id) => {
-    // Cascade: remove all students that belong to this class
-    const updatedStudents = students.filter((s) => s.classId !== id);
-    setStudents(updatedStudents);
-    saveStudents(updatedStudents);
-    // Then remove the class itself
-    const updated = classes.filter((c) => c.id !== id);
-    setClasses(updated);
-    saveClasses(updated);
-  }, [classes, students]);
+  const deleteClass = useCallback(async (id) => {
+    await classApi.deleteClass(id);
+    setClasses((prev) => prev.filter((c) => c.id !== id));
+    // Xóa lớp trong Supabase sẽ set class_id = null cho students (ON DELETE SET NULL)
+    // Cần refresh students để phản ánh thay đổi
+    await refreshStudents();
+  }, [refreshStudents]);
 
-  const updateClass = useCallback((id, data) => {
-    const updated = classes.map((c) => c.id === id ? { ...c, ...data } : c);
-    setClasses(updated);
-    saveClasses(updated);
-  }, [classes]);
+  const updateClass = useCallback(async (id, data) => {
+    const updated = await classApi.updateClass(id, data);
+    setClasses((prev) => prev.map((c) => (c.id === id ? updated : c)));
+  }, []);
 
-  /* ── Student CRUD ── */
-  const createStudent = useCallback((data) => {
-    const newStudent = {
-      id: nextId(students, 'student-'),
-      ...data,
-      role: 'student',
-      avatar: null,
-      enrolledCourseIds: [],
-    };
-    // Derive enrolledCourseIds from classId
-    const cls = classes.find((c) => c.id === data.classId);
-    if (cls) newStudent.enrolledCourseIds = [cls.courseId];
-
-    const updated = [newStudent, ...students];
-    setStudents(updated);
-    saveStudents(updated);
+  /* ── Student CRUD ────────────────────────────────────────────────────── */
+  const createStudent = useCallback(async (data) => {
+    const newStudent = await studentApi.createStudent(data);
+    setStudents((prev) => [newStudent, ...prev]);
     return newStudent;
-  }, [students, classes]);
+  }, []);
 
-  const updateStudent = useCallback((id, data) => {
-    const updated = students.map((s) => {
-      if (s.id !== id) return s;
-      const merged = { ...s, ...data };
-      // Re-derive enrolledCourseIds if classId changed
-      if (data.classId && data.classId !== s.classId) {
-        const cls = classes.find((c) => c.id === data.classId);
-        merged.enrolledCourseIds = cls ? [cls.courseId] : s.enrolledCourseIds;
-      }
-      return merged;
-    });
-    setStudents(updated);
-    saveStudents(updated);
-  }, [students, classes]);
+  const updateStudent = useCallback(async (id, data) => {
+    const updated = await studentApi.updateStudent(id, data);
+    setStudents((prev) => prev.map((s) => (s.id === id ? updated : s)));
+  }, []);
 
-  const toggleActive = useCallback((id) => {
-    const updated = students.map((s) =>
-      s.id === id ? { ...s, isActive: !s.isActive } : s
-    );
-    setStudents(updated);
-    saveStudents(updated);
+  const toggleActive = useCallback(async (id) => {
+    const current = students.find((s) => s.id === id);
+    if (!current) return;
+    const updated = await studentApi.toggleActive(id, current.isActive);
+    setStudents((prev) => prev.map((s) => (s.id === id ? updated : s)));
   }, [students]);
 
-  const updatePassword = useCallback((id, newPassword) => {
-    const updated = students.map((s) =>
-      s.id === id ? { ...s, password: newPassword } : s
-    );
-    setStudents(updated);
-    saveStudents(updated);
-  }, [students]);
+  const updatePassword = useCallback(async (id, newPassword) => {
+    await studentApi.updatePassword(id, newPassword);
+    // Không cần cập nhật state vì password không lưu trong profile
+  }, []);
 
-  const deleteStudent = useCallback((id) => {
-    const updated = students.filter((s) => s.id !== id);
-    setStudents(updated);
-    saveStudents(updated);
-  }, [students]);
+  const deleteStudent = useCallback(async (id) => {
+    await studentApi.deleteStudent(id);
+    setStudents((prev) => prev.filter((s) => s.id !== id));
+  }, []);
 
-  /* ── Queries ── */
+  /* ── Queries ─────────────────────────────────────────────────────────── */
   const getStudentsByClass = useCallback(
     (classId) => students.filter((s) => s.classId === classId),
     [students]
@@ -142,9 +116,15 @@ export const UserManagementProvider = ({ children }) => {
     [classes]
   );
 
+  const isLoading = studentsLoading || classesLoading;
+
   return (
     <UserManagementContext.Provider
       value={{
+        // loading
+        isLoading,
+        classesLoading,
+        studentsLoading,
         // data
         classes,
         students,
@@ -161,6 +141,7 @@ export const UserManagementProvider = ({ children }) => {
         // queries
         getStudentsByClass,
         getClassById,
+        refreshStudents,
       }}
     >
       {children}
