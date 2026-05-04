@@ -1,0 +1,209 @@
+.page {
+  max-width: 860px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-xl);
+  padding-bottom: var(--spacing-2xl);
+}
+
+/* ════════════════════════
+   Hero Gradient
+════════════════════════ */
+.hero {
+  position: relative;
+  overflow: hidden;
+  background: var(--gradient-primary);
+  border-radius: var(--radius-xl);
+  padding: var(--spacing-xl) var(--spacing-2xl);
+}
+.blob {
+  position: absolute;
+  top: -40px; right: 0;
+  width: 180px; height: 180px;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.06);
+  pointer-events: none;
+}
+.heroBtn {
+  padding: 8px 20px;
+  border-radius: var(--radius-pill);
+  background: rgba(255,255,255,0.15);
+  border: 1px solid rgba(255,255,255,0.3);
+  color: #fff;
+  font-family: var(--font-family-base);
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-semibold);
+  cursor: pointer;
+  white-space: nowrap;
+  transition: background 0.15s ease, border-color 0.15s ease;
+  backdrop-filter: blur(4px);
+}
+.heroBtn:hover {
+  background: rgba(255,255,255,0.25);
+  border-color: rgba(255,255,255,0.5);
+}
+
+/* ════════════════════════
+   Profile Header (avatar row)
+════════════════════════ */
+.profileHeader {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-lg);
+}
+.avatarCircle {
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  background: var(--gradient-primary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.75rem;
+  font-weight: var(--font-weight-bold);
+  color: #fff;
+  font-family: var(--font-family-base);
+  flex-shrink: 0;
+}
+.profileMeta {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.rolePill {
+  display: inline-flex;
+  padding: 3px 12px;
+  border-radius: var(--radius-pill);
+  background: var(--color-primary-subtle);
+  color: var(--color-primary);
+  font-family: var(--font-family-base);
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-semibold);
+  width: fit-content;
+}
+
+/* ════════════════════════
+   Form Grid (2-col)
+════════════════════════ */
+.formGrid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--spacing-lg);
+}
+
+.formSection {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-lg);
+  max-width: 480px;
+  margin-top: var(--spacing-md);
+}
+
+.inputGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.label {
+  font-family: var(--font-family-base);
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-medium);
+  color: var(--color-text-secondary);
+}
+.input {
+  padding: 10px 14px;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--color-border);
+  background: var(--color-surface);
+  font-family: var(--font-family-base);
+  font-size: var(--font-size-sm);
+  color: var(--color-text-primary);
+  transition: border-color 0.15s, box-shadow 0.15s;
+}
+.input:focus {
+  outline: none;
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 3px var(--color-primary-subtle);
+}
+.input[readOnly] {
+  background: var(--color-surface-alt);
+  color: var(--color-text-secondary);
+  cursor: not-allowed;
+}
+
+.actions {
+  display: flex;
+  align-items: center;
+  margin-top: var(--spacing-sm);
+}
+
+/* Security tips list */
+.tipList {
+  margin: 0;
+  padding-left: 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.tipList li {
+  font-family: var(--font-family-base);
+  font-size: var(--font-size-sm);
+  color: var(--color-text-secondary);
+  line-height: 1.6;
+}
+
+/* Error input state */
+.inputError {
+  border-color: #dc2626 !important;
+  box-shadow: 0 0 0 3px rgba(220,38,38,0.12) !important;
+}
+
+/* ════════════════════════
+   Buttons
+════════════════════════ */
+.pillPrimary {
+  padding: 9px 22px;
+  border-radius: var(--radius-pill);
+  background: var(--gradient-primary);
+  color: #fff;
+  font-family: var(--font-family-base);
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-semibold);
+  border: none;
+  cursor: pointer;
+  box-shadow: 0 2px 8px rgba(33,12,174,0.22);
+  transition: opacity 0.15s, transform 0.15s, box-shadow 0.15s;
+}
+.pillPrimary:hover:not(:disabled) {
+  opacity: 0.88;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 14px rgba(33,12,174,0.30);
+}
+.pillPrimary:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+.pillOutline {
+  padding: 6px 16px;
+  border-radius: var(--radius-pill);
+  background: transparent;
+  color: var(--color-text-secondary);
+  font-family: var(--font-family-base);
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-semibold);
+  border: 1px solid var(--color-border);
+  cursor: pointer;
+  transition: all 0.15s;
+}
+.pillOutline:hover {
+  background: var(--color-surface-alt);
+  color: var(--color-text-primary);
+  border-color: var(--color-border-strong);
+}
+
+@media (max-width: 600px) {
+  .formGrid { grid-template-columns: 1fr; }
+  .profileHeader { flex-direction: column; text-align: center; }
+  .rolePill { align-self: center; }
+}

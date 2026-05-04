@@ -1,0 +1,61 @@
+.header {
+  height: 64px;
+  background-color: var(--color-surface);
+  border-bottom: 1px solid var(--color-border);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 var(--spacing-2xl);
+  position: sticky;
+  top: 0;
+  z-index: 40;
+}
+
+.left {
+  display: flex;
+  align-items: center;
+}
+
+.title {
+  font-size: var(--font-size-xl);
+  font-weight: var(--font-weight-bold);
+  color: var(--color-text-primary);
+  margin: 0;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeSpeed; /* Fix ClearType artifacts on Windows */
+  transform: translateZ(0); /* Force hardware acceleration to clean up text edges */
+}
+
+.right {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-xl);
+}
+
+.search {
+  width: 300px;
+}
+
+.actions {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-md);
+}
+
+.iconBtn {
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  color: var(--color-text-secondary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--spacing-xs);
+  border-radius: var(--radius-pill);
+}
+
+.iconBtn:hover {
+  background-color: var(--color-surface-alt);
+  color: var(--color-text-primary);
+}

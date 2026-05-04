@@ -1,0 +1,393 @@
+/* AdminStudentDetail.module.css */
+
+/* ── Page ────────────────────────────────────────────────── */
+.page {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+  padding: 2rem 1.5rem;
+  max-width: 1200px;
+  margin: 0 auto;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+/* ── Back button ─────────────────────────────────────────── */
+.backBtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 0.45rem 1rem 0.45rem 0.75rem;
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-pill);
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-medium);
+  font-family: var(--font-family-base);
+  color: var(--color-text-secondary);
+  cursor: pointer;
+  transition: all 0.15s;
+  width: fit-content;
+  outline: none;
+}
+
+.backBtn:hover {
+  border-color: var(--color-primary-accent-border);
+  color: var(--color-primary);
+  background: var(--color-primary-subtle);
+}
+
+/* ── Hero ────────────────────────────────────────────────── */
+.hero {
+  display: flex;
+  gap: 2rem;
+  align-items: flex-start;
+  background: var(--gradient-primary);
+  border-radius: var(--radius-2xl);
+  padding: 2rem 2.25rem;
+  color: #fff;
+  box-shadow: var(--shadow-primary-glow);
+  position: relative;
+  overflow: hidden;
+}
+
+.hero::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(ellipse 60% 80% at 90% 50%, rgba(255,255,255,0.06) 0%, transparent 70%);
+  pointer-events: none;
+}
+
+/* Avatar */
+.avatarWrap { flex-shrink: 0; }
+
+.avatarRing {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  padding: 3px;
+  background: linear-gradient(135deg, rgba(255,255,255,0.5), rgba(255,255,255,0.15));
+  box-shadow: 0 0 0 1px rgba(255,255,255,0.2);
+}
+
+.avatarLg {
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  font-size: 1.35rem;
+  font-weight: var(--font-weight-bold);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  letter-spacing: -0.02em;
+}
+
+/* Hero info */
+.heroInfo {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.heroTopRow {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+}
+
+.heroName {
+  font-size: 1.5rem;
+  font-weight: var(--font-weight-bold);
+  margin: 0;
+  color: #fff;
+  letter-spacing: -0.025em;
+  font-family: var(--font-family-display);
+}
+
+.heroUsername {
+  font-size: var(--font-size-sm);
+  color: rgba(255,255,255,0.7);
+  margin: 0;
+  font-weight: var(--font-weight-medium);
+}
+
+.statusBadge {
+  padding: 0.2rem 0.7rem;
+  border-radius: var(--radius-pill);
+  font-size: 0.7rem;
+  font-weight: var(--font-weight-bold);
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.statusActive {
+  background: rgba(34, 197, 94, 0.2);
+  color: #86efac;
+  border: 1px solid rgba(34,197,94,0.3);
+}
+
+.statusInactive {
+  background: rgba(255,255,255,0.1);
+  color: rgba(255,255,255,0.6);
+  border: 1px solid rgba(255,255,255,0.15);
+}
+
+.heroContacts {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  margin-top: 2px;
+}
+
+.heroContact {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 0.78rem;
+  color: rgba(255,255,255,0.75);
+  font-weight: var(--font-weight-medium);
+}
+
+.heroContact svg { flex-shrink: 0; }
+
+/* Progress bar */
+.heroProgress { margin-top: 0.5rem; }
+
+.heroProgressLabel {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.75rem;
+  color: rgba(255,255,255,0.7);
+  margin-bottom: 6px;
+  font-weight: var(--font-weight-medium);
+}
+
+.heroProgressPct { font-weight: var(--font-weight-bold); color: rgba(255,255,255,0.9); }
+
+.heroProgressBar {
+  height: 6px;
+  background: rgba(255,255,255,0.15);
+  border-radius: var(--radius-pill);
+  overflow: hidden;
+}
+
+.heroProgressFill {
+  height: 100%;
+  background: rgba(255,255,255,0.8);
+  border-radius: var(--radius-pill);
+  transition: width 0.6s cubic-bezier(0.16,1,0.3,1);
+}
+
+/* ── Stat Cards ──────────────────────────────────────────── */
+.statsRow {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 0.85rem;
+}
+
+.statCard {
+  display: flex;
+  align-items: center;
+  gap: 0.85rem;
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-xl);
+  padding: 1.1rem 1.25rem;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.04);
+  transition: box-shadow 0.15s, transform 0.15s;
+}
+
+.statCard:hover {
+  box-shadow: 0 4px 16px rgba(33,12,174,0.08);
+  transform: translateY(-1px);
+}
+
+.statIconWrap {
+  width: 42px;
+  height: 42px;
+  border-radius: var(--radius-xl);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.statValue {
+  font-size: 1.25rem;
+  font-weight: var(--font-weight-bold);
+  color: var(--color-text-primary);
+  margin: 0 0 2px;
+  letter-spacing: -0.02em;
+  font-family: var(--font-family-display);
+}
+
+.statLabel {
+  font-size: 0.72rem;
+  font-weight: var(--font-weight-medium);
+  color: var(--color-text-tertiary);
+  margin: 0;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+/* ── Section ─────────────────────────────────────────────── */
+.section { display: flex; flex-direction: column; gap: 0.75rem; }
+
+.sectionTitle {
+  font-size: var(--font-size-base);
+  font-weight: var(--font-weight-bold);
+  color: var(--color-text-primary);
+  margin: 0;
+  letter-spacing: -0.01em;
+  font-family: var(--font-family-display);
+}
+
+/* ── Table ───────────────────────────────────────────────── */
+.tableWrap {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-2xl);
+  overflow: hidden;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.04);
+}
+
+.tableHeader {
+  display: grid;
+  grid-template-columns: 1.4fr 2.2fr 0.7fr 0.8fr 0.95fr 0.95fr;
+  gap: 1rem;
+  padding: 0.65rem 1.25rem;
+  background: var(--gradient-primary);
+  font-size: 0.67rem;
+  font-weight: var(--font-weight-bold);
+  color: rgba(255,255,255,0.8);
+  text-transform: uppercase;
+  letter-spacing: 0.07em;
+  align-items: center;
+}
+
+.tableRow {
+  display: grid;
+  grid-template-columns: 1.4fr 2.2fr 0.7fr 0.8fr 0.95fr 0.95fr;
+  gap: 1rem;
+  align-items: center;
+  padding: 0.85rem 1.25rem;
+  border-bottom: 1px solid var(--color-border);
+  transition: background 0.12s;
+}
+
+.tableRow:last-child { border-bottom: none; }
+.tableRow:hover { background: var(--color-surface-hover); }
+
+.rowUnsubmitted { opacity: 0.58; }
+.rowUnsubmitted:hover { opacity: 0.75; }
+
+/* Cells */
+.cellChapter {
+  font-size: 0.78rem;
+  color: var(--color-text-secondary);
+  font-weight: var(--font-weight-medium);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.cellHw {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  min-width: 0;
+}
+
+.hwTypeIcon {
+  width: 26px;
+  height: 26px;
+  border-radius: var(--radius-md);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--color-surface-alt);
+  color: var(--color-primary);
+  flex-shrink: 0;
+}
+
+.hwTitle {
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-text-primary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.draftTag {
+  font-size: 0.62rem;
+  font-weight: var(--font-weight-bold);
+  color: var(--color-warning);
+  background: var(--color-warning-subtle);
+  border-radius: var(--radius-pill);
+  padding: 0.1rem 0.45rem;
+  flex-shrink: 0;
+}
+
+.cellScore {
+  font-size: 1rem;
+  font-weight: var(--font-weight-bold);
+  letter-spacing: -0.01em;
+  font-family: var(--font-family-display);
+}
+
+.cellAttempts { font-size: var(--font-size-sm); }
+
+.attemptsBadge {
+  display: inline-block;
+  padding: 0.15rem 0.55rem;
+  border-radius: var(--radius-pill);
+  font-size: 0.72rem;
+  font-weight: var(--font-weight-semibold);
+  background: var(--color-surface-alt);
+  color: var(--color-text-secondary);
+  border: 1px solid var(--color-border);
+}
+
+.attemptsRetry {
+  background: rgba(239,68,68,0.08);
+  color: #ef4444;
+  border-color: rgba(239,68,68,0.25);
+}
+
+.cellDue {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 0.78rem;
+  color: var(--color-text-tertiary);
+}
+
+.cellDueOverdue {
+  color: var(--color-error);
+  font-weight: var(--font-weight-semibold);
+}
+
+.cellDate {
+  font-size: 0.78rem;
+  color: var(--color-text-secondary);
+  font-weight: var(--font-weight-medium);
+}
+
+.notSubmitted {
+  font-size: 0.72rem;
+  color: var(--color-text-tertiary);
+  font-style: italic;
+}
+
+/* ── Empty ───────────────────────────────────────────────── */
+.empty {
+  text-align: center;
+  padding: 3rem;
+  color: var(--color-text-tertiary);
+  font-size: var(--font-size-sm);
+}

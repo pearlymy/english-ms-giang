@@ -1,0 +1,36 @@
+.group {
+  display: flex;
+  align-items: center;
+}
+
+.item {
+  margin-left: -12px;
+  border: 2px solid var(--color-surface);
+  border-radius: var(--radius-pill);
+  transition: transform 0.2s;
+}
+
+.item:first-child {
+  margin-left: 0;
+}
+
+.item:hover {
+  transform: translateY(-2px);
+  z-index: 10 !important;
+}
+
+.excess {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: var(--color-surface-alt);
+  color: var(--color-text-secondary);
+  font-weight: var(--font-weight-medium);
+  font-size: var(--font-size-sm);
+  width: 40px;
+  height: 40px;
+  border-radius: var(--radius-pill);
+  border: 2px solid var(--color-surface);
+  margin-left: -12px;
+  z-index: 1;
+}

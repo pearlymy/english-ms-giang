@@ -1,0 +1,263 @@
+/* Dashboard.module.css */
+
+.page {
+  max-width: 1100px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-xl);
+  padding-bottom: var(--spacing-2xl);
+}
+
+/* ════════════════════════
+   Hero gradient banner
+════════════════════════ */
+.hero {
+  position: relative;
+  overflow: hidden;
+  background: var(--gradient-primary);
+  /* cyan → deep indigo */
+  border-radius: var(--radius-xl);
+  padding: var(--spacing-2xl);
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-lg);
+}
+
+/* Decorative translucent blobs */
+.blob1 {
+  position: absolute;
+  top: -48px;
+  right: -32px;
+  width: 220px;
+  height: 220px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.08);
+  pointer-events: none;
+}
+
+.blob2 {
+  position: absolute;
+  bottom: -60px;
+  left: 40%;
+  width: 160px;
+  height: 160px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.06);
+  pointer-events: none;
+}
+
+.heroTop {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--spacing-md);
+  flex-wrap: wrap;
+  position: relative;
+}
+
+/* Ghost white button in hero */
+.heroBtn {
+  padding: 8px 20px;
+  border-radius: var(--radius-pill);
+  background: rgba(255, 255, 255, 0.15);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  color: #fff;
+  font-family: var(--font-family-base);
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-semibold);
+  cursor: pointer;
+  white-space: nowrap;
+  transition: background 0.15s ease, border-color 0.15s ease;
+  backdrop-filter: blur(4px);
+}
+
+.heroBtn:hover {
+  background: rgba(255, 255, 255, 0.24);
+  border-color: rgba(255, 255, 255, 0.5);
+}
+
+/* Stats strip */
+.heroStats {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-xl);
+  flex-wrap: wrap;
+  position: relative;
+}
+
+.statDiv {
+  width: 1px;
+  height: 28px;
+  background: rgba(255, 255, 255, 0.25);
+}
+
+.statItem {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.statNum {
+  font-family: var(--font-family-base);
+  font-size: 1.6rem;
+  font-weight: var(--font-weight-bold);
+  color: #fff;
+  line-height: 1;
+}
+
+.statLabel {
+  font-family: var(--font-family-base);
+  font-size: var(--font-size-xs);
+  color: rgba(255, 255, 255, 0.65);
+}
+
+/* Progress */
+.heroProgress {
+  height: 5px;
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: var(--radius-pill);
+  overflow: hidden;
+  position: relative;
+}
+
+.heroFill {
+  height: 100%;
+  background: rgba(255, 255, 255, 0.85);
+  border-radius: var(--radius-pill);
+  transition: width 0.7s cubic-bezier(0.4, 0, 0.2, 1);
+  min-width: 4px;
+}
+
+/* ════════════════════════
+   Body panels
+════════════════════════ */
+.panels {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--spacing-xl);
+  align-items: start;
+}
+
+/* Section header */
+.sectionHeader {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+}
+
+.countBadge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 20px;
+  height: 20px;
+  padding: 0 6px;
+  border-radius: var(--radius-pill);
+  background: var(--color-primary-subtle);
+  color: var(--color-primary);
+  font-family: var(--font-family-base);
+  font-size: 11px;
+  font-weight: var(--font-weight-bold);
+}
+
+/* ── HW Row ── */
+.hwRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--spacing-md);
+  padding: var(--spacing-sm) var(--spacing-md);
+  border-radius: var(--radius-md);
+  background: var(--color-background);
+  border: 1px solid var(--color-border);
+  transition: border-color 0.15s, box-shadow 0.15s;
+}
+
+.hwRow:hover {
+  border-color: var(--color-border-strong);
+  box-shadow: var(--shadow-xs);
+}
+
+.hwInfo {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+}
+
+/* ── Action pill buttons ── */
+.pill {
+  flex-shrink: 0;
+  padding: 6px 16px;
+  border-radius: var(--radius-pill);
+  font-family: var(--font-family-base);
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-semibold);
+  cursor: pointer;
+  white-space: nowrap;
+  border: none;
+  transition: all 0.15s ease;
+  line-height: 1;
+}
+
+/* Gradient: primary action */
+.pillPrimary {
+  background: var(--gradient-primary);
+  color: #fff;
+  box-shadow: 0 2px 8px rgba(33, 12, 174, 0.22);
+}
+
+.pillPrimary:hover {
+  opacity: 0.88;
+  box-shadow: 0 4px 14px rgba(33, 12, 174, 0.30);
+  transform: translateY(-1px);
+}
+
+/* Ghost: secondary action (view) */
+.pillGhost {
+  background: transparent;
+  color: var(--color-primary);
+  border: 1px solid var(--color-border);
+}
+
+.pillGhost:hover {
+  background: var(--color-primary-subtle);
+  border-color: var(--color-primary);
+}
+
+/* Outline: redo */
+.pillOutline {
+  background: transparent;
+  color: var(--color-text-secondary);
+  border: 1px solid var(--color-border);
+}
+
+.pillOutline:hover {
+  background: var(--color-surface-alt);
+  color: var(--color-text-primary);
+}
+
+/* ── Responsive ── */
+@media (max-width: 900px) {
+  .panels {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 600px) {
+  .heroStats {
+    gap: var(--spacing-lg);
+  }
+
+  .statNum {
+    font-size: 1.25rem;
+  }
+
+  .hwRow {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+}

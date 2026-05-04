@@ -1,0 +1,168 @@
+/* =====================================================
+   Toast Component
+   Motion: MOTION_SYSTEM.md → "Toast: slide/fade"
+   Enter : slide from right + fade — 180ms, easing.enter
+   Exit  : slide to right  + fade — 180ms, easing.exit
+   ===================================================== */
+
+/* ── Container (fixed bottom-right stack) ── */
+.container {
+  position: fixed;
+  bottom: var(--spacing-2xl);
+  right: var(--spacing-2xl);
+  z-index: 9999;
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-sm);
+  pointer-events: none; /* let clicks through the empty space */
+  width: 360px;
+  max-width: calc(100vw - var(--spacing-2xl) * 2);
+}
+
+/* ── Toast card ── */
+.toast {
+  pointer-events: auto;
+  display: flex;
+  align-items: flex-start;
+  gap: var(--spacing-sm);
+  background-color: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-lg);
+  overflow: hidden;
+  position: relative;
+  padding: var(--spacing-md) var(--spacing-md);
+
+  /* Enter animation — slide/fade from right, 180ms, easing.enter */
+  animation: toastEnter var(--motion-duration-normal) var(--motion-easing-enter) both;
+}
+
+/* Exit class applied before removal */
+.exiting {
+  animation: toastExit var(--motion-duration-normal) var(--motion-easing-exit) both;
+}
+
+@keyframes toastEnter {
+  from {
+    opacity: 0;
+    transform: translateX(calc(100% + var(--spacing-2xl)));
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes toastExit {
+  from {
+    opacity: 1;
+    transform: translateX(0);
+    max-height: 120px;
+    margin-bottom: 0;
+  }
+  to {
+    opacity: 0;
+    transform: translateX(calc(100% + var(--spacing-2xl)));
+    max-height: 0;
+    margin-bottom: calc(-1 * var(--spacing-sm));
+  }
+}
+
+/* ── Left accent bar ── */
+.accent {
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 4px;
+  border-radius: var(--radius-lg) 0 0 var(--radius-lg);
+}
+
+.success .accent { background: var(--color-success); }
+.error   .accent { background: var(--color-error); }
+.warning .accent { background: var(--color-warning); }
+.info    .accent { background: var(--color-primary); }
+
+/* ── Icon wrapper ── */
+.iconWrap {
+  flex-shrink: 0;
+  margin-left: var(--spacing-xs); /* offset for accent bar */
+  margin-top: 1px;
+}
+
+.icon_success { color: var(--color-success); }
+.icon_error   { color: var(--color-error); }
+.icon_warning { color: var(--color-warning); }
+.icon_info    { color: var(--color-primary); }
+
+/* ── Body ── */
+.body {
+  flex: 1;
+  min-width: 0;
+}
+
+.title {
+  margin: 0 0 2px;
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-text-primary);
+  line-height: 1.4;
+}
+
+.message {
+  margin: 0;
+  font-size: var(--font-size-sm);
+  color: var(--color-text-secondary);
+  line-height: 1.5;
+}
+
+/* ── Close button ── */
+.closeBtn {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  border: none;
+  background: transparent;
+  border-radius: var(--radius-md);
+  color: var(--color-text-tertiary);
+  cursor: pointer;
+  padding: 0;
+  margin-top: 1px;
+  transition: background-color var(--motion-duration-fast) var(--motion-easing-standard),
+              color            var(--motion-duration-fast) var(--motion-easing-standard);
+}
+
+.closeBtn:hover {
+  background-color: var(--color-surface-alt);
+  color: var(--color-text-primary);
+}
+
+/* ── Mobile: full width, bottom center ── */
+@media (max-width: 640px) {
+  .container {
+    left: var(--spacing-md);
+    right: var(--spacing-md);
+    bottom: var(--spacing-lg);
+    width: auto;
+    max-width: none;
+  }
+}
+
+/* ── Reduced motion ── */
+@media (prefers-reduced-motion: reduce) {
+  .toast,
+  .exiting {
+    animation: none;
+    opacity: 1;
+    transform: none;
+  }
+  .exiting {
+    opacity: 0;
+  }
+  .closeBtn {
+    transition: none;
+  }
+}

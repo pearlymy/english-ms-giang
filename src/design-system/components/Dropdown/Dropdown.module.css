@@ -1,0 +1,51 @@
+.content {
+  background-color: var(--color-surface);
+  border-radius: var(--radius-md);
+  padding: var(--spacing-xs);
+  box-shadow: var(--shadow-md);
+  border: 1px solid var(--color-border);
+  min-width: 200px;
+  z-index: 1000;
+  transform-origin: var(--radix-dropdown-menu-content-transform-origin);
+  animation: dropdownEnter var(--motion-duration-normal) var(--motion-easing-enter);
+}
+
+.item {
+  font-size: var(--font-size-sm);
+  color: var(--color-text-primary);
+  border-radius: var(--radius-sm);
+  display: flex;
+  align-items: center;
+  padding: var(--spacing-sm) var(--spacing-md);
+  cursor: pointer;
+  outline: none;
+  transition: background-color var(--motion-duration-fast) var(--motion-easing-standard),
+              color var(--motion-duration-fast) var(--motion-easing-standard);
+}
+
+.item:hover, .item[data-highlighted] {
+  background-color: var(--color-surface-alt);
+  color: var(--color-primary);
+}
+
+.separator {
+  height: 1px;
+  background-color: var(--color-border);
+  margin: var(--spacing-xs) calc(-1 * var(--spacing-xs));
+}
+
+@keyframes dropdownEnter {
+  from { opacity: 0; transform: translateY(-4px) scale(0.97); }
+  to   { opacity: 1; transform: translateY(0)   scale(1); }
+}
+
+.subTrigger[data-state="open"] {
+  background-color: var(--color-surface-alt);
+  color: var(--color-primary);
+}
+
+.rightSlot {
+  margin-left: auto;
+  padding-left: var(--spacing-lg);
+  color: var(--color-text-tertiary);
+}

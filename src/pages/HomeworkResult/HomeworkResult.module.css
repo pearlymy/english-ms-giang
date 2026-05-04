@@ -1,0 +1,335 @@
+/* HomeworkResult.module.css */
+
+/* ════════════════════════
+   Answer filter bar
+════════════════════════ */
+.filterBar {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  background: var(--color-surface-alt);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-pill);
+  padding: 3px;
+}
+.filterBtn {
+  padding: 5px 14px;
+  border-radius: var(--radius-pill);
+  border: none;
+  background: transparent;
+  font-family: var(--font-family-base);
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-medium);
+  color: var(--color-text-secondary);
+  cursor: pointer;
+  transition: all 0.15s ease;
+  white-space: nowrap;
+}
+.filterBtn:hover { color: var(--color-text-primary); }
+
+/* Active — "Tất cả" */
+.filterActive {
+  background: var(--gradient-primary);
+  color: #fff !important;
+  font-weight: var(--font-weight-semibold);
+  box-shadow: var(--shadow-xs);
+}
+/* Active — "Câu sai" (red tint) */
+.filterActiveWrong {
+  background: linear-gradient(135deg, #ef4444, #dc2626);
+  color: #fff !important;
+  font-weight: var(--font-weight-semibold);
+  box-shadow: var(--shadow-xs);
+}
+
+.page {
+  max-width: 720px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-xl);
+  padding-bottom: var(--spacing-2xl);
+}
+
+/* ════════════════════════
+   Score hero
+════════════════════════ */
+.hero {
+  position: relative;
+  overflow: hidden;
+  background: var(--gradient-primary);
+  border-radius: var(--radius-xl);
+  padding: var(--spacing-2xl) var(--spacing-xl);
+}
+.blob {
+  position: absolute;
+  top: -50px; right: -30px;
+  width: 200px; height: 200px;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.07);
+  pointer-events: none;
+}
+
+/* Meta pills row */
+.heroMeta {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+  flex-wrap: wrap;
+  justify-content: center;
+}
+.metaPill {
+  padding: 4px 12px;
+  border-radius: var(--radius-pill);
+  background: rgba(255,255,255,0.15);
+  border: 1px solid rgba(255,255,255,0.25);
+  font-family: var(--font-family-base);
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-semibold);
+  color: #fff;
+  white-space: nowrap;
+}
+.metaGreen { background: rgba(5,150,105,0.35); border-color: rgba(5,150,105,0.5); }
+.metaMuted { background: rgba(255,255,255,0.10); border-color: rgba(255,255,255,0.18); }
+
+/* ════════════════════════
+   Pill buttons
+════════════════════════ */
+.pillPrimary {
+  padding: 9px 22px;
+  border-radius: var(--radius-pill);
+  background: var(--gradient-primary);
+  color: #fff;
+  font-family: var(--font-family-base);
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-semibold);
+  border: none;
+  cursor: pointer;
+  box-shadow: 0 2px 8px rgba(33,12,174,0.22);
+  transition: opacity 0.15s, transform 0.15s, box-shadow 0.15s;
+}
+.pillPrimary:hover {
+  opacity: 0.88;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 14px rgba(33,12,174,0.30);
+}
+.pillOutline {
+  padding: 9px 22px;
+  border-radius: var(--radius-pill);
+  background: transparent;
+  color: var(--color-text-secondary);
+  font-family: var(--font-family-base);
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-semibold);
+  border: 1px solid var(--color-border);
+  cursor: pointer;
+  transition: all 0.15s;
+}
+.pillOutline:hover {
+  background: var(--color-surface-alt);
+  color: var(--color-text-primary);
+  border-color: var(--color-border-strong);
+}
+
+/* ════════════════════════
+   Result tag (Đúng / Sai)
+════════════════════════ */
+.resultTagCorrect,
+.resultTagWrong {
+  padding: 3px 10px;
+  border-radius: var(--radius-pill);
+  font-family: var(--font-family-base);
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-semibold);
+}
+.resultTagCorrect {
+  background: rgba(5,150,105,0.10);
+  color: #059669;
+}
+.resultTagWrong {
+  background: rgba(220,38,38,0.10);
+  color: #dc2626;
+}
+
+/* ════════════════════════
+   Answer group card — mirrors AdminAssignmentOverview .groupCard
+════════════════════════ */
+.answerGroupCard {
+  background: var(--color-surface);
+  border-radius: var(--radius-xl);
+  padding: var(--spacing-lg) var(--spacing-xl);
+  box-shadow: 0 1px 3px rgba(0,0,0,0.04), 0 4px 12px rgba(0,0,0,0.03);
+  border: 1px solid var(--color-border);
+}
+
+/* ════════════════════════
+   Question list / items
+════════════════════════ */
+.questionList {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+
+.questionItem {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-md);
+  padding: var(--spacing-xl) 0;
+  border-bottom: 1px solid var(--color-border);
+}
+.questionItem:last-child {
+  border-bottom: none;
+  padding-bottom: var(--spacing-sm);
+}
+.questionItem:first-child {
+  padding-top: var(--spacing-sm);
+}
+
+/* Question header row */
+.questionHeader {
+  display: flex;
+  align-items: flex-start;
+  gap: calc(var(--spacing-sm) + 4px);
+}
+
+/* Number badge — blue gradient */
+.questionBadge {
+  width: 32px;
+  height: 32px;
+  border-radius: var(--radius-md);
+  background: var(--gradient-primary);
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 13px;
+  font-weight: var(--font-weight-bold);
+  font-family: var(--font-family-base);
+  flex-shrink: 0;
+  box-shadow: 0 2px 6px rgba(33,12,174,0.18);
+}
+
+.questionText {
+  margin: 0;
+  font-size: var(--font-size-base);
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-text-primary);
+  line-height: 1.55;
+  flex: 1;
+}
+
+.qTextRestLines {
+  display: block;
+  font-size: var(--font-size-md);
+  font-weight: var(--font-weight-normal);
+  color: #334155;
+  white-space: pre-wrap;
+  margin-top: 4px;
+}
+
+/* ════════════════════════
+   Options grid — 2 columns
+════════════════════════ */
+.optionsGrid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: var(--spacing-sm);
+  margin-left: 44px;
+}
+
+@media (max-width: 600px) {
+  .optionsGrid { grid-template-columns: 1fr; margin-left: 0; }
+}
+
+/* Option row */
+.opt {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+  padding: 10px var(--spacing-md);
+  border-radius: var(--radius-md);
+  border: 1px solid var(--color-border);
+  font-size: var(--font-size-sm);
+  font-family: var(--font-family-base);
+  color: var(--color-text-secondary);
+  background: var(--color-surface);
+  transition: border-color 0.15s, background 0.15s;
+}
+
+.optCorrect {
+  background: rgba(5,150,105,0.06);
+  border-color: rgba(5,150,105,0.25);
+  color: #065f46;
+  font-weight: var(--font-weight-medium);
+}
+
+.optWrong {
+  background: rgba(220,38,38,0.06);
+  border-color: rgba(220,38,38,0.25);
+  color: #991b1b;
+}
+
+/* Letter circle */
+.optLetter {
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  background: var(--color-surface-alt);
+  color: var(--color-text-tertiary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+  font-weight: var(--font-weight-bold);
+  font-family: var(--font-family-base);
+  flex-shrink: 0;
+  border: 1px solid var(--color-border);
+}
+
+.letterCorrect {
+  background: rgba(5,150,105,0.15);
+  color: #059669;
+  border-color: rgba(5,150,105,0.25);
+}
+
+.letterWrong {
+  background: rgba(220,38,38,0.15);
+  color: #dc2626;
+  border-color: rgba(220,38,38,0.25);
+}
+
+.optText { flex: 1; line-height: 1.4; }
+
+/* Trailing icons */
+.correctIcon { color: #059669; flex-shrink: 0; }
+.wrongIcon   { color: #dc2626; flex-shrink: 0; }
+
+/* ════════════════════════
+   Explanation box
+════════════════════════ */
+.explanationBox {
+  margin-left: 44px;
+  padding: var(--spacing-md);
+  background: var(--color-surface-alt);
+  border-radius: var(--radius-md);
+  border-left: 3px solid var(--color-primary);
+  font-size: var(--font-size-sm);
+  color: var(--color-text-secondary);
+  display: flex;
+  gap: var(--spacing-sm);
+  align-items: flex-start;
+}
+
+
+.explanationIcon {
+  color: var(--color-primary);
+  flex-shrink: 0;
+  margin-top: 1px;
+}
+
+.explanationText {
+  margin: 0;
+  line-height: 1.55;
+}
+

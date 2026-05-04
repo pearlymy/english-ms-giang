@@ -1,0 +1,213 @@
+/* ============================================
+   Select (LOV) Component
+   Motion: MOTION_SYSTEM.md
+   - Panel: fade + slide  → motion.duration.normal (180ms), easing.enter
+   - Item:  bg transition → motion.duration.fast  (120ms), easing.standard
+   ============================================ */
+
+.container {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-xs);
+  width: 100%;
+  position: relative;
+}
+
+/* ---------- Label ---------- */
+.label {
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-text-secondary);
+}
+
+/* ---------- Trigger button ---------- */
+.trigger {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--spacing-sm);
+
+  padding: 10px var(--spacing-lg);
+  border-radius: var(--radius-pill);
+  border: 1px solid var(--color-border-strong);
+  background-color: var(--color-surface);
+  color: var(--color-text-primary);
+
+  font-family: var(--font-family-base);
+  font-size: var(--font-size-md);
+  text-align: left;
+  cursor: pointer;
+  outline: none;
+
+  transition:
+    border-color var(--motion-duration-fast) var(--motion-easing-standard),
+    box-shadow   var(--motion-duration-fast) var(--motion-easing-standard);
+}
+
+.trigger:hover:not(:disabled) {
+  border-color: var(--color-primary-accent);
+}
+
+.triggerOpen {
+  border-color: var(--color-border-focus);
+  box-shadow: 0 0 0 3px var(--color-primary-subtle);
+}
+
+.triggerError {
+  border-color: var(--color-border-error);
+}
+
+.triggerError:focus,
+.triggerError.triggerOpen {
+  box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.12);
+}
+
+.trigger:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  background-color: var(--color-surface-alt);
+}
+
+/* ---------- Trigger text ---------- */
+.triggerValue {
+  color: var(--color-text-primary);
+  flex: 1;
+}
+
+.triggerPlaceholder {
+  color: var(--color-text-tertiary);
+  flex: 1;
+}
+
+/* ---------- Chevron icon ---------- */
+.chevron {
+  color: var(--color-text-tertiary);
+  flex-shrink: 0;
+  transition: transform var(--motion-duration-normal) var(--motion-easing-standard);
+}
+
+.chevronOpen {
+  transform: rotate(180deg);
+}
+
+/* ---------- Panel ---------- */
+.panel {
+  position: absolute;
+  top: calc(100% + var(--spacing-xs));
+  left: 0;
+  right: 0;
+  z-index: 200;
+
+  background-color: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  padding: var(--spacing-xs);
+  box-shadow: var(--shadow-lg);
+  max-height: 240px;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+
+  /* Motion: fade + slide — MOTION_SYSTEM.md → dropdown/tooltip */
+  animation: panelEnter var(--motion-duration-normal) var(--motion-easing-enter) both;
+}
+
+@keyframes panelEnter {
+  from {
+    opacity: 0;
+    transform: translateY(-6px) scale(0.98);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+/* ---------- Group ---------- */
+.group {
+  /* No margin needed, groups are visually separated by label */
+}
+
+.groupLabel {
+  font-size: 11px;
+  font-weight: var(--font-weight-bold);
+  color: var(--color-text-tertiary);
+  text-transform: uppercase;
+  letter-spacing: 0.6px;
+  padding: var(--spacing-xs) var(--spacing-md);
+  margin-top: var(--spacing-xs);
+}
+
+/* ---------- Option ---------- */
+.option {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--spacing-sm) var(--spacing-md);
+  border-radius: var(--radius-md);
+  font-size: var(--font-size-sm);
+  color: var(--color-text-primary);
+  cursor: pointer;
+  outline: none;
+
+  /* Motion: item bg — MOTION_SYSTEM.md → hover/focus = fast */
+  transition: background-color var(--motion-duration-fast) var(--motion-easing-standard),
+              color            var(--motion-duration-fast) var(--motion-easing-standard);
+}
+
+.option:hover,
+.option:focus {
+  background-color: var(--color-primary-subtle);
+  color: var(--color-primary);
+}
+
+.optionSelected {
+  background-color: var(--color-primary-subtle);
+  color: var(--color-primary);
+  font-weight: var(--font-weight-semibold);
+}
+
+.checkIcon {
+  color: var(--color-primary);
+  flex-shrink: 0;
+}
+
+/* ---------- Helper / Error text ---------- */
+.helperText {
+  font-size: var(--font-size-xs);
+  color: var(--color-text-secondary);
+}
+
+.errorText {
+  color: var(--color-error);
+}
+
+/* ---------- States ---------- */
+.disabled .trigger {
+  pointer-events: none;
+}
+
+.hasError .label {
+  color: var(--color-error);
+}
+
+/* ---------- Scrollbar ---------- */
+.panel::-webkit-scrollbar {
+  width: 4px;
+}
+.panel::-webkit-scrollbar-thumb {
+  background: var(--color-border-strong);
+  border-radius: var(--radius-pill);
+}
+
+/* ---------- Reduced motion ---------- */
+@media (prefers-reduced-motion: reduce) {
+  .panel {
+    animation: none;
+  }
+  .chevron,
+  .trigger,
+  .option {
+    transition: none;
+  }
+}

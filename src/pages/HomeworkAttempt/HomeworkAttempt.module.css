@@ -1,0 +1,173 @@
+/* HomeworkAttempt.module.css — quiz-specific elements only */
+
+.page {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-xl);
+  max-width: 720px;
+  margin: 0 auto;
+  padding-bottom: var(--spacing-2xl);
+}
+
+/* ── Audio Player ── */
+.audioCard {
+  background: linear-gradient(135deg, rgba(79,70,229,0.06), rgba(6,182,212,0.04)) !important;
+  border-color: rgba(79,70,229,0.2) !important;
+}
+
+.audioIconWrap {
+  width: 40px;
+  height: 40px;
+  border-radius: var(--radius-md);
+  background: var(--gradient-primary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.playerRow {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-md);
+  padding: var(--spacing-sm) 0;
+}
+
+/* Sound wave bars */
+.waveWrap {
+  display: flex;
+  align-items: center;
+  gap: 3px;
+  height: 32px;
+  opacity: 0.3;
+  transition: opacity 0.3s ease;
+}
+.waveActive { opacity: 1; }
+
+.waveBar {
+  display: block;
+  width: 4px;
+  border-radius: 2px;
+  background: var(--gradient-primary);
+  height: 10px;
+  animation: none;
+  transition: height 0.2s ease;
+}
+.waveActive .waveBar {
+  animation: wave 0.8s ease-in-out infinite alternate;
+}
+
+@keyframes wave {
+  0%   { height: 4px; }
+  50%  { height: 28px; }
+  100% { height: 8px; }
+}
+
+/* Warning */
+.warningCard {
+  border-color: var(--color-warning) !important;
+  background: rgba(245,158,11,0.04) !important;
+}
+
+/* Progress dots */
+.dots { display: flex; gap: 6px; flex-wrap: wrap; }
+
+/* ── Grouped mode dots ── */
+.groupedDots {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--spacing-lg);
+  flex-wrap: wrap;
+}
+
+.dotGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  align-items: flex-start;
+}
+
+/* vertical divider between groups */
+.dotGroupDivider {
+  display: none; /* hidden in column layout — groups stack naturally */
+}
+
+.dot {
+  width: 30px; height: 30px;
+  border-radius: 50%;
+  border: 1.5px solid var(--color-border);
+  background: var(--color-surface);
+  cursor: pointer;
+  font-size: 11px;
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-text-secondary);
+  display: flex; align-items: center; justify-content: center;
+  transition: all 0.15s ease;
+  font-family: inherit;
+}
+.dot:hover { border-color: var(--color-primary); color: var(--color-primary); }
+.dotAnswered {
+  background: var(--color-primary-subtle);
+  border-color: var(--color-primary);
+  color: var(--color-primary);
+}
+.dotActive {
+  background: var(--color-primary) !important;
+  border-color: var(--color-primary) !important;
+  color: #fff !important;
+  transform: scale(1.1);
+}
+
+/* Quiz option buttons */
+.option {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-md);
+  width: 100%;
+  padding: var(--spacing-md) var(--spacing-lg);
+  background: var(--color-background);
+  border: 1.5px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  cursor: pointer;
+  text-align: left;
+  font-family: inherit;
+  transition: border-color 0.15s ease, background 0.15s ease, transform 0.1s ease;
+}
+.option:hover {
+  border-color: var(--color-primary);
+  background: var(--color-primary-subtle);
+  transform: translateX(3px);
+}
+.optionSelected {
+  border-color: var(--color-primary);
+  background: var(--color-primary-subtle);
+}
+
+.optLabel {
+  width: 32px; height: 32px;
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-bold);
+  background: var(--color-border);
+  color: var(--color-text-secondary);
+  flex-shrink: 0;
+  transition: background 0.15s ease, color 0.15s ease;
+}
+.optLabelActive {
+  background: var(--color-primary);
+  color: #fff;
+}
+
+.optText {
+  font-size: var(--font-size-md);
+  color: var(--color-text-primary);
+  font-family: inherit;
+  line-height: 1.4;
+}
+
+/* Warning card accent */
+.warning {
+  border-color: var(--color-warning) !important;
+  background: rgba(245,158,11,0.05) !important;
+}

@@ -1,0 +1,252 @@
+/* =====================================================
+   LandingLayout — Navbar, Drawer, Footer
+   Motion: MOTION_SYSTEM.md
+   - Hamburger bars: 120ms (fast) standard
+   - Drawer slide: 240ms (slow) enter/exit
+   - Backdrop: 180ms (normal) fade
+   ===================================================== */
+
+.layout {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  background-color: var(--color-background);
+  overflow-x: hidden;
+}
+
+/* ===== NAVBAR ===== */
+.navbar {
+  height: 72px;
+  background-color: rgba(255, 255, 255, 0.85);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border-bottom: 1px solid var(--color-border);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 var(--spacing-3xl);
+  position: sticky;
+  top: 0;
+  z-index: 100;
+}
+
+.logo {
+  font-size: var(--font-size-lg);
+  font-weight: var(--font-weight-bold);
+  color: var(--color-primary);
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+  text-decoration: none;
+  letter-spacing: -0.3px;
+}
+
+/* ===== DESKTOP NAV LINKS ===== */
+.navLinks {
+  display: flex;
+  gap: var(--spacing-2xl);
+  align-items: center;
+}
+
+.navLink {
+  color: var(--color-text-secondary);
+  text-decoration: none;
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-medium);
+  transition: color var(--motion-duration-fast) var(--motion-easing-standard);
+}
+
+.navLink:hover {
+  color: var(--color-primary);
+}
+
+.navLinkActive {
+  color: var(--color-primary);
+  font-weight: var(--font-weight-semibold);
+}
+
+/* ===== HAMBURGER BUTTON (hidden on desktop) ===== */
+.hamburger {
+  display: none;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 5px;
+  width: 40px;
+  height: 40px;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  padding: var(--spacing-xs);
+  border-radius: var(--radius-md);
+  transition: background-color var(--motion-duration-fast) var(--motion-easing-standard);
+}
+
+.hamburger:hover {
+  background-color: var(--color-surface-hover);
+}
+
+/* Animated bars */
+.bar {
+  display: block;
+  width: 22px;
+  height: 2px;
+  background-color: var(--color-text-primary);
+  border-radius: var(--radius-pill);
+  /* Motion: fast (120ms) for micro hover/toggle */
+  transition:
+    transform var(--motion-duration-fast) var(--motion-easing-standard),
+    opacity   var(--motion-duration-fast) var(--motion-easing-standard);
+  transform-origin: center;
+}
+
+/* Bars → X transformation */
+.barTopOpen { transform: translateY(7px) rotate(45deg); }
+.barMidOpen { opacity: 0; transform: scaleX(0); }
+.barBotOpen { transform: translateY(-7px) rotate(-45deg); }
+
+/* ===== MOBILE BACKDROP ===== */
+.backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 90;
+  background-color: var(--color-overlay);
+  opacity: 0;
+  pointer-events: none;
+  /* Motion: normal (180ms) fade */
+  transition: opacity var(--motion-duration-normal) var(--motion-easing-standard);
+}
+
+.backdropVisible {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+/* ===== MOBILE DRAWER ===== */
+.drawer {
+  position: fixed;
+  top: 72px; /* Below navbar */
+  left: 0;
+  right: 0;
+  z-index: 95;
+  background-color: var(--color-surface);
+  border-bottom: 1px solid var(--color-border);
+  box-shadow: var(--shadow-lg);
+
+  /* Hidden state */
+  transform: translateY(-8px);
+  opacity: 0;
+  pointer-events: none;
+  visibility: hidden;
+
+  /* Motion: slow (240ms) modal/drawer — from MOTION_SYSTEM.md */
+  transition:
+    transform  var(--motion-duration-slow) var(--motion-easing-enter),
+    opacity    var(--motion-duration-slow) var(--motion-easing-enter),
+    visibility var(--motion-duration-slow) linear;
+}
+
+.drawerOpen {
+  transform: translateY(0);
+  opacity: 1;
+  pointer-events: auto;
+  visibility: visible;
+}
+
+.drawerInner {
+  display: flex;
+  flex-direction: column;
+  padding: var(--spacing-lg) var(--spacing-xl);
+  gap: var(--spacing-xs);
+}
+
+.drawerLink {
+  display: block;
+  color: var(--color-text-primary);
+  text-decoration: none;
+  font-size: var(--font-size-md);
+  font-weight: var(--font-weight-medium);
+  padding: var(--spacing-md) var(--spacing-sm);
+  border-radius: var(--radius-md);
+  transition: background-color var(--motion-duration-fast) var(--motion-easing-standard),
+              color            var(--motion-duration-fast) var(--motion-easing-standard);
+}
+
+.drawerLink:hover {
+  background-color: var(--color-primary-subtle);
+  color: var(--color-primary);
+}
+
+.drawerCta {
+  margin-top: var(--spacing-md);
+  padding-top: var(--spacing-md);
+  border-top: 1px solid var(--color-border);
+}
+
+/* ===== MAIN + FOOTER ===== */
+.main {
+  flex: 1;
+}
+
+.footer {
+  background-color: var(--color-surface);
+  border-top: 1px solid var(--color-border);
+  padding: var(--spacing-2xl) var(--spacing-3xl);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  color: var(--color-text-tertiary);
+  font-size: var(--font-size-xs);
+}
+
+.footerBrand {
+  font-weight: var(--font-weight-bold);
+  color: var(--color-primary);
+  font-size: var(--font-size-sm);
+}
+
+/* ===== RESPONSIVE ===== */
+
+/* Tablet: slightly reduce padding */
+@media (max-width: 1024px) {
+  .navbar {
+    padding: 0 var(--spacing-xl);
+  }
+  .footer {
+    padding: var(--spacing-xl);
+  }
+}
+
+/* Mobile: show hamburger, hide desktop nav links */
+@media (max-width: 640px) {
+  .navLinks {
+    display: none;
+  }
+
+  .hamburger {
+    display: flex;
+  }
+
+  .navbar {
+    padding: 0 var(--spacing-lg);
+  }
+
+  .footer {
+    flex-direction: column;
+    align-items: center;
+    gap: var(--spacing-sm);
+    text-align: center;
+    padding: var(--spacing-xl) var(--spacing-lg);
+  }
+}
+
+/* Reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  .bar,
+  .drawer,
+  .backdrop,
+  .navLink,
+  .drawerLink {
+    transition: none;
+  }
+}

@@ -1,0 +1,534 @@
+/* AdminStudentsPage.module.css */
+
+/* ── Page wrapper — centered ─────────────────────────────── */
+.page {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+  padding: 2rem 1.5rem;
+  max-width: 1200px;
+  margin: 0 auto;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+/* ── Hero ────────────────────────────────────────────────── */
+.hero {
+  display: flex;
+  align-items: center;
+  gap: 1.25rem;
+  background: var(--gradient-primary);
+  border-radius: var(--radius-2xl);
+  padding: 1.75rem 2rem;
+  color: #fff;
+  box-shadow: var(--shadow-primary-glow);
+}
+
+.heroIcon {
+  width: 56px;
+  height: 56px;
+  background: rgba(255,255,255,0.15);
+  border-radius: var(--radius-xl);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  backdrop-filter: blur(6px);
+}
+
+.heroTitle {
+  font-size: 1.4rem;
+  font-weight: var(--font-weight-bold);
+  margin: 0 0 0.2rem;
+  letter-spacing: -0.02em;
+  font-family: var(--font-family-display);
+  color: #fff;
+}
+
+.heroSub {
+  font-size: var(--font-size-sm);
+  opacity: 0.82;
+  margin: 0;
+  font-weight: var(--font-weight-medium);
+}
+
+/* ── Filter bar ──────────────────────────────────────────── */
+.filterBar {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-2xl);
+  padding: 0.85rem 1.25rem;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.03);
+}
+
+.lovGroup {
+  display: flex;
+  gap: 0.5rem;
+  margin-left: auto;
+}
+
+.searchWrap {
+  position: relative;
+  flex: 1;
+  min-width: 200px;
+}
+
+.searchIcon {
+  position: absolute;
+  left: 0.75rem;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--color-text-tertiary);
+  pointer-events: none;
+}
+
+.searchInput {
+  width: 100%;
+  padding: 0.55rem 0.75rem 0.55rem 2.2rem;
+  background: var(--color-surface-alt);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  font-size: var(--font-size-sm);
+  font-family: var(--font-family-base);
+  color: var(--color-text-primary);
+  outline: none;
+  box-sizing: border-box;
+  transition: border-color 0.15s, box-shadow 0.15s;
+}
+
+.searchInput:focus {
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 3px var(--color-primary-subtle);
+}
+
+.filterGroup {
+  display: flex;
+  gap: 0.35rem;
+  flex-wrap: wrap;
+}
+
+.filterBtn {
+  padding: 0.4rem 0.9rem;
+  border: 1px solid var(--color-border);
+  background: var(--color-surface);
+  color: var(--color-text-secondary);
+  border-radius: var(--radius-pill);
+  font-size: 0.78rem;
+  font-weight: var(--font-weight-medium);
+  font-family: var(--font-family-base);
+  cursor: pointer;
+  transition: all 0.15s;
+  white-space: nowrap;
+  outline: none;
+}
+
+.filterBtn:focus-visible {
+  box-shadow: 0 0 0 2px var(--color-primary-subtle);
+}
+
+.filterBtn:hover { border-color: var(--color-primary-accent-border); color: var(--color-primary); }
+
+.filterActive {
+  background: var(--gradient-primary) !important;
+  color: #fff !important;
+  border-color: transparent !important;
+  box-shadow: 0 4px 12px rgba(33,12,174,0.2);
+  font-weight: var(--font-weight-semibold) !important;
+}
+
+.monthFilter { margin-left: auto; }
+
+.monthSelect {
+  padding: 0.45rem 0.85rem;
+  border: 1px solid var(--color-border);
+  background: var(--color-surface);
+  color: var(--color-text-secondary);
+  border-radius: var(--radius-pill);
+  font-size: 0.78rem;
+  font-weight: var(--font-weight-medium);
+  font-family: var(--font-family-base);
+  cursor: pointer;
+  outline: none;
+  transition: border-color 0.15s;
+  appearance: none;
+  padding-right: 2rem;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%236b7280' stroke-width='2'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 0.6rem center;
+}
+
+.monthSelect:focus { border-color: var(--color-primary); }
+
+/* ── Table wrapper ───────────────────────────────────────── */
+.tableWrap {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-2xl);
+  overflow: hidden;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.04);
+}
+
+/* ── Table header ────────────────────────────────────────── */
+.tableHeader {
+  display: grid;
+  grid-template-columns: 2fr 1.5fr 0.9fr 1.6fr 28px;
+  gap: 1rem;
+  padding: 0.65rem 1.25rem;
+  background: var(--gradient-primary);
+  font-size: 0.68rem;
+  font-weight: var(--font-weight-bold);
+  color: rgba(255,255,255,0.85);
+  text-transform: uppercase;
+  letter-spacing: 0.07em;
+  align-items: center;
+}
+
+.monthTag {
+  display: inline-block;
+  margin-left: 6px;
+  padding: 0.1rem 0.5rem;
+  background: rgba(255,255,255,0.2);
+  border-radius: var(--radius-pill);
+  font-size: 0.6rem;
+  font-weight: var(--font-weight-semibold);
+  text-transform: none;
+  letter-spacing: 0;
+  vertical-align: middle;
+}
+
+/* ── Class group ─────────────────────────────────────────── */
+.classGroup {
+  border-bottom: 1px solid var(--color-border);
+}
+.classGroup:last-child { border-bottom: none; }
+
+.groupHeader {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  width: 100%;
+  padding: 0.7rem 1.25rem;
+  background: linear-gradient(135deg, #e0f9fd 0%, #ede9fe 60%, #dbeafe 100%);
+  border: none;
+  cursor: pointer;
+  text-align: left;
+  font-family: var(--font-family-base);
+  transition: background 0.15s;
+}
+
+.groupHeader:hover { background: linear-gradient(135deg, #c7f5fb 0%, #ddd6fe 60%, #bfdbfe 100%); }
+
+.groupChevron {
+  color: var(--color-primary);
+  display: flex;
+  align-items: center;
+  flex-shrink: 0;
+}
+
+.groupName {
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-bold);
+  color: var(--color-text-primary);
+  font-family: var(--font-family-display);
+  letter-spacing: -0.01em;
+}
+
+.groupCode {
+  font-size: 0.72rem;
+  color: var(--color-text-tertiary);
+  font-weight: var(--font-weight-medium);
+}
+
+.groupCount {
+  margin-left: auto;
+  font-size: 0.72rem;
+  font-weight: var(--font-weight-bold);
+  color: var(--color-primary);
+  background: rgba(255,255,255,0.7);
+  border: 1px solid rgba(77, 201, 230, 0.25);
+  padding: 0.12rem 0.6rem;
+  border-radius: var(--radius-pill);
+  backdrop-filter: blur(4px);
+}
+
+/* ── Student row ─────────────────────────────────────────── */
+.tableRow {
+  display: grid;
+  grid-template-columns: 2fr 1.5fr 0.9fr 1.6fr 28px;
+  gap: 1rem;
+  align-items: center;
+  padding: 0.85rem 1.25rem;
+  border-bottom: 1px solid var(--color-border);
+  cursor: pointer;
+  transition: background 0.15s;
+}
+
+.tableRow:last-child { border-bottom: none; }
+.tableRow:hover { background: var(--color-surface-hover); }
+
+/* ── Column: Họ tên ──────────────────────────────────────── */
+.colName { min-width: 0; }
+
+.studentCell {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.avatar {
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  font-size: 0.72rem;
+  font-weight: var(--font-weight-bold);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.studentInfo {
+  display: flex;
+  flex-direction: column;
+  gap: 0.1rem;
+  min-width: 0;
+}
+
+.studentName {
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-bold);
+  color: var(--color-text-primary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  letter-spacing: -0.01em;
+}
+
+.studentSub {
+  font-size: 0.72rem;
+  color: var(--color-text-tertiary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* ── Column: Liên hệ ─────────────────────────────────────── */
+.colContact { min-width: 0; }
+
+.contactStack {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.contactRow {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 0.72rem;
+  color: var(--color-text-secondary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.contactRow svg { flex-shrink: 0; color: var(--color-text-tertiary); }
+
+/* ── Column: Điểm TB ─────────────────────────────────────── */
+.colScore { text-align: center; }
+
+.avgScore {
+  font-size: 1rem;
+  font-weight: var(--font-weight-bold);
+  letter-spacing: -0.01em;
+  font-family: var(--font-family-display);
+}
+
+/* ── Column: Bài đã nộp ──────────────────────────────────── */
+.colSubmit { min-width: 0; }
+
+.submittedCell {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.submittedTop {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.submittedCount {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 0.78rem;
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-text-secondary);
+}
+
+.submittedCount svg { color: var(--color-text-tertiary); }
+
+.submittedPct {
+  font-size: 0.68rem;
+  font-weight: var(--font-weight-bold);
+  color: var(--color-text-tertiary);
+}
+
+.progressBar {
+  height: 5px;
+  background: var(--color-border);
+  border-radius: var(--radius-pill);
+  overflow: hidden;
+}
+
+.progressFill {
+  height: 100%;
+  border-radius: var(--radius-pill);
+  transition: width 0.4s ease;
+}
+
+/* ── Arrow ───────────────────────────────────────────────── */
+.arrowIcon {
+  color: var(--color-text-tertiary);
+  transition: transform 0.15s, color 0.15s;
+}
+
+.tableRow:hover .arrowIcon {
+  color: var(--color-primary);
+  transform: translateX(3px);
+}
+
+/* ── Empty ───────────────────────────────────────────────── */
+.empty {
+  text-align: center;
+  padding: 3rem;
+  color: var(--color-text-tertiary);
+  font-size: var(--font-size-sm);
+}
+
+/* ── Custom MonthDropdown ────────────────────────────────── */
+.monthDropdownWrap {
+  position: relative;
+  margin-left: auto;
+  flex-shrink: 0;
+}
+
+.monthDropdownTrigger {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  padding: 0.45rem 0.95rem;
+  background: var(--color-surface);
+  border: 1.5px solid var(--color-border);
+  border-radius: var(--radius-pill);
+  font-size: 0.8rem;
+  font-weight: var(--font-weight-semibold);
+  font-family: var(--font-family-base);
+  color: var(--color-text-secondary);
+  cursor: pointer;
+  transition: all 0.18s;
+  white-space: nowrap;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.04);
+  outline: none;
+}
+
+.monthDropdownTrigger:hover {
+  border-color: var(--color-primary-accent-border);
+  color: var(--color-primary);
+  background: var(--color-primary-subtle);
+}
+
+.monthDropdownOpen {
+  border-color: var(--color-primary) !important;
+  color: var(--color-primary) !important;
+  background: var(--color-primary-subtle) !important;
+  box-shadow: 0 0 0 3px rgba(33,12,174,0.1) !important;
+}
+
+.monthDropdownIcon {
+  color: var(--color-primary);
+  flex-shrink: 0;
+}
+
+.monthDropdownChevron {
+  color: var(--color-text-tertiary);
+  transition: transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+  flex-shrink: 0;
+}
+
+.monthDropdownChevronUp {
+  transform: rotate(180deg);
+}
+
+/* Floating menu */
+.monthDropdownMenu {
+  position: absolute;
+  top: calc(100% + 8px);
+  right: 0;
+  min-width: 180px;
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-xl);
+  box-shadow:
+    0 8px 32px rgba(33, 12, 174, 0.12),
+    0 2px 8px rgba(0, 0, 0, 0.06);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  overflow: hidden;
+  z-index: 100;
+  animation: dropdownIn 0.18s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+@keyframes dropdownIn {
+  from { opacity: 0; transform: translateY(-6px) scale(0.97); }
+  to   { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+.monthDropdownHeader {
+  padding: 0.55rem 1rem 0.4rem;
+  font-size: 0.65rem;
+  font-weight: var(--font-weight-bold);
+  color: var(--color-text-tertiary);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  border-bottom: 1px solid var(--color-border);
+}
+
+.monthDropdownItem {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  padding: 0.6rem 1rem;
+  background: transparent;
+  border: none;
+  font-size: 0.82rem;
+  font-family: var(--font-family-base);
+  font-weight: var(--font-weight-medium);
+  color: var(--color-text-secondary);
+  cursor: pointer;
+  text-align: left;
+  transition: background 0.13s, color 0.13s;
+}
+
+.monthDropdownItem:hover {
+  background: var(--color-surface-alt);
+  color: var(--color-text-primary);
+}
+
+.monthDropdownItemActive {
+  background: var(--color-primary-subtle) !important;
+  color: var(--color-primary) !important;
+  font-weight: var(--font-weight-bold) !important;
+}
+
+.monthDropdownCheck {
+  color: var(--color-primary);
+  flex-shrink: 0;
+}
