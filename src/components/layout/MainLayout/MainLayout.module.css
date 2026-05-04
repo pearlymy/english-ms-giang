@@ -16,3 +16,16 @@
   flex: 1;
   min-height: 0;
 }
+
+/* ── Mobile: ẩn sidebar, content full-width ── */
+@media (max-width: 768px) {
+  .mainContent {
+    margin-left: 0;
+  }
+
+  .pageContent {
+    padding: var(--spacing-lg) var(--spacing-md);
+    /* Chừa chỗ cho bottom navigation bar */
+    padding-bottom: calc(var(--spacing-lg) + 70px);
+  }
+}

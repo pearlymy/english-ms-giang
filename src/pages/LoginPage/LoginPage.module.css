@@ -272,32 +272,76 @@
    RESPONSIVE — mobile: stack vertically
 ══════════════════════════════════════════════════════ */
 @media (max-width: 768px) {
-  .page { flex-direction: column; }
+  .page {
+    flex-direction: column;
+    min-height: 100dvh; /* dynamic viewport height - tránh bị thanh địa chỉ che */
+  }
 
+  /* Banner thu gọn, chỉ giữ logo + tagline */
   .brand {
     flex: 0 0 auto;
-    min-height: 220px;
   }
 
   .brandInner {
-    padding: var(--spacing-xl) var(--spacing-lg);
+    padding: var(--spacing-lg) var(--spacing-lg) var(--spacing-xl);
+    flex-direction: column;
+    justify-content: flex-end;
+    min-height: 180px;
   }
 
-  .brandContent { padding: var(--spacing-lg) 0 var(--spacing-sm); }
-  .brandTitle { font-size: 1.6rem; }
+  .brandLogo {
+    font-size: var(--font-size-md);
+  }
+
+  .brandContent {
+    padding: var(--spacing-md) 0 0;
+  }
+
+  .brandTitle {
+    font-size: 1.5rem;
+    margin-bottom: var(--spacing-xs);
+  }
+
+  .brandSub {
+    font-size: var(--font-size-xs);
+    margin-bottom: 0;
+    opacity: 0.85;
+  }
+
+  /* Ẩn danh sách bullet points trên mobile */
   .brandList { display: none; }
 
+  /* Form panel chiếm phần còn lại */
   .formPanel {
     flex: 1;
-    padding: var(--spacing-xl) var(--spacing-md);
+    padding: var(--spacing-lg) var(--spacing-md) var(--spacing-2xl);
     align-items: flex-start;
+    overflow-y: auto;
   }
 
   .formCard {
     max-width: 100%;
     box-shadow: none;
     border: none;
-    padding: var(--spacing-xl) var(--spacing-lg);
+    padding: var(--spacing-lg) 0;
+    background: transparent;
+  }
+
+  /* Tăng kích thước input cho ngón tay */
+  .input {
+    padding: 13px 0;
+    font-size: 16px; /* Ngăn iOS zoom khi focus vào input */
+  }
+
+  .submitBtn {
+    padding: 15px var(--spacing-lg);
+    font-size: var(--font-size-md);
+    border-radius: var(--radius-lg);
+    margin-top: var(--spacing-md);
+  }
+
+  .formTitle {
+    font-size: var(--font-size-xl);
   }
 }
 

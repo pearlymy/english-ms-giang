@@ -194,3 +194,64 @@
 .itemSmall:hover {
   opacity: 1;
 }
+
+/* ══════════════════════════════════════════════════════
+   MOBILE BOTTOM NAVIGATION BAR
+   Chỉ hiện trên mobile (≤768px), sidebar bị ẩn đi
+══════════════════════════════════════════════════════ */
+
+/* Ẩn bottom nav mặc định trên desktop */
+.bottomNav {
+  display: none;
+}
+
+@media (max-width: 768px) {
+  /* Ẩn sidebar trên mobile */
+  .sidebar {
+    display: none;
+  }
+
+  /* Hiện bottom nav bar */
+  .bottomNav {
+    display: flex;
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    z-index: 100;
+    background: var(--color-surface);
+    border-top: 1px solid var(--color-border);
+    /* Hỗ trợ iPhone notch/safe area */
+    padding-bottom: env(safe-area-inset-bottom, 0px);
+    box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.08);
+  }
+
+  .bottomNavItem {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 3px;
+    padding: 10px 4px;
+    text-decoration: none;
+    color: var(--color-text-tertiary);
+    font-size: 10px;
+    font-weight: var(--font-weight-medium);
+    font-family: var(--font-family-base);
+    transition: color 0.15s ease;
+    min-height: 56px;
+    /* Vùng chạm đủ rộng cho ngón tay */
+    min-width: 44px;
+  }
+
+  .bottomNavItem:hover {
+    color: var(--color-text-secondary);
+  }
+
+  .bottomNavItemActive {
+    color: var(--color-primary);
+    font-weight: var(--font-weight-semibold);
+  }
+}
+
