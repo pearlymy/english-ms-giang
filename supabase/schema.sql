@@ -45,18 +45,10 @@ create table public.users (
 -- RLS cho bảng users
 alter table public.users enable row level security;
 
-create policy "Users can view own profile"
+-- Cho phép bất kỳ ai cũng có thể đọc (để tra cứu username lúc đăng nhập)
+create policy "Anyone can view users"
   on public.users for select
-  using ( auth.uid() = id );
-
-create policy "Admins can view all profiles"
-  on public.users for select
-  using (
-    exists (
-      select 1 from public.users
-      where id = auth.uid() and role = 'admin'
-    )
-  );
+  using ( true );
 
 create policy "Admins can update all profiles"
   on public.users for update
