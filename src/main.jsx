@@ -11,7 +11,7 @@ import { UserManagementProvider } from './contexts/UserManagementContext.jsx'
 
 createRoot(document.getElementById('root')).render(
   <StrictMode>
-    <BrowserRouter>
+    <BrowserRouter basename={import.meta.env.BASE_URL}>
       <AuthProvider>
         <TeacherProvider>
           <UserManagementProvider>
