@@ -19,7 +19,18 @@ import { Select }       from '../../design-system/components/Select/Select';
 import { ToastContext } from '../../design-system/components/Toast/Toast';
 
 import { useUserManagement } from '../../contexts/UserManagementContext';
-import { generateClassCode } from '../../data/classData';
+
+/* ── Helpers ─────────────────────────────────────────────────────────────── */
+/** Generate class code: YYYY.GG.SS */
+const generateClassCode = (gradeLevel, existingClasses = []) => {
+  const year  = new Date().getFullYear();
+  const grade = String(gradeLevel).padStart(2, '0');
+  const sameGroup = existingClasses.filter(
+    (c) => c.year === year && Number(c.gradeLevel ?? c.grade_level) === Number(gradeLevel)
+  );
+  const seq = String(sameGroup.length + 1).padStart(2, '0');
+  return `${year}.${grade}.${seq}`;
+};
 
 import styles from './AdminUserManagement.module.css';
 
@@ -33,21 +44,6 @@ const getInitials = (name) =>
 const AV_COLORS = ['#dbeafe','#ede9fe','#d1fae5','#fce7f3','#cffafe','#fef3c7'];
 const AV_TEXT   = ['#1d4ed8','#6d28d9','#065f46','#9d174d','#0e7490','#92400e'];
 
-/* ════════════════════════════════════════════════════════════════════════════
-   PwCell
-════════════════════════════════════════════════════════════════════════════ */
-const PwCell = ({ password }) => {
-  const [show, setShow] = useState(false);
-  return (
-    <span className={styles.pwCell}>
-      <span className={styles.cellText}>{show ? password : '••••••'}</span>
-      <button className={styles.pwReveal} onClick={() => setShow(v => !v)} type="button"
-        title={show ? 'Ẩn' : 'Xem'}>
-        {show ? <EyeOff size={12} /> : <Eye size={12} />}
-      </button>
-    </span>
-  );
-};
 
 /* ════════════════════════════════════════════════════════════════════════════
    MODAL — Tạo lớp (no courseId)
@@ -132,7 +128,7 @@ const StudentModal = ({ open, student, onClose, classes }) => {
     name:     student?.name     ?? '',
     email:    student?.email    ?? '',
     phone:    student?.phone    ?? '',
-    password: student?.password ?? '',
+    password: '',
     classId:  student?.classId  ?? '',
     isActive: student?.isActive ?? true,
   }));
@@ -379,7 +375,6 @@ const TabStudents = () => {
             onChange={setFilterClass}
           />
           <span>SĐT</span>
-          <span>Mật khẩu</span>
           {/* Trạng thái — inline filter */}
           <HeaderFilter
             label="Trạng thái"
@@ -417,8 +412,6 @@ const TabStudents = () => {
               </span>
 
               <span className={styles.cellText}>{s.phone || '—'}</span>
-
-              <PwCell password={s.password} />
 
               {/* Status — clickable toggle */}
               <button className={styles.statusToggle}

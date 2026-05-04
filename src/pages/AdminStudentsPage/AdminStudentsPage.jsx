@@ -8,8 +8,6 @@ import { useNavigate } from 'react-router-dom';
 import { Search, Users, ChevronDown, ChevronRight, Phone, Mail, BookOpen, CalendarDays, Check } from 'lucide-react';
 import { useTeacher } from '../../contexts/TeacherContext';
 import { useUserManagement } from '../../contexts/UserManagementContext';
-import { MOCK_STUDENT_PROGRESS } from '../../data/teacherData';
-import { ASSIGNMENTS } from '../../data/homeworkData';
 import styles from './AdminStudentsPage.module.css';
 
 /* ── helpers ──────────────────────────────────────────────── */
@@ -17,7 +15,7 @@ const getInitials = (name) =>
   name ? name.split(' ').map(w => w[0]).slice(-2).join('').toUpperCase() : '?';
 
 const AVATAR_COLORS = [
-  ['var(--brand-100)',   'var(--brand-700)'],
+  ['var(--brand-100)', 'var(--brand-700)'],
   ['#ede9fe', '#6d28d9'],
   ['#fef9c3', '#b45309'],
   ['#dcfce7', '#15803d'],
@@ -26,36 +24,33 @@ const AVATAR_COLORS = [
 ];
 
 /**
- * Compute avg score + submitted count for a student,
+ * Compute avg score + submitted count for a student from real Supabase data,
  * optionally filtered to a given month (format: "YYYY-MM" or "all")
  */
-function computeStats(studentId, monthFilter) {
-  const progress = MOCK_STUDENT_PROGRESS[studentId] || {};
+function computeStats(progress, assignmentsTotal, monthFilter) {
   const entries = Object.entries(progress); // [hwId, { score, submittedAt }]
 
   const filtered = monthFilter === 'all'
     ? entries
     : entries.filter(([, v]) => {
-        if (!v.submittedAt) return false;
-        const d = new Date(v.submittedAt);
-        const key = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}`;
-        return key === monthFilter;
-      });
+      if (!v.submittedAt) return false;
+      const d = new Date(v.submittedAt);
+      const key = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}`;
+      return key === monthFilter;
+    });
 
   const submitted = filtered.length;
   const avg = submitted
     ? (filtered.reduce((s, [, v]) => s + v.score, 0) / submitted).toFixed(1)
     : null;
 
-  // Total assignable hw for progress bar denominator
-  const total = ASSIGNMENTS.length;
-  return { avg, submitted, total };
+  return { avg, submitted, total: assignmentsTotal };
 }
 
-/** Derive all months that appear in MOCK_STUDENT_PROGRESS */
-function deriveMonths() {
+/** Derive all months that appear in real student progress data */
+function deriveMonths(allProgress) {
   const set = new Set();
-  Object.values(MOCK_STUDENT_PROGRESS).forEach(prog => {
+  Object.values(allProgress).forEach(prog => {
     Object.values(prog).forEach(v => {
       if (v.submittedAt) {
         const d = new Date(v.submittedAt);
@@ -169,25 +164,53 @@ const MonthDropdown = ({ value, months, onChange, monthLabel }) => {
    MAIN COMPONENT
 ════════════════════════════════════════════════════════════ */
 export const AdminStudentsPage = () => {
-  const {} = useTeacher();
+  const { assignments } = useTeacher();
   const { classes, students } = useUserManagement();
-  const navigate   = useNavigate();
+  const navigate = useNavigate();
 
-  const [search,      setSearch]      = useState('');
-  const [filterClass, setFilterClass] = useState('all'); // classId | 'all'
-  const [filterMonth, setFilterMonth] = useState('all'); // "YYYY-MM" | 'all'
-  const [collapsed,   setCollapsed]   = useState({});    // { classId: bool }
+  const [search, setSearch] = useState('');
+  const [filterClass, setFilterClass] = useState('all');
+  const [filterMonth, setFilterMonth] = useState('all');
+  const [collapsed, setCollapsed] = useState({});
 
-  const months = useMemo(() => deriveMonths(), []);
+  /* ── Load submissions bulk (1 API call) ── */
+  const [allSubs, setAllSubs] = useState([]);
+  React.useEffect(() => {
+    if (!students.length) return;
+    import('../../services/api/submissionApi').then(({ submissionApi }) => {
+      const ids = students.map(s => s.id);
+      submissionApi.getSubmissionsByStudents(ids)
+        .then(setAllSubs)
+        .catch(err => console.error('AdminStudentsPage: failed to load submissions', err));
+    });
+  }, [students]);
+
+  /* ── Build progressMap: { studentId: { hwId: { score, submittedAt } } } ── */
+  const progressMap = useMemo(() => {
+    const map = {};
+    allSubs.forEach(sub => {
+      if (!map[sub.studentId]) map[sub.studentId] = {};
+      const cur = map[sub.studentId][sub.assignmentId];
+      if (!cur || sub.score >= cur.score) {
+        map[sub.studentId][sub.assignmentId] = {
+          score: sub.score,
+          submittedAt: sub.submittedAt,
+        };
+      }
+    });
+    return map;
+  }, [allSubs]);
+
+  const months = useMemo(() => deriveMonths(progressMap), [progressMap]);
 
   /* ── filtered flat list ── */
   const filtered = useMemo(() => {
     const q = search.toLowerCase();
     return students.filter(s => {
       const matchSearch = s.name.toLowerCase().includes(q) ||
-                          s.email.toLowerCase().includes(q) ||
-                          (s.phone ?? '').includes(q);
-      const matchClass  = filterClass === 'all' || s.classId === filterClass;
+        s.email.toLowerCase().includes(q) ||
+        (s.phone ?? '').includes(q);
+      const matchClass = filterClass === 'all' || s.classId === filterClass;
       return matchSearch && matchClass;
     });
   }, [students, search, filterClass]);
@@ -195,10 +218,10 @@ export const AdminStudentsPage = () => {
   /* ── group by classId ── */
   const groups = useMemo(() => {
     const map = {};
-    
+
     // 1. Initialize all classes matching the filter
-    const classesToShow = filterClass === 'all' 
-      ? classes 
+    const classesToShow = filterClass === 'all'
+      ? classes
       : classes.filter(c => c.id === filterClass);
 
     classesToShow.forEach(c => {
@@ -321,12 +344,13 @@ export const AdminStudentsPage = () => {
 
               {/* Student rows */}
               {isOpen && group.students.map((student, i) => {
-                const { avg, submitted, total } = computeStats(student.id, filterMonth);
+                const progress = progressMap[student.id] ?? {};
+                const { avg, submitted, total } = computeStats(progress, assignments.length, filterMonth);
                 const [bg, color] = AVATAR_COLORS[student._colorIdx % AVATAR_COLORS.length];
                 const scoreColor = avg >= 8 ? 'var(--color-success)'
-                                 : avg >= 6 ? 'var(--color-warning)'
-                                 : avg       ? 'var(--color-error)'
-                                 : 'var(--color-text-tertiary)';
+                  : avg >= 6 ? 'var(--color-warning)'
+                    : avg ? 'var(--color-error)'
+                      : 'var(--color-text-tertiary)';
                 const pct = total > 0 ? Math.round((submitted / total) * 100) : 0;
 
                 return (
@@ -386,8 +410,8 @@ export const AdminStudentsPage = () => {
                             style={{
                               width: `${pct}%`,
                               background: pct === 100 ? 'var(--color-success)'
-                                        : pct >= 50 ? 'var(--color-primary)'
-                                        : 'var(--color-warning)',
+                                : pct >= 50 ? 'var(--color-primary)'
+                                  : 'var(--color-warning)',
                             }}
                           />
                         </div>

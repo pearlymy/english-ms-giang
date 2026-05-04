@@ -2,19 +2,17 @@
  * TeacherContext.jsx — Admin data + actions
  * Phase 1: Courses & Chapters → Supabase ✅
  * Phase 3: Assignments → Supabase ✅
- * Phase 5: Assignment Logs → Supabase (TODO)
+ * Phase 5: Assignment Logs → Supabase ✅
  */
 import React, { createContext, useContext, useState, useCallback, useEffect } from 'react';
 import { courseApi }     from '../services/api/courseApi';
 import { chapterApi }    from '../services/api/chapterApi';
-import { assignmentApi } from '../services/api/assignmentApi';
-import { questionApi }   from '../services/api/questionApi';
-import { submissionApi } from '../services/api/submissionApi';
+import { assignmentApi }    from '../services/api/assignmentApi';
+import { questionApi }      from '../services/api/questionApi';
+import { submissionApi }    from '../services/api/submissionApi';
+import { assignmentLogApi } from '../services/api/assignmentLogApi';
 
 const TeacherContext = createContext(null);
-
-/* ── Assignment Logs masih pakai localStorage (Phase 5) ─────────────────── */
-const ASSIGNMENT_LOGS_KEY = 'hg_assignment_logs';
 
 const GROUP_CONFIG = {
   'Cấp 1': { gradient: 'linear-gradient(135deg, #1d4ed8 0%, #3b82f6 100%)' },
@@ -170,36 +168,47 @@ export const TeacherProvider = ({ children }) => {
     // TODO Phase 3+: persist order_index to Supabase if needed
   }, []);
 
-  /* ── Assignment Logs — localStorage (Phase 5 sẽ migrate) ────────────── */
-  const [assignmentLogs, setAssignmentLogs] = useState(() => {
-    try {
-      const stored = localStorage.getItem(ASSIGNMENT_LOGS_KEY);
-      return stored ? JSON.parse(stored) : [];
-    } catch { return []; }
-  });
+  /* ── Assignment Logs — Supabase (Phase 5) ───────────────────────────── */
+  const [assignmentLogs,        setAssignmentLogs]        = useState([]);
+  const [assignmentLogsLoading, setAssignmentLogsLoading] = useState(true);
 
-  const saveAssignmentLogs = useCallback((updated) => {
-    setAssignmentLogs(updated);
-    localStorage.setItem(ASSIGNMENT_LOGS_KEY, JSON.stringify(updated));
+  useEffect(() => {
+    assignmentLogApi.getAllLogs()
+      .then(setAssignmentLogs)
+      .catch((err) => console.error('Failed to load assignment logs:', err))
+      .finally(() => setAssignmentLogsLoading(false));
   }, []);
 
-  const createAssignmentLog = useCallback((data) => {
-    const now      = new Date();
-    const yyyymmdd = now.toISOString().split('T')[0].replace(/-/g, '');
-    const todayCount = assignmentLogs.filter((l) => String(l.id).startsWith(yyyymmdd)).length;
-    const seq      = String(todayCount + 1).padStart(3, '0');
-    const newItem  = { id: `${yyyymmdd}.${seq}`, assignedAt: now.toISOString(), ...data };
-    saveAssignmentLogs([newItem, ...assignmentLogs]);
-    return newItem;
-  }, [assignmentLogs, saveAssignmentLogs]);
+  const createAssignmentLog = useCallback(async (data) => {
+    try {
+      const newItem = await assignmentLogApi.createLog(data);
+      setAssignmentLogs((prev) => [newItem, ...prev]);
+      return newItem;
+    } catch (err) {
+      console.error('createAssignmentLog error:', err);
+      throw err;
+    }
+  }, []);
 
-  const updateAssignmentLog = useCallback((id, patch) => {
-    saveAssignmentLogs(assignmentLogs.map((a) => (a.id === id ? { ...a, ...patch } : a)));
-  }, [assignmentLogs, saveAssignmentLogs]);
+  const updateAssignmentLog = useCallback(async (id, patch) => {
+    try {
+      const updated = await assignmentLogApi.updateLog(id, patch);
+      setAssignmentLogs((prev) => prev.map((a) => (a.id === id ? updated : a)));
+    } catch (err) {
+      console.error('updateAssignmentLog error:', err);
+      throw err;
+    }
+  }, []);
 
-  const deleteAssignmentLog = useCallback((id) => {
-    saveAssignmentLogs(assignmentLogs.filter((a) => a.id !== id));
-  }, [assignmentLogs, saveAssignmentLogs]);
+  const deleteAssignmentLog = useCallback(async (id) => {
+    try {
+      await assignmentLogApi.deleteLog(id);
+      setAssignmentLogs((prev) => prev.filter((a) => a.id !== id));
+    } catch (err) {
+      console.error('deleteAssignmentLog error:', err);
+      throw err;
+    }
+  }, []);
 
   const getAssignmentLogsByCourse = useCallback(
     (courseId) => assignmentLogs.filter((log) => log.courseId === courseId),
@@ -248,7 +257,7 @@ export const TeacherProvider = ({ children }) => {
     assignments.find((a) => a.id === id), [assignments]);
 
   /* ── isLoading ───────────────────────────────────────────────────────── */
-  const isLoading = coursesLoading || chaptersLoading || assignmentsLoading;
+  const isLoading = coursesLoading || chaptersLoading || assignmentsLoading || assignmentLogsLoading;
 
   return (
     <TeacherContext.Provider value={{

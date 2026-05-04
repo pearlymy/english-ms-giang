@@ -310,16 +310,19 @@ create policy "Admins can view all submissions"
 
 
 -- ======================================================================================
--- BẢNG 10: assignment_logs (Nhật ký giao bài)
+-- BẢNG 10: assignment_logs (Nhật ký giao bài — mỗi row = 1 lần giao bài)
 -- ======================================================================================
 create table public.assignment_logs (
-  id             text primary key,   -- vd: '20260504.001'
-  assignment_id  text not null references public.assignments(id) on delete cascade,
-  class_id       text not null references public.classes(id) on delete cascade,
-  action         text not null check (action in ('assigned', 'revoked', 'due_date_updated')),
-  due_date       date,
-  performed_by   uuid references public.users(id) on delete set null,
-  performed_at   timestamp with time zone default timezone('utc', now()) not null
+  id               text primary key,   -- vd: '20260504.001'
+  course_id        text references public.courses(id) on delete cascade,
+  log_type         text check (log_type in ('single', 'chapter')),
+  target_id        text,               -- hwId (single) hoặc chapterId (chapter)
+  target_name      text,               -- tên bài tập hoặc tên chương
+  assigned_classes jsonb,              -- ["Lớp 6A", "Lớp 6B"] — tên hiển thị
+  assigned_hw_ids  jsonb,              -- ["hw-123", "hw-456"] — danh sách bài được giao
+  due_date         date,
+  performed_by     uuid references public.users(id) on delete set null,
+  performed_at     timestamp with time zone default timezone('utc', now()) not null
 );
 
 alter table public.assignment_logs enable row level security;
