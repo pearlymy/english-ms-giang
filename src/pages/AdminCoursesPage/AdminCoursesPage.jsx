@@ -5,12 +5,12 @@ import React, { useState, useContext, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { BookOpen, Plus, Trash2, GraduationCap } from 'lucide-react';
 
-import { Button }       from '../../design-system/components/Button/Button';
-import { Modal }        from '../../design-system/components/Modal/Modal';
-import { TextField }    from '../../design-system/components/TextField/TextField';
-import { Select }       from '../../design-system/components/Select/Select';
+import { Button } from '../../design-system/components/Button/Button';
+import { Modal } from '../../design-system/components/Modal/Modal';
+import { TextField } from '../../design-system/components/TextField/TextField';
+import { Select } from '../../design-system/components/Select/Select';
 import { ToastContext } from '../../design-system/components/Toast/Toast';
-import { Tooltip }      from '../../design-system/components/Tooltip/Tooltip';
+import { Tooltip } from '../../design-system/components/Tooltip/Tooltip';
 
 import { useTeacher } from '../../contexts/TeacherContext';
 import { useUserManagement } from '../../contexts/UserManagementContext';
@@ -27,7 +27,7 @@ const GROUP_OPTIONS = [
 const CreateCourseModal = ({ open, onClose }) => {
   const { createCourse } = useTeacher();
   const toast = useToast();
-  const [name,       setName]       = useState('');
+  const [name, setName] = useState('');
   const [gradeLevel, setGradeLevel] = useState('');
   const [classGroup, setClassGroup] = useState('');
 
@@ -99,18 +99,29 @@ const GROUP_ORDER = ['Cấp 1', 'Cấp 2'];
 
 export const AdminCoursesPage = () => {
   const { courses, deleteCourse, getAssignmentsByCourse } = useTeacher();
-  const { students: allStudents } = useUserManagement();
+  const { students: allStudents, classes } = useUserManagement();
   const navigate = useNavigate();
   const toast = useToast();
 
-  const [createOpen,  setCreateOpen]  = useState(false);
-  const [deleteCrs,   setDeleteCrs]   = useState(null);
+  const [createOpen, setCreateOpen] = useState(false);
+  const [deleteCrs, setDeleteCrs] = useState(null);
 
   const handleConfirmDelete = () => {
     deleteCourse(deleteCrs.id);
     toast?.success(`Đã xóa khóa học "${deleteCrs.name}"`);
     setDeleteCrs(null);
   };
+
+  /* Tìm classIds thuộc mỗi course (match bằng gradeLevel) */
+  const classIdsByCourse = useMemo(() => {
+    const map = {};
+    for (const c of courses) {
+      map[c.id] = classes
+        .filter(cls => cls.gradeLevel === c.gradeLevel)
+        .map(cls => cls.id);
+    }
+    return map;
+  }, [courses, classes]);
 
   const grouped = useMemo(() =>
     GROUP_ORDER.map(group => ({
@@ -119,7 +130,7 @@ export const AdminCoursesPage = () => {
         .filter(c => c.classGroup === group)
         .sort((a, b) => (a.gradeLevel ?? 0) - (b.gradeLevel ?? 0)),
     })).filter(g => g.items.length > 0),
-  [courses]);
+    [courses]);
 
   return (
     <div className={styles.page}>
@@ -158,7 +169,7 @@ export const AdminCoursesPage = () => {
             {/* Header */}
             <div className={`${styles.tableRow} ${styles.tableHeader}`}>
               <span>Khóa học</span>
-              <span>Khối lớp</span>
+              <span>Số lớp</span>
               <span>Học viên</span>
               <span>Bài tập</span>
               <span />
@@ -166,10 +177,10 @@ export const AdminCoursesPage = () => {
 
             {items.map(course => {
               const assignments = getAssignmentsByCourse(course.id);
-              const students = allStudents.filter(s => {
-                const isAssigned = assignments.some(a => a.assignedClassIds?.includes(s.classId));
-                return isAssigned || s.enrolledCourseIds?.includes(course.id);
-              });
+              const courseClassIds = classIdsByCourse[course.id] || [];
+              const activeStudents = allStudents.filter(
+                s => s.isActive && courseClassIds.includes(s.classId)
+              );
               return (
                 <div
                   key={course.id}
@@ -185,13 +196,13 @@ export const AdminCoursesPage = () => {
                     <span className={styles.courseName}>{course.name}</span>
                   </div>
 
-                  <span className={styles.cellText}>
-                    Lớp {course.gradeLevel ?? '—'}
-                  </span>
-
-                  <span className={styles.cellText}>{students.length} học viên</span>
-
-                  <span className={styles.cellText}>{assignments.length} bài tập</span>
+                  <div className={styles.mobileInfo}>
+                    <span className={styles.cellText}>
+                      {courseClassIds.length} lớp
+                    </span>
+                    <span className={styles.cellText}>{activeStudents.length} học viên</span>
+                    <span className={styles.cellText}>{assignments.length} bài tập</span>
+                  </div>
 
                   {/* Hover actions */}
                   <div className={styles.rowActions}>

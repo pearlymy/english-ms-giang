@@ -105,6 +105,25 @@ export const UserManagementProvider = ({ children }) => {
     setStudents((prev) => prev.filter((s) => s.id !== id));
   }, []);
 
+  /**
+   * Tạo nhiều học viên cùng lúc (import Excel).
+   * Trả về { succeeded: Student[], failed: { row, error }[] }
+   */
+  const bulkCreateStudents = useCallback(async (rows) => {
+    const succeeded = [];
+    const failed    = [];
+    for (const row of rows) {
+      try {
+        const s = await studentApi.createStudent(row);
+        succeeded.push(s);
+        setStudents((prev) => [s, ...prev]);
+      } catch (err) {
+        failed.push({ row, error: err?.message ?? 'Lỗi không xác định' });
+      }
+    }
+    return { succeeded, failed };
+  }, []);
+
   /* ── Queries ─────────────────────────────────────────────────────────── */
   const getStudentsByClass = useCallback(
     (classId) => students.filter((s) => s.classId === classId),
@@ -136,6 +155,7 @@ export const UserManagementProvider = ({ children }) => {
         createStudent,
         updateStudent,
         deleteStudent,
+        bulkCreateStudents,
         toggleActive,
         updatePassword,
         // queries

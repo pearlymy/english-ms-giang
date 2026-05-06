@@ -2,6 +2,7 @@
   display: flex;
   min-height: 100vh;
   background-color: var(--color-background);
+  overflow-x: hidden;
 }
 
 .mainContent {
@@ -9,18 +10,25 @@
   margin-left: 240px;
   display: flex;
   flex-direction: column;
+  max-width: 100vw;
+  overflow-x: hidden;
+  box-sizing: border-box;
 }
 
 .pageContent {
   padding: var(--spacing-2xl) var(--spacing-2xl);
   flex: 1;
   min-height: 0;
+  overflow-x: hidden;
+  box-sizing: border-box;
 }
 
 /* ── Mobile: ẩn sidebar, content full-width ── */
 @media (max-width: 768px) {
   .mainContent {
     margin-left: 0;
+    max-width: 100vw;
+    width: 100%;
   }
 
   .pageContent {

@@ -26,7 +26,7 @@
 .heroIconWrap {
   width: 48px;
   height: 48px;
-  background: rgba(255,255,255,0.18);
+  background: rgba(255, 255, 255, 0.18);
   border-radius: var(--radius-xl);
   display: flex;
   align-items: center;
@@ -45,7 +45,7 @@
 
 .heroSub {
   font-size: var(--font-size-sm);
-  color: rgba(255,255,255,0.72);
+  color: rgba(255, 255, 255, 0.72);
   margin: 0;
 }
 
@@ -57,8 +57,8 @@
   display: inline-flex;
   align-items: center;
   gap: 6px;
-  background: rgba(255,255,255,0.18);
-  border: 1px solid rgba(255,255,255,0.25);
+  background: rgba(255, 255, 255, 0.18);
+  border: 1px solid rgba(255, 255, 255, 0.25);
   border-radius: var(--radius-pill);
   padding: 0.3rem 0.9rem;
   font-size: var(--font-size-sm);
@@ -111,7 +111,7 @@
   background: var(--color-surface);
   border: 1px solid var(--color-border);
   border-radius: var(--radius-2xl);
-  box-shadow: 0 1px 6px rgba(0,0,0,0.05);
+  box-shadow: 0 1px 6px rgba(0, 0, 0, 0.05);
 }
 
 /* ── Table rows ─────────────────────────────────────────────────────────── */
@@ -130,10 +130,10 @@
   padding-bottom: 0.65rem;
   font-size: 11px;
   font-weight: var(--font-weight-bold);
-  color: rgba(255,255,255,0.82);
+  color: rgba(255, 255, 255, 0.82);
   text-transform: uppercase;
   letter-spacing: 0.08em;
-  border-top-left-radius:  calc(var(--radius-2xl) - 1px);
+  border-top-left-radius: calc(var(--radius-2xl) - 1px);
   border-top-right-radius: calc(var(--radius-2xl) - 1px);
 }
 
@@ -145,7 +145,7 @@
 
 .dataRow:last-child {
   border-bottom: none;
-  border-bottom-left-radius:  calc(var(--radius-2xl) - 1px);
+  border-bottom-left-radius: calc(var(--radius-2xl) - 1px);
   border-bottom-right-radius: calc(var(--radius-2xl) - 1px);
 }
 
@@ -218,8 +218,8 @@
 }
 
 .rowActionDelete:hover {
-  background: rgba(239,68,68,0.08);
-  border-color: rgba(239,68,68,0.3);
+  background: rgba(239, 68, 68, 0.08);
+  border-color: rgba(239, 68, 68, 0.3);
   color: var(--color-error, #ef4444);
 }
 
@@ -230,8 +230,8 @@
   gap: var(--spacing-sm);
   padding: var(--spacing-md) var(--spacing-lg);
   border-radius: var(--radius-lg);
-  background: rgba(239,68,68,0.07);
-  border: 1px solid rgba(239,68,68,0.2);
+  background: rgba(239, 68, 68, 0.07);
+  border: 1px solid rgba(239, 68, 68, 0.2);
   color: var(--color-text-primary);
   font-size: var(--font-size-sm);
   line-height: 1.55;
@@ -256,4 +256,155 @@
   display: flex;
   flex-direction: column;
   gap: var(--spacing-md);
+}
+
+/* Desktop: mobileInfo is invisible wrapper */
+.mobileInfo { display: contents; }
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   SWIPE-TO-DELETE
+═══════════════════════════════════════════════════════════════════════════ */
+.swipeContainer {
+  position: relative;
+  overflow: hidden;
+  border-bottom: 1px solid var(--color-border);
+}
+.swipeContainer:last-child { border-bottom: none; }
+
+.swipeAction {
+  position: absolute;
+  top: 0; right: 0; bottom: 0;
+  width: 70px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  background: #ef4444;
+  color: #fff;
+  font-size: 0.7rem;
+  font-weight: var(--font-weight-bold);
+  font-family: var(--font-family-base);
+  cursor: pointer;
+  z-index: 0;
+}
+
+.swipeContent {
+  position: relative;
+  z-index: 1;
+  background: var(--color-surface);
+  will-change: transform;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   MOBILE RESPONSIVE — clean card layout
+═══════════════════════════════════════════════════════════════════════════ */
+@media (max-width: 768px) {
+  /* ── Page ── */
+  .page {
+    padding: var(--spacing-sm);
+    gap: var(--spacing-md);
+  }
+
+  /* ── Hero — compact 1-liner ── */
+  .hero {
+    flex-direction: row;
+    align-items: center;
+    padding: 1rem 1.25rem;
+    gap: var(--spacing-md);
+    min-height: auto;
+  }
+
+  .heroIconWrap {
+    width: 40px;
+    height: 40px;
+  }
+
+  .heroTitle {
+    font-size: 1.1rem;
+    margin: 0;
+  }
+
+  .heroSub {
+    display: none;
+  }
+
+  .heroRight {
+    margin-left: auto;
+  }
+
+  .heroStat {
+    font-size: var(--font-size-xs);
+    padding: 0.2rem 0.6rem;
+  }
+
+  /* ── Toolbar ── */
+  .toolbar {
+    flex-wrap: wrap;
+    gap: var(--spacing-sm);
+  }
+
+  /* ── Table panel ── */
+  .tablePanel {
+    border-radius: var(--radius-xl);
+    overflow: hidden;
+  }
+
+  /* ── Hide table header row ── */
+  .tableRow.tableHeader {
+    display: none !important;
+  }
+
+  /* ── Data row = compact card ── */
+  .dataRow.tableRow {
+    display: flex !important;
+    align-items: flex-start;
+    flex-wrap: wrap;
+    gap: 0.35rem 0.75rem;
+    padding: 0.75rem 1rem;
+    grid-template-columns: none;
+  }
+
+  /* Course cell — takes full width row 1 */
+  .courseCell {
+    gap: var(--spacing-sm);
+    width: 100%;
+  }
+
+  .courseIcon {
+    width: 28px;
+    height: 28px;
+  }
+
+  .courseName {
+    font-size: var(--font-size-sm);
+    font-weight: var(--font-weight-bold);
+  }
+
+  /* Info chips — row 2, horizontal */
+  .mobileInfo {
+    display: flex !important;
+    align-items: center;
+    gap: 0.35rem;
+    flex-wrap: wrap;
+    width: 100%;
+    padding-left: 36px; /* align with course name (28px icon + 8px gap) */
+  }
+
+  .mobileInfo .cellText {
+    display: inline-flex;
+    align-items: center;
+    font-size: 0.68rem;
+    color: var(--color-text-secondary);
+    background: var(--color-surface-alt);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-pill);
+    padding: 0.12rem 0.5rem;
+    white-space: nowrap;
+  }
+
+  /* Hide hover delete on mobile — swipe replaces it */
+  .rowActions {
+    display: none !important;
+  }
 }

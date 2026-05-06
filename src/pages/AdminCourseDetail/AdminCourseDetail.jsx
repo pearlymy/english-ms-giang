@@ -112,11 +112,10 @@ const AddAssignmentModal = ({ open, courseId, chapterId, onClose }) => {
 
   const handleAdd = () => {
     if (!title.trim()) return;
-    const hw = createAssignment({ courseId, chapterId, title: title.trim(), type, questions: [] });
+    createAssignment({ courseId, chapterId, title: title.trim(), type, questions: [] });
     toast?.success(`Đã tạo bài tập "${title.trim()}"`);
     setTitle('');
     onClose();
-    navigate(`/app/courses/${courseId}/assignments/${hw.id}`);
   };
 
   return (
@@ -124,7 +123,7 @@ const AddAssignmentModal = ({ open, courseId, chapterId, onClose }) => {
       open={open}
       onOpenChange={(v) => { if (!v) { setTitle(''); onClose(); } }}
       title="Thêm bài tập mới"
-      primaryAction={{ label: 'Tạo & soạn bài', onClick: handleAdd }}
+      primaryAction={{ label: 'Thêm bài tập', onClick: handleAdd }}
       secondaryAction={{ label: 'Hủy' }}
     >
       <div className={styles.formGrid}>
@@ -767,6 +766,8 @@ export const AdminCourseDetail = () => {
                         ? <ChevronDown size={16} className={styles.chevron} />
                         : <ChevronRight size={16} className={styles.chevron} />}
                     </button>
+
+                    <span className={styles.chapterOrder}>{ch.order ?? (chapters.indexOf(ch) + 1)}</span>
 
                     {renamingChap === ch.id ? (
                       <RenameChapterInline chapter={ch} onDone={() => setRenamingChap(null)} />

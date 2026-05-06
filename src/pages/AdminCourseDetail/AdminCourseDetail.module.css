@@ -353,6 +353,7 @@
   display: flex;
   flex-direction: column;
   gap: var(--spacing-lg);
+  animation: fadeIn var(--motion-duration-normal) var(--motion-easing-base);
 }
 
 .toolbar {
@@ -365,13 +366,14 @@
   font-size: var(--font-size-sm);
   color: var(--color-text-tertiary);
   margin: 0;
+  font-weight: var(--font-weight-medium);
 }
 
 /* ── Chapter list ────────────────────────────────────────── */
 .chapterList {
   display: flex;
   flex-direction: column;
-  gap: var(--spacing-md);
+  gap: var(--spacing-lg);
 }
 
 .chapterCard {
@@ -379,64 +381,106 @@
   border: 1px solid var(--color-border);
   border-radius: var(--radius-2xl);
   overflow: hidden;
-  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.04);
+  transition: border-color var(--motion-duration-fast);
+}
+
+.chapterCard:hover {
+  border-color: rgba(77, 201, 230, 0.25);
 }
 
 /* Chapter header row */
 .chapterHeader {
   display: flex;
   align-items: center;
-  gap: var(--spacing-sm);
-  padding: 0.85rem 1.25rem;
-  background: linear-gradient(135deg, #e0f9fd 0%, #ede9fe 60%, #dbeafe 100%);
-  border-bottom: 1px solid rgba(77, 201, 230, 0.15);
-  min-height: 54px;
+  gap: var(--spacing-md);
+  padding: 1rem 1.25rem;
+  background: var(--color-surface);
+  border-bottom: 1px solid var(--color-border);
+  min-height: 56px;
   position: relative;
+  transition: background var(--motion-duration-fast);
+}
+
+.chapterHeader::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 4px;
+  background: var(--gradient-primary);
+  border-radius: 0 4px 4px 0;
+}
+
+.chapterHeader:hover {
+  background: var(--color-surface-hover);
 }
 
 .chapterHeader:hover .chapterActions {
   opacity: 1;
+  transform: translateX(0);
 }
 
 .chapterToggle {
   background: none;
   border: none;
   cursor: pointer;
-  padding: 2px;
+  padding: 4px;
   display: flex;
   align-items: center;
+  justify-content: center;
   color: var(--color-text-tertiary);
   flex-shrink: 0;
   font-family: var(--font-family-base);
-  transition: color var(--motion-duration-fast);
+  border-radius: var(--radius-sm);
+  transition: color var(--motion-duration-fast), background var(--motion-duration-fast);
 }
 
 .chapterToggle:hover {
   color: var(--color-primary);
+  background: var(--color-primary-subtle);
 }
 
 .chevron {
-  color: var(--color-text-tertiary);
+  color: inherit;
+  transition: transform var(--motion-duration-fast);
+}
+
+/* Chapter order number badge */
+.chapterOrder {
+  width: 28px;
+  height: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--gradient-primary);
+  border-radius: var(--radius-md);
+  color: #fff;
+  font-size: 0.72rem;
+  font-weight: var(--font-weight-bold);
+  flex-shrink: 0;
+  font-family: var(--font-family-display);
+  letter-spacing: -0.02em;
 }
 
 .chapterName {
   flex: 1;
-  font-size: var(--font-size-sm);
+  font-size: var(--font-size-base);
   font-weight: var(--font-weight-bold);
   color: var(--color-text-primary);
-  letter-spacing: -0.01em;
+  letter-spacing: -0.015em;
+  font-family: var(--font-family-display);
 }
 
 .chapterCount {
   font-size: 0.72rem;
   color: var(--color-primary);
   font-weight: var(--font-weight-semibold);
-  background: rgba(255, 255, 255, 0.7);
-  border: 1px solid rgba(77, 201, 230, 0.25);
-  padding: 0.12rem 0.6rem;
+  background: var(--color-primary-subtle);
+  border: 1px solid rgba(77, 201, 230, 0.2);
+  padding: 0.18rem 0.65rem;
   border-radius: var(--radius-pill);
   white-space: nowrap;
-  backdrop-filter: blur(4px);
 }
 
 /* Hover actions on chapter row */
@@ -445,36 +489,38 @@
   align-items: center;
   gap: 4px;
   opacity: 0;
-  transition: opacity var(--motion-duration-fast);
+  transform: translateX(8px);
+  transition: opacity var(--motion-duration-fast), transform var(--motion-duration-fast);
 }
 
 .chapterActionBtn {
-  width: 28px;
-  height: 28px;
+  width: 30px;
+  height: 30px;
   display: flex;
   align-items: center;
   justify-content: center;
-  background: rgba(255, 255, 255, 0.55);
-  border: 1px solid rgba(77, 201, 230, 0.2);
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
   border-radius: var(--radius-md);
   color: var(--color-text-secondary);
   cursor: pointer;
   font-family: var(--font-family-base);
   transition: all var(--motion-duration-fast);
-  backdrop-filter: blur(4px);
 }
 
 .chapterActionBtn:hover {
-  background: rgba(255, 255, 255, 0.85);
+  background: var(--color-primary-subtle);
   border-color: var(--color-primary-accent-border);
   color: var(--color-primary);
-  box-shadow: 0 2px 8px rgba(33, 12, 174, 0.08);
+  box-shadow: 0 2px 8px rgba(33, 12, 174, 0.1);
+  transform: translateY(-1px);
 }
 
 .chapterActionDelete:hover {
   background: rgba(239, 68, 68, 0.08);
   border-color: rgba(239, 68, 68, 0.3);
   color: #ef4444;
+  box-shadow: 0 2px 8px rgba(239, 68, 68, 0.1);
 }
 
 /* Inline rename */
@@ -487,8 +533,8 @@
 
 .renameInput {
   flex: 1;
-  padding: 0.3rem 0.6rem;
-  border: 1px solid var(--color-border-focus);
+  padding: 0.35rem 0.7rem;
+  border: 1.5px solid var(--color-border-focus);
   border-radius: var(--radius-md);
   font-size: var(--font-size-sm);
   font-family: var(--font-family-base);
@@ -499,29 +545,41 @@
 }
 
 .renameConfirm {
-  width: 26px;
-  height: 26px;
+  width: 28px;
+  height: 28px;
   display: flex;
   align-items: center;
   justify-content: center;
   background: var(--color-primary);
   border: none;
-  border-radius: var(--radius-sm);
+  border-radius: var(--radius-md);
   color: #fff;
   cursor: pointer;
+  transition: all var(--motion-duration-fast);
+}
+
+.renameConfirm:hover {
+  box-shadow: 0 2px 8px rgba(33, 12, 174, 0.25);
+  transform: translateY(-1px);
 }
 
 .renameCancel {
-  width: 26px;
-  height: 26px;
+  width: 28px;
+  height: 28px;
   display: flex;
   align-items: center;
   justify-content: center;
   background: var(--color-surface-alt);
   border: 1px solid var(--color-border);
-  border-radius: var(--radius-sm);
+  border-radius: var(--radius-md);
   color: var(--color-text-secondary);
   cursor: pointer;
+  transition: all var(--motion-duration-fast);
+}
+
+.renameCancel:hover {
+  background: var(--color-surface-hover);
+  color: var(--color-text-primary);
 }
 
 /* ── Assignment list ─────────────────────────────────────── */
@@ -548,8 +606,20 @@
   display: flex;
   align-items: center;
   gap: var(--spacing-md);
-  padding: 0.75rem 1.25rem;
+  padding: 0.85rem 1.25rem 0.85rem 1.5rem;
   border-bottom: 1px solid var(--color-border);
+  transition: background var(--motion-duration-fast);
+  position: relative;
+}
+
+.assignmentRow::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 3px;
+  background: transparent;
   transition: background var(--motion-duration-fast);
 }
 
@@ -558,7 +628,11 @@
 }
 
 .assignmentRow:hover {
-  background: var(--color-surface-hover);
+  background: linear-gradient(90deg, rgba(77, 201, 230, 0.03) 0%, var(--color-surface-hover) 100%);
+}
+
+.assignmentRow:hover::before {
+  background: var(--color-primary);
 }
 
 .assignmentRow:hover .hwActions {
@@ -566,19 +640,27 @@
 }
 
 .hwIcon {
-  width: 32px;
-  height: 32px;
+  width: 34px;
+  height: 34px;
   display: flex;
   align-items: center;
   justify-content: center;
   background: var(--color-primary-subtle);
-  border-radius: var(--radius-md);
+  border: 1px solid rgba(77, 201, 230, 0.15);
+  border-radius: var(--radius-lg);
   color: var(--color-primary);
   flex-shrink: 0;
+  transition: all var(--motion-duration-fast);
+}
+
+.assignmentRow:hover .hwIcon {
+  background: rgba(77, 201, 230, 0.15);
+  border-color: rgba(77, 201, 230, 0.3);
 }
 
 .hwMeta {
   flex: 1;
+  min-width: 0;
 }
 
 .hwTitle {
@@ -586,34 +668,41 @@
   font-size: var(--font-size-sm);
   font-weight: var(--font-weight-semibold);
   color: var(--color-text-primary);
+  transition: color var(--motion-duration-fast);
+  letter-spacing: -0.01em;
+}
+
+.hwTitle:hover {
+  color: var(--color-primary);
 }
 
 .hwNum {
-  color: var(--color-text-secondary);
+  color: var(--color-text-tertiary);
   font-weight: var(--font-weight-medium);
+  margin-right: 2px;
 }
 
 .hwInfo {
   display: block;
   font-size: 0.75rem;
   color: var(--color-text-tertiary);
-  margin-top: 1px;
+  margin-top: 2px;
 }
 
 .hwActions {
   display: flex;
-  gap: 4px;
+  gap: 6px;
   opacity: 0;
   transition: opacity var(--motion-duration-fast);
 }
 
 .hwActionBtn {
-  width: 28px;
-  height: 28px;
+  width: 30px;
+  height: 30px;
   display: flex;
   align-items: center;
   justify-content: center;
-  background: transparent;
+  background: var(--color-surface);
   border: 1px solid var(--color-border);
   border-radius: var(--radius-md);
   color: var(--color-text-secondary);
@@ -625,12 +714,15 @@
   background: var(--color-primary-subtle);
   border-color: var(--color-primary-accent-border);
   color: var(--color-primary);
+  transform: translateY(-1px);
+  box-shadow: 0 2px 6px rgba(33, 12, 174, 0.1);
 }
 
 .hwActionDelete:hover {
   background: rgba(239, 68, 68, 0.08);
   border-color: rgba(239, 68, 68, 0.3);
   color: #ef4444;
+  box-shadow: 0 2px 6px rgba(239, 68, 68, 0.1);
 }
 
 /* ── Drag handle ─────────────────────────────────────────── */
@@ -661,10 +753,11 @@
 }
 
 .assignmentRow:hover .dragHandle {
-  opacity: 1;
+  opacity: 0.6;
 }
 
 .assignmentRow:hover .dragHandle:hover {
+  opacity: 1;
   color: var(--color-primary);
   background: var(--color-primary-subtle);
 }
@@ -692,9 +785,9 @@
   justify-content: center;
   gap: 8px;
   margin: var(--spacing-md);
-  padding: 1rem;
-  background: var(--color-surface);
-  border: 1.5px dashed var(--color-border-strong);
+  padding: 1.15rem;
+  background: linear-gradient(135deg, rgba(77, 201, 230, 0.03) 0%, rgba(99, 102, 241, 0.03) 100%);
+  border: 1.5px dashed rgba(77, 201, 230, 0.35);
   border-radius: var(--radius-xl);
   font-family: var(--font-family-base);
   font-size: var(--font-size-sm);
@@ -710,14 +803,17 @@
   border-color: var(--color-primary);
   color: var(--color-primary);
   background: var(--color-primary-subtle);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(33, 12, 174, 0.08);
 }
 
 .addMoreBtn {
   display: flex;
   align-items: center;
+  justify-content: center;
   gap: 6px;
-  padding: 0.6rem 1.25rem;
-  background: transparent;
+  padding: 0.7rem 1.25rem;
+  background: var(--color-surface-alt);
   border: none;
   border-top: 1px solid var(--color-border);
   font-family: var(--font-family-base);
@@ -730,7 +826,7 @@
 }
 
 .addMoreBtn:hover {
-  background: var(--color-surface-hover);
+  background: var(--color-primary-subtle);
   color: var(--color-primary);
 }
 

@@ -19,16 +19,27 @@ const ICONS = {
   info:    Info,
 };
 
+/* ── Default titles per variant ──────────────────────── */
+const DEFAULT_TITLES = {
+  success: 'Thành công',
+  error:   'Lỗi',
+  warning: 'Cảnh báo',
+  info:    'Thông tin',
+};
+
 /* ── Default duration (ms) ───────────────────────────── */
 const DEFAULT_DURATION = 4000;
-/** Exit animation must match --toast-exit-duration in CSS */
-const EXIT_ANIMATION_MS = 200;
+/** Exit animation must match CSS exit animation duration */
+const EXIT_ANIMATION_MS = 280;
 
 /* ── Provider ────────────────────────────────────────── */
 export const ToastProvider = ({ children }) => {
   const [toasts, setToasts] = useState([]);
   // Map of id → timeout handle so we can clear on manual dismiss
   const timers = useRef({});
+  // Map of id → pause state for hover
+  const pausedAt = useRef({});
+  const remaining = useRef({});
 
   const dismiss = useCallback((id) => {
     // Clear auto-dismiss timer if still pending
@@ -36,6 +47,8 @@ export const ToastProvider = ({ children }) => {
       clearTimeout(timers.current[id]);
       delete timers.current[id];
     }
+    delete pausedAt.current[id];
+    delete remaining.current[id];
     // Trigger exit animation
     setToasts(prev =>
       prev.map(t => (t.id === id ? { ...t, exiting: true } : t))
@@ -46,12 +59,34 @@ export const ToastProvider = ({ children }) => {
     }, EXIT_ANIMATION_MS);
   }, []);
 
+  const pauseTimer = useCallback((id) => {
+    if (timers.current[id]) {
+      clearTimeout(timers.current[id]);
+      delete timers.current[id];
+      pausedAt.current[id] = Date.now();
+    }
+  }, []);
+
+  const resumeTimer = useCallback((id) => {
+    const pauseTime = pausedAt.current[id];
+    const rem = remaining.current[id];
+    if (pauseTime && rem) {
+      const elapsed = Date.now() - pauseTime;
+      const left = Math.max(rem - elapsed, 500);
+      remaining.current[id] = left;
+      delete pausedAt.current[id];
+      timers.current[id] = setTimeout(() => dismiss(id), left);
+    }
+  }, [dismiss]);
+
   const add = useCallback(
     ({ message, title, variant = 'info', duration = DEFAULT_DURATION }) => {
       const id = `toast-${Date.now()}-${Math.random().toString(36).slice(2)}`;
-      setToasts(prev => [...prev, { id, message, title, variant, exiting: false }]);
+      const autoTitle = title ?? DEFAULT_TITLES[variant];
+      setToasts(prev => [...prev, { id, message, title: autoTitle, variant, duration, exiting: false }]);
 
       if (duration > 0) {
+        remaining.current[id] = duration;
         timers.current[id] = setTimeout(() => dismiss(id), duration);
       }
       return id;
@@ -80,7 +115,13 @@ export const ToastProvider = ({ children }) => {
         aria-label="Thông báo"
       >
         {toasts.map(t => (
-          <ToastItem key={t.id} data={t} onDismiss={() => dismiss(t.id)} />
+          <ToastItem
+            key={t.id}
+            data={t}
+            onDismiss={() => dismiss(t.id)}
+            onPause={() => pauseTimer(t.id)}
+            onResume={() => resumeTimer(t.id)}
+          />
         ))}
       </div>
     </ToastContext.Provider>
@@ -88,20 +129,22 @@ export const ToastProvider = ({ children }) => {
 };
 
 /* ── Individual Toast Item ───────────────────────────── */
-function ToastItem({ data: { message, title, variant, exiting }, onDismiss }) {
+function ToastItem({ data: { message, title, variant, duration, exiting }, onDismiss, onPause, onResume }) {
   const Icon = ICONS[variant] ?? Info;
 
   return (
     <div
       role="alert"
       className={`${styles.toast} ${styles[variant]} ${exiting ? styles.exiting : ''}`}
+      onMouseEnter={onPause}
+      onMouseLeave={onResume}
     >
       {/* Coloured left accent */}
       <div className={styles.accent} />
 
-      {/* Icon */}
+      {/* Icon with tinted background */}
       <div className={`${styles.iconWrap} ${styles[`icon_${variant}`]}`}>
-        <Icon size={18} strokeWidth={2.5} />
+        <Icon size={20} strokeWidth={2.2} />
       </div>
 
       {/* Text */}
@@ -116,8 +159,18 @@ function ToastItem({ data: { message, title, variant, exiting }, onDismiss }) {
         onClick={onDismiss}
         aria-label="Đóng thông báo"
       >
-        <X size={14} />
+        <X size={15} />
       </button>
+
+      {/* Auto-dismiss progress bar */}
+      {duration > 0 && (
+        <div className={styles.progressBar}>
+          <div
+            className={styles.progressFill}
+            style={{ '--toast-duration': `${duration}ms` }}
+          />
+        </div>
+      )}
     </div>
   );
 }

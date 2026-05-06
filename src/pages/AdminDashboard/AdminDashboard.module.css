@@ -346,14 +346,65 @@
 }
 
 @media (max-width: 640px) {
+  .page {
+    padding: 1rem;
+    gap: 1rem;
+  }
+
   .hero {
     flex-direction: column;
     align-items: flex-start;
-    gap: 1.5rem;
-    padding: 1.5rem;
+    gap: 1.25rem;
+    padding: 1.25rem 1.25rem 1rem;
   }
 
   .heroBadge {
     display: none;
+  }
+
+  .heroTitle {
+    font-size: 1.3rem;
+  }
+
+  .heroDate {
+    font-size: 0.7rem;
+  }
+
+  .heroSub {
+    font-size: var(--font-size-xs);
+  }
+
+  /* Stats — 2x2 grid on mobile */
+  .heroStats {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0.6rem;
+    width: 100%;
+  }
+
+  .statDiv {
+    display: none;
+  }
+
+  .statItem {
+    background: rgba(255, 255, 255, 0.12);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    border-radius: var(--radius-lg);
+    padding: 0.5rem 0.75rem;
+    backdrop-filter: blur(4px);
+  }
+
+  .statNum {
+    font-size: 1.25rem;
+  }
+
+  /* Cards */
+  .cardHeader {
+    padding: 1rem 1rem 0.65rem;
+  }
+
+  .upcomingItem,
+  .subItem {
+    padding: 0.85rem 1rem;
   }
 }

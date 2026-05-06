@@ -59,3 +59,30 @@
   background-color: var(--color-surface-alt);
   color: var(--color-text-primary);
 }
+
+/* ── Mobile responsive ── */
+@media (max-width: 768px) {
+  .header {
+    height: 52px;
+    padding: 0 var(--spacing-md);
+  }
+
+  .title {
+    font-size: var(--font-size-md);
+  }
+
+  .search {
+    width: 160px;
+  }
+
+  .right {
+    gap: var(--spacing-sm);
+  }
+}
+
+@media (max-width: 480px) {
+  .search {
+    width: 130px;
+    font-size: var(--font-size-xs);
+  }
+}
