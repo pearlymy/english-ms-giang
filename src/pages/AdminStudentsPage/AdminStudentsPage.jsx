@@ -75,20 +75,21 @@ const ClassDropdown = ({ value, classes, onChange }) => {
   }, []);
 
   const options = [
-    { value: 'all', label: 'Tất cả lớp' },
-    ...classes.map(c => ({ value: c.id, label: c.name }))
+    { value: 'all', label: 'Tất cả lớp', code: '' },
+    ...classes.map(c => ({ value: c.id, label: c.name, code: c.code }))
   ];
-  const selected = options.find(o => o.value === value) ?? options[0];
+  const isFiltered = value !== 'all';
 
   return (
     <div className={styles.monthDropdownWrap} ref={ref}>
       <button
-        className={`${styles.monthDropdownTrigger} ${open ? styles.monthDropdownOpen : ''}`}
+        className={`${styles.monthDropdownTrigger} ${open ? styles.monthDropdownOpen : ''} ${isFiltered ? styles.monthDropdownFiltered : ''}`}
         onClick={() => setOpen(p => !p)}
         type="button"
       >
         <Users size={14} className={styles.monthDropdownIcon} />
-        <span>{selected.label}</span>
+        <span>Mã lớp</span>
+        {isFiltered && <span className={styles.filterDot} />}
         <ChevronDown size={13} className={`${styles.monthDropdownChevron} ${open ? styles.monthDropdownChevronUp : ''}`} />
       </button>
 
@@ -102,7 +103,12 @@ const ClassDropdown = ({ value, classes, onChange }) => {
               onClick={() => { onChange(opt.value); setOpen(false); }}
               type="button"
             >
-              <span>{opt.label}</span>
+              <span className={styles.classDropdownItemLabel}>
+                {opt.label}
+                {opt.code && (
+                  <span className={styles.classDropdownCode}>{opt.code}</span>
+                )}
+              </span>
               {opt.value === value && <Check size={13} className={styles.monthDropdownCheck} />}
             </button>
           ))}
@@ -128,15 +134,18 @@ const MonthDropdown = ({ value, months, onChange, monthLabel }) => {
   const options = [{ value: 'all', label: 'Tất cả tháng' }, ...months.map(m => ({ value: m, label: monthLabel(m) }))];
   const selected = options.find(o => o.value === value) ?? options[0];
 
+  const isFiltered = value !== 'all';
+
   return (
     <div className={styles.monthDropdownWrap} ref={ref}>
       <button
-        className={`${styles.monthDropdownTrigger} ${open ? styles.monthDropdownOpen : ''}`}
+        className={`${styles.monthDropdownTrigger} ${open ? styles.monthDropdownOpen : ''} ${isFiltered ? styles.monthDropdownFiltered : ''}`}
         onClick={() => setOpen(p => !p)}
         type="button"
       >
         <CalendarDays size={14} className={styles.monthDropdownIcon} />
-        <span>{selected.label}</span>
+        <span>Tháng</span>
+        {isFiltered && <span className={styles.filterDot} />}
         <ChevronDown size={13} className={`${styles.monthDropdownChevron} ${open ? styles.monthDropdownChevronUp : ''}`} />
       </button>
 

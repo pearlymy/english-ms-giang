@@ -1,9 +1,13 @@
 import { supabase } from '../../lib/supabase';
 
 /* ── Field mapping helpers ─────────────────────────────────────────────── */
+/* Email giả được tự sinh khi học viên không có email thật */
+const PLACEHOLDER_EMAIL_DOMAIN = '@noemail.hg';
+const isPlaceholderEmail = (email) => email?.endsWith(PLACEHOLDER_EMAIL_DOMAIN);
+
 const toApp = (row) => ({
   id:                row.id,
-  email:             row.email,
+  email:             isPlaceholderEmail(row.email) ? null : (row.email ?? null),
   username:          row.username,
   name:              row.name,
   role:              row.role,
@@ -12,7 +16,6 @@ const toApp = (row) => ({
   classId:           row.class_id ?? null,
   avatar:            row.avatar ?? null,
   createdAt:         row.created_at,
-  // Derived — sẽ tính từ class khi cần
   enrolledCourseIds: row.class_id ? [row.class_course_id].filter(Boolean) : [],
 });
 
@@ -58,11 +61,15 @@ export const studentApi = {
    */
   async updateStudent(id, patch) {
     const dbPatch = {};
-    if (patch.name     !== undefined) dbPatch.name     = patch.name;
-    if (patch.phone    !== undefined) dbPatch.phone    = patch.phone;
-    if (patch.classId  !== undefined) dbPatch.class_id = patch.classId;
-    if (patch.username !== undefined) dbPatch.username = patch.username;
-    if (patch.avatar   !== undefined) dbPatch.avatar   = patch.avatar;
+    if (patch.name     !== undefined) dbPatch.name      = patch.name;
+    if (patch.phone    !== undefined) dbPatch.phone     = patch.phone;
+    if (patch.classId  !== undefined) dbPatch.class_id  = patch.classId;
+    if (patch.username !== undefined) dbPatch.username  = patch.username;
+    if (patch.avatar   !== undefined) dbPatch.avatar    = patch.avatar;
+    // Email: cho phép xóa trắng (null) khi người dùng bỏ email
+    if (patch.email !== undefined) dbPatch.email = patch.email?.trim() || null;
+    // Trạng thái hoạt động
+    if (patch.isActive !== undefined) dbPatch.is_active = patch.isActive;
 
     const { data, error } = await supabase
       .from('users')
@@ -96,18 +103,23 @@ export const studentApi = {
    */
   async createStudent({ email, password, username, name, phone, classId }) {
     const headers = await edgeHeaders();
+
+    // Supabase Auth bắt buộc email. Nếu người dùng không nhập,
+    // tự sinh email giả có domain riêng để dễ nhận biết và ẩn khỏi UI.
+    const authEmail = email?.trim() || `${username}${PLACEHOLDER_EMAIL_DOMAIN}`;
+
     const res = await fetch(edgeFnUrl('manage-student'), {
       method: 'POST',
       headers,
       body: JSON.stringify({
-        action: 'create',
-        email,
+        action:   'create',
+        email:    authEmail,
         password,
         username,
         name,
-        phone: phone ?? null,
+        phone:    phone ?? null,
         class_id: classId ?? null,
-        role: 'student',
+        role:     'student',
       }),
     });
 

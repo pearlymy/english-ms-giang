@@ -64,15 +64,18 @@ Deno.serve(async (req: Request) => {
     if (action === 'create') {
       const { email, password, username, name, phone, class_id, role = 'student' } = body;
 
-      if (!email || !password || !name) {
-        return new Response(JSON.stringify({ error: 'Thiếu email, password hoặc name.' }), {
+      if (!password || !name) {
+        return new Response(JSON.stringify({ error: 'Thiếu password hoặc name.' }), {
           status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' },
         });
       }
 
+      // Nếu không có email, tự động sinh email giả (Supabase Auth bắt buộc email)
+      const authEmail = email?.trim() || `${username}@hgenglish.local`;
+
       // Tạo auth user
       const { data: authData, error: createErr } = await adminClient.auth.admin.createUser({
-        email,
+        email: authEmail,
         password,
         email_confirm: true,      // Bỏ qua xác nhận email
         user_metadata: { username, name, role },
@@ -84,10 +87,11 @@ Deno.serve(async (req: Request) => {
         });
       }
 
-      // Trigger handle_new_user() tự tạo profile, nhưng ta cần cập nhật thêm
+      // Cập nhật profile: email lưu email thật (null nếu không nhập), không lưu email giả
+      const profileEmail = email?.trim() || null;
       await adminClient
         .from('users')
-        .update({ username, name, phone: phone ?? null, class_id: class_id ?? null, role })
+        .update({ username, name, phone: phone ?? null, class_id: class_id ?? null, role, email: profileEmail })
         .eq('id', authData.user!.id);
 
       // Lấy profile đã hoàn chỉnh

@@ -217,6 +217,22 @@
   text-underline-offset: 2px;
 }
 
+/* Dot indicator shown when a filter is active */
+.headerFilterDot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #fff;
+  flex-shrink: 0;
+  box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.35);
+  animation: dotPopIn 0.22s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+}
+
+@keyframes dotPopIn {
+  from { transform: scale(0); opacity: 0; }
+  to   { transform: scale(1); opacity: 1; }
+}
+
 .headerFilterBackdrop {
   position: fixed;
   inset: 0;
@@ -224,17 +240,13 @@
 }
 
 .headerFilterPanel {
-  position: absolute;
-  top: calc(100% + 4px);
-  left: 0;
-  z-index: 20;
-  min-width: 150px;
+  z-index: 9999;
+  min-width: 220px;
   background: var(--color-surface);
   border: 1px solid var(--color-border);
   border-radius: var(--radius-xl);
   box-shadow: var(--shadow-float-sm);
   padding: var(--spacing-xs);
-  /* Padding all around */
   animation: menuIn var(--motion-duration-normal) var(--motion-easing-enter);
 }
 
@@ -352,18 +364,22 @@
 /* ── Column definitions ──────────────────────────────────────────────── */
 .tableRow {
   display: grid;
-  grid-template-columns: 2fr 1fr 0.9fr 1.3fr 0.85fr 1.1fr 40px;
+  grid-template-columns: 32px 44px minmax(0, 2fr) minmax(0, 1fr) minmax(0, 0.9fr) minmax(0, 1.3fr) minmax(0, 0.85fr) minmax(0, 1.1fr) 90px;
   align-items: center;
   gap: var(--spacing-md);
   padding: 0.9rem 1.5rem;
+  width: 100%;
+  box-sizing: border-box;
 }
 
 .classRow {
   display: grid;
-  grid-template-columns: 1.4fr 1.4fr 2fr 0.8fr 40px;
+  grid-template-columns: 32px 44px minmax(0, 1.2fr) minmax(0, 1.8fr) minmax(0, 1.2fr) minmax(0, 0.8fr) 240px;
   align-items: center;
   gap: var(--spacing-md);
   padding: 0.9rem 1.5rem;
+  width: 100%;
+  box-sizing: border-box;
 }
 
 /* ── Header row — gradient ───────────────────────────────────────────── */
@@ -380,6 +396,24 @@
   border-top-left-radius: calc(var(--radius-2xl) - 1px);
   border-top-right-radius: calc(var(--radius-2xl) - 1px);
 }
+
+/* Fix header text overlapping */
+.tableHeader > span,
+.tableHeader > div:not(.checkCell) {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  min-width: 0;
+}
+
+.headerActionLabel {
+  text-align: center;
+  opacity: 0.8;
+  display: block;
+  width: 100%;
+}
+
+
 
 /* ── Data rows ───────────────────────────────────────────────────────── */
 .tableRow:not(.tableHeader),
@@ -401,30 +435,28 @@
   background: var(--color-surface-hover);
 }
 
-/* Hover-only action buttons for class rows */
 .rowActions {
   display: flex;
   align-items: center;
   gap: var(--spacing-xs);
-  opacity: 0;
-  transition: opacity var(--motion-duration-fast) var(--motion-easing-standard);
-}
-
-.classRowData:hover .rowActions {
-  opacity: 1;
+  justify-content: center;
 }
 
 .rowActionBtn {
-  width: 28px;
-  height: 28px;
-  display: flex;
+  display: inline-flex;
   align-items: center;
-  justify-content: center;
+  gap: 5px;
+  padding: 0.3rem 0.6rem;
+  height: 30px;
   background: transparent;
   border: 1px solid var(--color-border);
   border-radius: var(--radius-md);
   color: var(--color-text-secondary);
   cursor: pointer;
+  font-size: 12px;
+  font-family: var(--font-family-base);
+  font-weight: var(--font-weight-medium);
+  white-space: nowrap;
   transition: all var(--motion-duration-fast) var(--motion-easing-standard);
 }
 
@@ -438,6 +470,12 @@
   background: rgba(239, 68, 68, 0.08);
   border-color: rgba(239, 68, 68, 0.3);
   color: var(--color-error);
+}
+
+.rowActionTransfer:hover {
+  background: rgba(20, 184, 166, 0.08);
+  border-color: rgba(20, 184, 166, 0.35);
+  color: #0d9488;
 }
 
 /* ── Student cell (avatar + name + email) ───────────────────────────── */
@@ -486,6 +524,15 @@
   overflow: hidden;
   text-overflow: ellipsis;
 }
+
+.cellText {
+  font-size: var(--font-size-sm);
+  color: var(--color-text-secondary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
 
 .className {
   font-size: var(--font-size-sm);
@@ -674,16 +721,35 @@
   color: var(--color-primary);
 }
 
+.classNamePreview {
+  margin: var(--spacing-md) 0 0;
+  padding: 0.55rem 1rem;
+  background: var(--color-primary-subtle);
+  border: 1px solid var(--color-primary-accent-border);
+  border-radius: var(--radius-lg);
+  font-size: var(--font-size-sm);
+  color: var(--color-text-secondary);
+}
+
+.classNamePreview strong {
+  color: var(--color-primary);
+  font-weight: var(--font-weight-bold);
+}
+
 /* Password field with eye toggle in modal */
 .pwField {
   position: relative;
   grid-column: span 1;
 }
 
+/* Eye toggle sits inside the inputWrapper — offset from right edge of input */
 .eyeToggle {
   position: absolute;
   right: 0.75rem;
-  bottom: 0.6rem;
+  /* Align to input center height: input = 42px, icon = 15px → (42-15)/2 = 13.5px from top of inputWrapper */
+  top: calc(10px + 0px); /* align with input padding-top; fine-tuned visually */
+  bottom: auto;
+  transform: translateY(50%);
   background: none;
   border: none;
   color: var(--color-text-tertiary);
@@ -691,6 +757,7 @@
   display: flex;
   align-items: center;
   padding: 0;
+  z-index: 1;
   transition: color var(--motion-duration-fast);
 }
 
@@ -760,6 +827,89 @@
   flex-shrink: 0;
   margin-top: 2px;
   color: var(--color-error, #ef4444);
+}
+
+/* ── Enhanced Delete Warning Box (when class has students) ───────────────── */
+.deleteWarningBlock {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--spacing-md);
+  padding: var(--spacing-lg);
+  border-radius: var(--radius-xl);
+  background: linear-gradient(135deg, rgba(254, 242, 242, 0.6) 0%, rgba(254, 226, 226, 0.3) 100%);
+  border: 1px solid rgba(239, 68, 68, 0.15);
+  box-shadow: 0 4px 15px rgba(239, 68, 68, 0.05);
+  position: relative;
+  overflow: hidden;
+}
+
+.deleteWarningBlock::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 4px;
+  height: 100%;
+  background: var(--color-error, #ef4444);
+  border-radius: 4px 0 0 4px;
+}
+
+.deleteWarningIcon {
+  flex-shrink: 0;
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  background: rgba(239, 68, 68, 0.1);
+  color: var(--color-error, #ef4444);
+  box-shadow: 0 2px 8px rgba(239, 68, 68, 0.1);
+}
+
+.deleteWarningBody {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-xs);
+}
+
+.deleteWarningTitle {
+  margin: 0;
+  font-size: var(--font-size-md);
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-text-primary);
+  line-height: 1.4;
+}
+
+.deleteWarningTitle strong {
+  color: var(--color-error, #ef4444);
+  font-weight: var(--font-weight-bold);
+}
+
+.deleteWarningDesc {
+  margin: 0;
+  font-size: var(--font-size-sm);
+  color: var(--color-text-secondary);
+  line-height: 1.5;
+}
+
+.deleteWarningHint {
+  margin: var(--spacing-sm) 0 0 0;
+  padding: var(--spacing-sm) var(--spacing-md);
+  border-radius: var(--radius-md);
+  background: rgba(245, 158, 11, 0.08);
+  border: 1px dashed rgba(245, 158, 11, 0.3);
+  font-size: var(--font-size-xs);
+  color: #b45309;
+  display: flex;
+  align-items: flex-start;
+  gap: 6px;
+  line-height: 1.5;
+}
+
+.deleteWarningHint strong {
+  font-weight: var(--font-weight-semibold);
+  color: #92400e;
 }
 
 /* ── Toolbar icon button (ghost style for Import/Export) ─────────────── */
@@ -1151,3 +1301,217 @@
   font-size: var(--font-size-sm);
   user-select: none;
 }
+
+/* ── Checkbox cell ───────────────────────────────────────────────────── */
+.checkCell {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.checkbox {
+  width: 16px;
+  height: 16px;
+  cursor: pointer;
+  accent-color: var(--color-primary, #4dc9e6);
+  flex-shrink: 0;
+  border-radius: 3px;
+}
+
+/* ── STT cell ────────────────────────────────────────────────────────── */
+.sttCell {
+  font-size: var(--font-size-xs);
+  color: var(--color-text-tertiary);
+  font-weight: var(--font-weight-medium);
+  text-align: center;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+/* Header STT — uppercase like other headers */
+.tableHeader .sttCell {
+  font-size: 11px;
+  font-weight: var(--font-weight-bold);
+  color: rgba(255, 255, 255, 0.82);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+/* ── Selected row highlight ──────────────────────────────────────────── */
+.tableRowSelected {
+  background: rgba(77, 201, 230, 0.07) !important;
+  border-color: rgba(77, 201, 230, 0.2) !important;
+}
+
+.tableRowSelected:hover {
+  background: rgba(77, 201, 230, 0.12) !important;
+}
+
+/* ── Bulk action bar ─────────────────────────────────────────────────── */
+.bulkBar {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+  padding: 0.6rem 1rem;
+  background: rgba(77, 201, 230, 0.08);
+  border: 1px solid rgba(77, 201, 230, 0.25);
+  border-radius: var(--radius-xl);
+  animation: slideDown 0.18s var(--motion-easing-enter);
+}
+
+@keyframes slideDown {
+  from { opacity: 0; transform: translateY(-6px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.bulkBarCount {
+  font-size: var(--font-size-sm);
+  color: var(--color-text-secondary);
+  margin-right: auto;
+}
+
+.bulkBarCount strong {
+  color: var(--color-primary, #4dc9e6);
+  font-weight: var(--font-weight-bold);
+}
+
+.bulkDeleteBtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 0.42rem 0.9rem;
+  border-radius: var(--radius-lg);
+  border: 1px solid rgba(239, 68, 68, 0.35);
+  background: rgba(239, 68, 68, 0.08);
+  color: #dc2626;
+  font-family: var(--font-family-base);
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-semibold);
+  cursor: pointer;
+  transition: all var(--motion-duration-fast) var(--motion-easing-standard);
+  white-space: nowrap;
+}
+
+.bulkDeleteBtn:hover {
+  background: rgba(239, 68, 68, 0.15);
+  border-color: rgba(239, 68, 68, 0.5);
+}
+
+.bulkClearBtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 0.42rem 0.75rem;
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--color-border);
+  background: transparent;
+  color: var(--color-text-tertiary);
+  font-family: var(--font-family-base);
+  font-size: var(--font-size-sm);
+  cursor: pointer;
+  transition: all var(--motion-duration-fast);
+  white-space: nowrap;
+}
+
+.bulkClearBtn:hover {
+  background: var(--color-surface-hover);
+  color: var(--color-text-primary);
+}
+
+/* \u2500\u2500 Transfer Class Modal \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500 */
+.transferStats {
+  display: flex;
+  align-items: center;
+  gap: 0;
+  background: var(--color-surface-secondary, rgba(255,255,255,0.04));
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-xl);
+  padding: 1rem 1.5rem;
+  margin-bottom: var(--spacing-lg);
+}
+
+.transferStatItem {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  flex: 1;
+  gap: 4px;
+}
+
+.transferStatNum {
+  font-size: 1.75rem;
+  font-weight: var(--font-weight-bold);
+  color: var(--color-text-primary);
+  line-height: 1;
+  font-variant-numeric: tabular-nums;
+}
+
+.transferStatLabel {
+  font-size: var(--font-size-xs);
+  color: var(--color-text-tertiary);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  font-weight: var(--font-weight-medium);
+}
+
+.transferStatDivider {
+  width: 1px;
+  height: 40px;
+  background: var(--color-border);
+  flex-shrink: 0;
+  margin: 0 0.5rem;
+}
+
+/* Checkbox row bao g\u1ed3m h\u1ecdc vi\u00ean v\u00f4 hi\u1ec7u */
+.transferCheckRow {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  cursor: pointer;
+  font-size: var(--font-size-sm);
+  color: var(--color-text-primary);
+  padding: 0.75rem 1rem;
+  background: rgba(245, 158, 11, 0.06);
+  border: 1px solid rgba(245, 158, 11, 0.2);
+  border-radius: var(--radius-lg);
+  margin-bottom: var(--spacing-lg);
+  transition: background var(--motion-duration-fast);
+}
+
+.transferCheckRow:hover {
+  background: rgba(245, 158, 11, 0.1);
+}
+
+.transferCheckHint {
+  color: var(--color-text-tertiary);
+  font-size: var(--font-size-xs);
+}
+
+/* Preview box */
+.transferPreview {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 0.6rem 1rem;
+  background: rgba(20, 184, 166, 0.08);
+  border: 1px solid rgba(20, 184, 166, 0.25);
+  border-radius: var(--radius-lg);
+  font-size: var(--font-size-sm);
+  color: #0d9488;
+  margin-top: var(--spacing-sm);
+}
+
+.transferPreview strong {
+  color: #0d9488;
+}
+
+/* Empty state */
+.transferEmpty {
+  text-align: center;
+  color: var(--color-text-tertiary);
+  font-size: var(--font-size-sm);
+  padding: 1rem;
+  font-style: italic;
+}
+

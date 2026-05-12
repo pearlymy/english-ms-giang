@@ -124,6 +124,37 @@ export const UserManagementProvider = ({ children }) => {
     return { succeeded, failed };
   }, []);
 
+  /**
+   * Chuyển hàng loạt học viên sang lớp mới.
+   * @param {string[]} studentIds   - Danh sách ID học viên cần chuyển
+   * @param {string}   targetClassId - ID lớp đích
+   * @returns {number} Số học viên đã chuyển thành công
+   */
+  const bulkTransferClass = useCallback(async (studentIds, targetClassId) => {
+    // Gọi API song song cho tất cả
+    const results = await Promise.allSettled(
+      studentIds.map((id) => studentApi.updateStudent(id, { classId: targetClassId }))
+    );
+
+    // Cập nhật local state theo kết quả
+    const updated = results
+      .map((r, i) => r.status === 'fulfilled' ? r.value : null)
+      .filter(Boolean);
+
+    if (updated.length > 0) {
+      setStudents((prev) =>
+        prev.map((s) => {
+          const u = updated.find((x) => x.id === s.id);
+          return u ?? s;
+        })
+      );
+    }
+
+    const failed = results.filter((r) => r.status === 'rejected').length;
+    if (failed > 0) throw new Error(`${failed} học viên không thể chuyển lớp`);
+    return updated.length;
+  }, []);
+
   /* ── Queries ─────────────────────────────────────────────────────────── */
   const getStudentsByClass = useCallback(
     (classId) => students.filter((s) => s.classId === classId),
@@ -156,6 +187,7 @@ export const UserManagementProvider = ({ children }) => {
         updateStudent,
         deleteStudent,
         bulkCreateStudents,
+        bulkTransferClass,
         toggleActive,
         updatePassword,
         // queries
