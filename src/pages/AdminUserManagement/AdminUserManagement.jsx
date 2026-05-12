@@ -1511,8 +1511,25 @@ const TransferClassModal = ({ open, sourceCls, allClasses, allStudents, onClose 
   );
 };
 
+/* ════════════════════════════════════════════════════════════════════════════
+   SKELETON — loading placeholder rows
+════════════════════════════════════════════════════════════════════════════ */
+const SkeletonRow = () => (
+  <div className={`${styles.classRow} ${styles.classRowData}`} style={{ pointerEvents: 'none' }}>
+    <div className={styles.checkCell}><div className={styles.skeletonBox} style={{ width: 14, height: 14, borderRadius: 3 }} /></div>
+    <div className={styles.skeletonBox} style={{ width: 20, height: 14, borderRadius: 4 }} />
+    <div className={styles.skeletonBox} style={{ width: '85%', height: 14, borderRadius: 4 }} />
+    <div className={styles.skeletonBox} style={{ width: '70%', height: 14, borderRadius: 4 }} />
+    <div className={styles.skeletonBox} style={{ width: 60, height: 14, borderRadius: 4 }} />
+    <div className={styles.skeletonBox} style={{ width: 36, height: 14, borderRadius: 4 }} />
+    <div style={{ display: 'flex', gap: 6, justifyContent: 'center' }}>
+      {[1,2,3].map(i => <div key={i} className={styles.skeletonBox} style={{ width: 30, height: 28, borderRadius: 6 }} />)}
+    </div>
+  </div>
+);
+
 const TabClasses = () => {
-  const { classes, students, deleteClass } = useUserManagement();
+  const { classes, students, deleteClass, classesLoading } = useUserManagement();
   const toast = useToast();
   const [createOpen, setCreateOpen] = useState(false);
   const [editCls, setEditCls] = useState(null);
@@ -1538,6 +1555,7 @@ const TabClasses = () => {
   };
 
   /* ── Search filter ─────────────────────────────────────────────────────── */
+  const [searchQuery, setSearchQuery] = useState('');
   const [filterCode, setFilterCode] = useState('all');
   const [filterName, setFilterName] = useState('all');
 
@@ -1556,6 +1574,7 @@ const TabClasses = () => {
 
   const handleFilterCode = (v) => { setFilterCode(v); setPage(1); setSelectedIds(new Set()); };
   const handleFilterName = (v) => { setFilterName(v); setPage(1); setSelectedIds(new Set()); };
+  const handleSearch = (v) => { setSearchQuery(v); setPage(1); setSelectedIds(new Set()); };
 
   // Options cho Mã lớp
   const codeOptions = useMemo(() => [
@@ -1569,14 +1588,18 @@ const TabClasses = () => {
     ...classes.map(c => ({ value: c.id, label: c.name })),
   ], [classes]);
 
-  // Danh sách lớp sau khi lọc
+  // Danh sách lớp sau khi lọc (search + column filters)
   const filteredClasses = useMemo(() => {
+    const q = removeDiacritics(searchQuery.trim());
     return classes.filter(c => {
       const matchCode = filterCode === 'all' || c.id === filterCode;
       const matchName = filterName === 'all' || c.id === filterName;
-      return matchCode && matchName;
+      const matchSearch = !q ||
+        removeDiacritics(c.code ?? '').includes(q) ||
+        removeDiacritics(c.name ?? '').includes(q);
+      return matchCode && matchName && matchSearch;
     });
-  }, [classes, filterCode, filterName]);
+  }, [classes, filterCode, filterName, searchQuery]);
 
   const totalPages = Math.max(1, Math.ceil(filteredClasses.length / pageSize));
   const safePage = Math.min(page, totalPages);
@@ -1606,17 +1629,32 @@ const TabClasses = () => {
     });
   };
 
-  /* ── Bulk delete: đếm tổng học viên trong các lớp sẽ xóa ── */
-  const bulkStudentCount = [...selectedIds].reduce(
-    (sum, id) => sum + students.filter((s) => s.classId === id).length,
-    0
+  /* ── Bulk delete: thống kê học viên + guard ── */
+  const bulkSelectedClasses = useMemo(() =>
+    classes.filter(c => selectedIds.has(c.id)),
+    [classes, selectedIds]
+  );
+
+  const bulkStudentCount = useMemo(() =>
+    [...selectedIds].reduce(
+      (sum, id) => sum + students.filter((s) => s.classId === id).length,
+      0
+    ), [selectedIds, students]
+  );
+
+  // Các lớp TRONG selection còn học viên → không cho xóa
+  const bulkBlockedClasses = useMemo(() =>
+    bulkSelectedClasses.filter(c =>
+      students.some(s => s.classId === c.id)
+    ), [bulkSelectedClasses, students]
   );
 
   const handleBulkDelete = async () => {
+    if (bulkBlockedClasses.length > 0) return; // guard
     setBulkDeleting(true);
     try {
       await Promise.all([...selectedIds].map((id) => deleteClass(id)));
-      toast?.success('Xóa lớp thành công');
+      toast?.success(`Đã xóa ${selectedIds.size} lớp thành công`);
       setSelectedIds(new Set());
     } catch (err) {
       toast?.error(err?.message ?? 'Có lỗi khi xóa lớp');
@@ -1663,7 +1701,22 @@ const TabClasses = () => {
     <div className={styles.tabSection}>
       {/* Toolbar */}
       <div className={styles.toolbar}>
-        <div style={{ flex: 1 }} />
+        {/* Search bar */}
+        <div className={styles.searchWrap}>
+          <Search size={14} className={styles.searchIcon} />
+          <input
+            className={styles.searchInput}
+            placeholder="Tìm mã lớp, tên lớp..."
+            value={searchQuery}
+            onChange={e => handleSearch(e.target.value)}
+          />
+          {searchQuery && (
+            <button className={styles.searchClear} onClick={() => handleSearch('')}>
+              <X size={13} />
+            </button>
+          )}
+        </div>
+
         {/* Export Excel */}
         <button
           className={`${styles.toolbarIconBtn} ${styles.toolbarIconBtnGreen}`}
@@ -1739,9 +1792,35 @@ const TabClasses = () => {
           <span className={styles.headerActionLabel}>Thao tác</span>
         </div>
 
-        {filteredClasses.length === 0 && (
-          <div className={styles.empty}>
-            {classes.length === 0 ? 'Chưa có lớp nào. Hãy tạo lớp đầu tiên!' : 'Không tìm thấy lớp nào khớp bộ lọc.'}
+        {/* Loading skeleton */}
+        {classesLoading && (
+          [1,2,3,4,5].map(i => <SkeletonRow key={i} />)
+        )}
+
+        {/* Empty state */}
+        {!classesLoading && filteredClasses.length === 0 && (
+          <div className={styles.emptyState}>
+            <div className={styles.emptyStateIcon}>
+              <BookOpen size={32} strokeWidth={1.4} />
+            </div>
+            <p className={styles.emptyStateTitle}>
+              {classes.length === 0
+                ? 'Chưa có lớp nào'
+                : (searchQuery ? `Không tìm thấy lớp nào khớp "${searchQuery}"` : 'Không có lớp nào khớp bộ lọc')}
+            </p>
+            <p className={styles.emptyStateSub}>
+              {classes.length === 0
+                ? 'Nhấn "Tạo lớp mới" để bắt đầu.'
+                : (searchQuery ? 'Thử từ khóa khác hoặc xóa bộ lọc.' : 'Hãy thay đổi hoặc xóa bộ lọc.')}
+            </p>
+            {(searchQuery || filterCode !== 'all' || filterName !== 'all') && (
+              <button
+                className={styles.emptyStateClear}
+                onClick={() => { handleSearch(''); handleFilterCode('all'); handleFilterName('all'); }}
+              >
+                <X size={12} /> Xóa bộ lọc
+              </button>
+            )}
           </div>
         )}
 
@@ -1901,25 +1980,52 @@ const TabClasses = () => {
         open={bulkDelOpen}
         onOpenChange={(v) => { if (!v) setBulkDelOpen(false); }}
         title="Xác nhận xóa lớp"
-        description={`Bạn có chắc chắn muốn xóa ${selectedIds.size} lớp đã chọn không?`}
+        description={`Đã chọn ${selectedIds.size} lớp`}
         primaryAction={{
-          label: bulkDeleting ? 'Đang xóa...' : 'Xác nhận',
+          label: bulkDeleting ? 'Đang xóa...' : 'Xóa lớp trống',
           danger: true,
           onClick: handleBulkDelete,
-          disabled: bulkDeleting,
+          disabled: bulkDeleting || bulkBlockedClasses.length > 0,
         }}
         secondaryAction={{ label: 'Hủy' }}
       >
-        <div className={styles.deleteWarning}>
-          <Trash2 size={16} />
-          <span>
-            Thao tác này sẽ xóa <strong>{selectedIds.size} lớp</strong>
-            {bulkStudentCount > 0 && (
-              <> và toàn bộ <strong>{bulkStudentCount} học viên</strong> trong đó</>
-            )}
-            . Không thể <strong>hoàn tác</strong>.
-          </span>
-        </div>
+        {/* Blocked: có lớp còn học viên */}
+        {bulkBlockedClasses.length > 0 && (
+          <div className={styles.deleteWarningBlock}>
+            <div className={styles.deleteWarningIcon}>
+              <Lock size={20} strokeWidth={2.2} />
+            </div>
+            <div className={styles.deleteWarningBody}>
+              <p className={styles.deleteWarningTitle}>
+                <strong>{bulkBlockedClasses.length} lớp</strong> vẫn còn học viên — không thể xóa.
+              </p>
+              <div className={styles.bulkBlockedList}>
+                {bulkBlockedClasses.map(c => {
+                  const cnt = students.filter(s => s.classId === c.id).length;
+                  return (
+                    <span key={c.id} className={styles.bulkBlockedTag}>
+                      {c.code} <span className={styles.bulkBlockedTagCount}>({cnt} học viên)</span>
+                    </span>
+                  );
+                })}
+              </div>
+              <div className={styles.deleteWarningHint}>
+                <Zap size={14} style={{ flexShrink: 0, marginTop: '2px' }} />
+                <span>Dùng nút <strong>Chuyển lớp</strong> để chuyển học viên trước, hoặc bỏ chọn các lớp còn học viên.</span>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Safe: tất cả lớp trống */}
+        {bulkBlockedClasses.length === 0 && (
+          <div className={styles.deleteWarning}>
+            <Trash2 size={16} />
+            <span>
+              Sẽ xóa <strong>{selectedIds.size} lớp trống</strong>. Thao tác <strong>không thể hoàn tác</strong>.
+            </span>
+          </div>
+        )}
       </Modal>
     </div>
   );

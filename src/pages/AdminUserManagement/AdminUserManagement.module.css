@@ -1514,4 +1514,116 @@
   padding: 1rem;
   font-style: italic;
 }
+
+/* ════════════════════════════════════════════════════════════════════════════
+   SKELETON SHIMMER
+════════════════════════════════════════════════════════════════════════════ */
+@keyframes shimmer {
+  0%   { background-position: -600px 0; }
+  100% { background-position: 600px 0; }
+}
+
+.skeletonBox {
+  background: linear-gradient(
+    90deg,
+    var(--color-surface-alt) 25%,
+    var(--color-surface-hover) 50%,
+    var(--color-surface-alt) 75%
+  );
+  background-size: 1200px 100%;
+  animation: shimmer 1.4s ease-in-out infinite;
+  border-radius: 4px;
+  flex-shrink: 0;
+}
+
+/* ════════════════════════════════════════════════════════════════════════════
+   EMPTY STATE — illustrated
+════════════════════════════════════════════════════════════════════════════ */
+.emptyState {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--spacing-sm);
+  padding: 3.5rem var(--spacing-xl) 2.5rem;
+  text-align: center;
+}
+
+.emptyStateIcon {
+  width: 64px;
+  height: 64px;
+  border-radius: var(--radius-2xl);
+  background: var(--color-primary-subtle);
+  border: 1px solid var(--color-primary-accent-border);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--color-primary);
+  margin-bottom: var(--spacing-xs);
+  box-shadow: 0 4px 16px rgba(77, 201, 230, 0.12);
+}
+
+.emptyStateTitle {
+  margin: 0;
+  font-size: var(--font-size-md);
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-text-primary);
+}
+
+.emptyStateSub {
+  margin: 0;
+  font-size: var(--font-size-sm);
+  color: var(--color-text-tertiary);
+}
+
+.emptyStateClear {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  margin-top: var(--spacing-sm);
+  padding: 0.4rem 0.85rem;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-pill);
+  background: var(--color-surface-alt);
+  font-family: var(--font-family-base);
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-medium);
+  color: var(--color-text-secondary);
+  cursor: pointer;
+  transition: all var(--motion-duration-fast);
+}
+
+.emptyStateClear:hover {
+  background: var(--color-surface-hover);
+  border-color: var(--color-border-strong);
+  color: var(--color-text-primary);
+}
+
+/* ════════════════════════════════════════════════════════════════════════════
+   BULK BLOCKED CLASS TAGS
+════════════════════════════════════════════════════════════════════════════ */
+.bulkBlockedList {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin: var(--spacing-xs) 0;
+}
+
+.bulkBlockedTag {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 0.2rem 0.6rem;
+  border-radius: var(--radius-pill);
+  background: rgba(239, 68, 68, 0.1);
+  border: 1px solid rgba(239, 68, 68, 0.2);
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-semibold);
+  color: #dc2626;
+  white-space: nowrap;
+}
+
+.bulkBlockedTagCount {
+  color: #ef4444;
+  font-weight: var(--font-weight-regular, 400);
+}
 
