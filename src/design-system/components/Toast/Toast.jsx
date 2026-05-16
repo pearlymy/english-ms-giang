@@ -28,9 +28,9 @@ const DEFAULT_TITLES = {
 };
 
 /* ── Default duration (ms) ───────────────────────────── */
-const DEFAULT_DURATION = 4000;
+const DEFAULT_DURATION = 2500;
 /** Exit animation must match CSS exit animation duration */
-const EXIT_ANIMATION_MS = 280;
+const EXIT_ANIMATION_MS = 150;
 
 /* ── Provider ────────────────────────────────────────── */
 export const ToastProvider = ({ children }) => {
@@ -144,7 +144,7 @@ function ToastItem({ data: { message, title, variant, duration, exiting }, onDis
 
       {/* Icon with tinted background */}
       <div className={`${styles.iconWrap} ${styles[`icon_${variant}`]}`}>
-        <Icon size={20} strokeWidth={2.2} />
+        <Icon size={16} strokeWidth={2.4} />
       </div>
 
       {/* Text */}

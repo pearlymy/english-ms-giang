@@ -1,7 +1,7 @@
 /* HomeworkPage.module.css */
 
 .page {
-  max-width: 860px;
+  max-width: 900px;
   margin: 0 auto;
   display: flex;
   flex-direction: column;
@@ -10,7 +10,7 @@
 }
 
 /* ════════════════════════
-   Compact gradient hero
+   Hero
 ════════════════════════ */
 .hero {
   position: relative;
@@ -26,16 +26,12 @@
 }
 .blob {
   position: absolute;
-  top: -40px;
-  right: -30px;
-  width: 160px;
-  height: 160px;
+  top: -40px; right: -30px;
+  width: 160px; height: 160px;
   border-radius: 50%;
   background: rgba(255,255,255,0.07);
   pointer-events: none;
 }
-
-/* Meta pill strip */
 .heroMeta {
   display: flex;
   align-items: center;
@@ -63,94 +59,76 @@
 .metaRed         { background: rgba(239,68,68,0.35);  border-color: rgba(239,68,68,0.5); }
 
 /* ════════════════════════
-   Assignment card
+   Assignment row
 ════════════════════════ */
-.card {
+.row {
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   gap: var(--spacing-md);
   padding: var(--spacing-md) var(--spacing-lg);
   border-radius: var(--radius-lg);
   background: var(--color-surface);
   border: 1px solid var(--color-border);
-  cursor: pointer;
-  transition: border-color 0.15s, box-shadow 0.15s, transform 0.15s;
-  overflow: hidden;
-  text-decoration: none;
+  transition: box-shadow 0.15s, border-color 0.15s;
 }
-.card:hover {
-  border-color: var(--color-primary);
-  box-shadow: 0 4px 16px rgba(33,12,174,0.10);
-  transform: translateY(-1px);
+.row:hover {
+  border-color: #d1d5db;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.06);
 }
-.card:focus-visible {
-  outline: 2px solid var(--color-primary);
-  outline-offset: 2px;
-}
-.cardOverdue {
+.rowOverdue {
   background: #fff8f8;
-  border-color: rgba(239,68,68,0.2);
+  border-color: rgba(239,68,68,0.18);
 }
-.cardOverdue:hover {
-  border-color: #ef4444;
-  box-shadow: 0 4px 16px rgba(239,68,68,0.12);
-}
-.cardDone { background: var(--color-surface); }
 
-/* Left accent stripe */
-.cardAccent {
-  width: 3px;
-  align-self: stretch;
-  border-radius: 2px;
-  flex-shrink: 0;
-}
-.accentBlue  { background: var(--gradient-primary); }
-.accentGreen { background: linear-gradient(180deg, #059669, #10b981); }
-.accentRed   { background: linear-gradient(180deg, #dc2626, #ef4444); }
-
-/* Type icon circle */
-.typeIcon {
-  width: 38px;
-  height: 38px;
-  border-radius: 50%;
+/* ── Icon circle ── */
+.iconCircle {
+  width: 44px;
+  height: 44px;
+  border-radius: var(--radius-lg);
   display: flex;
   align-items: center;
   justify-content: center;
   flex-shrink: 0;
+  margin-top: 2px;
 }
-.typeIconBlue  {
-  background: rgba(79,70,229,0.10);
-  color: var(--color-primary);
-}
-.typeIconGreen {
-  background: rgba(16,185,129,0.10);
-  color: #059669;
-}
-.typeIconRed {
-  background: rgba(239,68,68,0.10);
-  color: #dc2626;
-}
+.iconCircleBlue  { background: rgba(79,70,229,0.09);  color: var(--color-primary); }
+.iconCircleGreen { background: rgba(16,185,129,0.09); color: #059669; }
+.iconCircleRed   { background: rgba(239,68,68,0.09);  color: #dc2626; }
 
-/* Card content */
-.cardContent {
+/* ── Row body (center) ── */
+.rowBody {
   flex: 1;
   min-width: 0;
   display: flex;
   flex-direction: column;
-  gap: 4px;
+  gap: 5px;
 }
-.cardTitle {
+.rowTitle {
   display: flex;
   align-items: center;
-  gap: 6px;
+  gap: 8px;
   font-size: var(--font-size-sm);
   font-weight: var(--font-weight-semibold);
   color: var(--color-text-primary);
   line-height: 1.4;
+  flex-wrap: wrap;
 }
-.listenIcon { color: var(--color-primary); flex-shrink: 0; }
+.typeTag {
+  display: inline-block;
+  padding: 2px 9px;
+  border-radius: var(--radius-pill);
+  font-size: 11px;
+  font-weight: var(--font-weight-semibold);
+  font-family: var(--font-family-base);
+  line-height: 1.6;
+  flex-shrink: 0;
+}
+.typeTagListen { background: #ede9fe; color: #7c3aed; }
+.typeTagRead   { background: #dcfce7; color: #16a34a; }
+.typeTagTest   { background: #fef3c7; color: #d97706; }
 
-.cardMeta {
+/* Meta strip */
+.rowMeta {
   display: flex;
   align-items: center;
   gap: 6px;
@@ -158,59 +136,144 @@
   color: var(--color-text-secondary);
   flex-wrap: wrap;
 }
+.metaItem {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
 .metaDot {
   width: 3px; height: 3px;
   border-radius: 50%;
   background: var(--color-text-tertiary);
   flex-shrink: 0;
 }
+.metaRed { color: #dc2626; font-weight: var(--font-weight-semibold); }
 
-/* Inline meta tags */
-.metaTagRed, .metaTagAmber, .metaTagGreen, .metaTagNeutral {
-  display: inline-flex;
+/* Progress bar */
+.progressWrap {
+  display: flex;
   align-items: center;
-  gap: 3px;
-  font-weight: var(--font-weight-semibold);
+  gap: 8px;
+  margin-top: 2px;
 }
-.metaTagRed    { color: #dc2626; }
-.metaTagAmber  { color: #d97706; }
-.metaTagGreen  { color: #059669; }
-.metaTagNeutral{ color: var(--color-text-secondary); }
+.progressBar {
+  flex: 1;
+  max-width: 200px;
+  height: 5px;
+  border-radius: 3px;
+  background: #e5e7eb;
+  overflow: hidden;
+}
+.progressFill {
+  height: 100%;
+  border-radius: 3px;
+  background: var(--gradient-primary);
+  transition: width 0.3s;
+}
+.progressLabel {
+  font-size: 11px;
+  color: var(--color-text-secondary);
+  white-space: nowrap;
+}
+.progressPct {
+  font-size: 11px;
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-primary);
+}
 
-/* Action area */
-.cardAction { flex-shrink: 0; }
+/* ── Action column ── */
+.rowAction {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 8px;
+  flex-shrink: 0;
+  min-width: 130px;
+}
 
-.actionBtn {
-  display: inline-flex;
+/* Status badges */
+.statusBadge {
+  display: inline-block;
+  padding: 2px 10px;
+  border-radius: var(--radius-pill);
+  font-size: 11px;
+  font-weight: var(--font-weight-semibold);
+  font-family: var(--font-family-base);
+  border: 1px solid;
+  line-height: 1.7;
+  white-space: nowrap;
+}
+.statusPending {
+  color: var(--color-primary);
+  border-color: rgba(79,70,229,0.3);
+  background: rgba(79,70,229,0.06);
+}
+.statusOverdue {
+  color: #dc2626;
+  border-color: rgba(220,38,38,0.3);
+  background: rgba(220,38,38,0.05);
+}
+
+/* Graded section */
+.statusGraded {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 3px;
+}
+.scoreRow {
+  display: flex;
   align-items: center;
   gap: 4px;
-  padding: 7px 15px;
+  font-size: var(--font-size-xs);
+  color: var(--color-text-secondary);
+}
+.scoreRow strong {
+  color: var(--color-text-primary);
+  font-size: var(--font-size-sm);
+}
+.starIcon { color: #f59e0b; }
+.scoreLabel {
+  font-size: 11px;
+  color: var(--color-text-secondary);
+}
+
+/* Action buttons */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  padding: 6px 16px;
   border-radius: var(--radius-pill);
   font-family: var(--font-family-base);
   font-size: var(--font-size-xs);
   font-weight: var(--font-weight-semibold);
+  cursor: pointer;
   white-space: nowrap;
-  pointer-events: none; /* clicks handled by card */
+  border: 1px solid transparent;
+  transition: opacity 0.15s, box-shadow 0.15s;
+  line-height: 1.5;
 }
-.actionBtnPrimary {
+.btn:hover { opacity: 0.85; }
+.btnPrimary {
   background: var(--gradient-primary);
   color: #fff;
-  box-shadow: 0 2px 8px rgba(33,12,174,0.20);
+  box-shadow: 0 2px 8px rgba(79,70,229,0.22);
 }
-.actionBtnRed {
+.btnDanger {
   background: linear-gradient(135deg, #ef4444, #dc2626);
   color: #fff;
-  box-shadow: 0 2px 8px rgba(220,38,38,0.20);
+  box-shadow: 0 2px 8px rgba(220,38,38,0.2);
 }
-.actionBtnGhost {
-  background: rgba(79,70,229,0.08);
-  color: var(--color-primary);
-  border: 1px solid rgba(79,70,229,0.2);
-}
-.actionBtnOutline {
+.btnOutline {
   background: transparent;
-  color: var(--color-text-secondary);
-  border: 1px solid var(--color-border);
+  color: var(--color-primary);
+  border-color: rgba(79,70,229,0.3);
+}
+.btnOutline:hover {
+  background: rgba(79,70,229,0.06);
+  opacity: 1;
 }
 
 /* ════════════════════════
@@ -237,9 +300,9 @@
 }
 
 /* ── Responsive ── */
-@media (max-width: 600px) {
-  .hero  { flex-direction: column; align-items: flex-start; }
-  .card  { flex-wrap: wrap; }
-  .cardAction { width: 100%; }
-  .actionBtn  { width: 100%; justify-content: center; pointer-events: auto; }
+@media (max-width: 640px) {
+  .hero        { flex-direction: column; align-items: flex-start; }
+  .row         { flex-wrap: wrap; }
+  .rowAction   { min-width: auto; align-items: flex-start; flex-direction: row; flex-wrap: wrap; }
+  .progressBar { max-width: 100%; }
 }

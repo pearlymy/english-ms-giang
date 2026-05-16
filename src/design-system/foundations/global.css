@@ -3,34 +3,45 @@
 @import url('https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;500;600;700&display=swap');
 
 :root {
-  /* Colors: Cyan → Deep Indigo Gradient Palette */
-  --color-primary: #210cae;
-  --color-primary-hover: #1a0a8a;
-  --color-primary-active: #130875;
-  --color-primary-subtle: #e0f9fd;
-  --color-primary-accent: #4dc9e6;
-  --color-primary-accent-border: #4dc9e6;
-  --color-on-primary: #FFFFFF;
+  /* Colors: Indigo → Violet → Cyan Gradient Palette */
+  --color-primary:              #4f46e5;
+  --color-primary-hover:        #3730a3;
+  --color-primary-active:       #2e27a0;
+  --color-primary-subtle:       #eef2ff;
+  --color-primary-accent:       #06b6d4;
+  --color-primary-accent-border:#06b6d4;
+  --color-on-primary:           #FFFFFF;
 
-  /* Brand Gradient */
-  --gradient-primary: linear-gradient(135deg, #4dc9e6 0%, #210cae 100%);
-  --gradient-primary-hover: linear-gradient(135deg, #38bfdc 0%, #1a0a8a 100%);
-  --gradient-hero-bg: linear-gradient(135deg, #e0f9fd 0%, #ede9fe 50%, #ffffff 100%);
+  /* Extended palette aliases */
+  --color-purple:               #7c3aed;
+  --color-cyan:                 #06b6d4;
+  --color-indigo-dark:          #3730a3;
+
+  /* Brand Gradient — Indigo → Violet → Cyan */
+  --gradient-primary:       linear-gradient(135deg, #4f46e5 0%, #7c3aed 60%, #06b6d4 100%);
+  --gradient-primary-hover: linear-gradient(135deg, #3730a3 0%, #6d28d9 60%, #0891b2 100%);
+  --gradient-hero-bg:       linear-gradient(135deg, #eef2ff 0%, #f5f3ff 50%, #ffffff 100%);
+
+  /* App Shell Header Gradient */
+  --gradient-app-header:    linear-gradient(135deg, #3730a3 0%, #4f46e5 40%, #7c3aed 75%, #06b6d4 100%);
+  /* App Shell Gradient (kept as token, NOT used as full-page bg anymore) */
+  --gradient-app-bg:        linear-gradient(145deg, #3730a3 0%, #4f46e5 35%, #7c3aed 70%, #06b6d4 100%);
 
   /* Glow / Shadow Tokens */
-  --shadow-primary-glow: 0 24px 48px -8px rgba(33, 12, 174, 0.22);
-  --shadow-primary-hover-glow: 0 12px 28px rgba(33, 12, 174, 0.12);
-  --shadow-float: 0 20px 40px rgba(0, 0, 0, 0.12);
-  --shadow-float-sm: 0 16px 32px rgba(0, 0, 0, 0.10);
-  --shadow-form: 0 8px 32px rgba(33, 12, 174, 0.08);
-  --shadow-testimonial-hover: 0 8px 24px rgba(33, 12, 174, 0.08);
+  --shadow-primary-glow:        0 20px 40px -8px rgba(79, 70, 229, 0.25);
+  --shadow-primary-hover-glow:  0 12px 28px rgba(79, 70, 229, 0.15);
+  --shadow-float:               0 20px 40px rgba(0, 0, 0, 0.10);
+  --shadow-float-sm:            0 16px 32px rgba(0, 0, 0, 0.08);
+  --shadow-form:                0 8px 32px rgba(79, 70, 229, 0.08);
+  --shadow-testimonial-hover:   0 8px 24px rgba(79, 70, 229, 0.08);
 
   /* Neutrals & Surfaces */
-  --color-background: #F9FAFB;
-  --color-surface: #FFFFFF;
-  --color-surface-hover: #F3F4F6;
-  --color-surface-alt: #F3F4F6;
-  --color-overlay: rgba(15,23,42,0.48);
+  --color-background:    #f8fafc;
+  --color-bg:            #f8fafc;   /* alias */
+  --color-surface:       #ffffff;
+  --color-surface-hover: #f3f4f6;
+  --color-surface-alt:   #f3f4f6;
+  --color-overlay:       rgba(15,23,42,0.48);
 
   /* Typography Colors */
   --color-text-primary: #111827;
@@ -56,6 +67,46 @@
   --color-on-gradient-glass-bg: rgba(255, 255, 255, 0.12);
   --color-on-gradient-glass-border: rgba(255, 255, 255, 0.20);
   --color-stat-divider: rgba(77, 201, 230, 0.4);
+
+  /* ── Glassmorphism tokens ──────────────────────────────────── */
+  --glass-bg:            rgba(255, 255, 255, 0.72);
+  --glass-bg-strong:     rgba(255, 255, 255, 0.95);
+  --glass-bg-subtle:     rgba(255, 255, 255, 0.45);
+  --glass-bg-on-dark:    rgba(255, 255, 255, 0.10);
+  --glass-border:        rgba(255, 255, 255, 0.35);
+  --glass-border-strong: rgba(255, 255, 255, 0.55);
+  --glass-blur:          blur(20px);
+  --glass-blur-sm:       blur(10px);
+  --glass-blur-xs:       blur(6px);
+  --glass-shadow:        0 8px 32px rgba(79, 70, 229, 0.08), 0 2px 8px rgba(0, 0, 0, 0.05);
+  --glass-shadow-strong: 0 16px 48px rgba(79, 70, 229, 0.12), 0 4px 16px rgba(0, 0, 0, 0.07);
+
+  /* ── Gradient Surface tokens ───────────────────────────────── */
+  --gradient-page-bg:      linear-gradient(160deg, #eef2ff 0%, #f5f3ff 40%, #f9fafb 100%);
+  --gradient-card:         linear-gradient(135deg, #ffffff 0%, #fafbff 100%);
+  --gradient-card-hover:   linear-gradient(135deg, #fafbff 0%, #f0f4ff 100%);
+  --gradient-sidebar-dark: linear-gradient(180deg, #1e1b4b 0%, #161432 55%, #0f172a 100%);
+  --gradient-hero-overlay: radial-gradient(ellipse 70% 80% at 90% 50%, rgba(255,255,255,0.09) 0%, transparent 70%);
+  --gradient-success:      linear-gradient(135deg, #059669 0%, #10b981 100%);
+  --gradient-warning:      linear-gradient(135deg, #d97706 0%, #f59e0b 100%);
+  --gradient-error:        linear-gradient(135deg, #dc2626 0%, #ef4444 100%);
+
+  /* ── Component-level tokens ────────────────────────────────── */
+  --btn-primary-shadow:        0 4px 14px rgba(79, 70, 229, 0.30);
+  --btn-primary-shadow-hover:  0 6px 20px rgba(79, 70, 229, 0.42);
+  --card-shadow:               0 1px 3px rgba(0,0,0,0.04), 0 4px 16px rgba(0,0,0,0.04);
+  --card-shadow-hover:         0 4px 12px rgba(0,0,0,0.06), 0 12px 32px rgba(0,0,0,0.08);
+  --card-border-radius:        var(--radius-2xl);
+
+  /* ── Sidebar dark tokens ───────────────────────────────────── */
+  --sidebar-bg:              var(--gradient-sidebar-dark);
+  --sidebar-text:            #cbd5e1;
+  --sidebar-text-active:     #ffffff;
+  --sidebar-text-hover:      #f1f5f9;
+  --sidebar-item-hover:      rgba(255, 255, 255, 0.08);
+  --sidebar-item-active:     rgba(6, 182, 212, 0.15);
+  --sidebar-border:          rgba(255, 255, 255, 0.07);
+  --sidebar-accent:          #06b6d4;
 
   /* Typography */
   --font-family-base: "Google Sans", "Open Sans", system-ui, -apple-system, sans-serif;

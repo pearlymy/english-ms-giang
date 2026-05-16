@@ -3,22 +3,38 @@ import { supabase } from '../../lib/supabase';
 /* ── Field mapping helpers ─────────────────────────────────────────────── */
 
 /** Map một question row từ DB về dạng app dùng */
-const questionToApp = (row) => ({
-  id:           row.id,
-  text:         row.text,
-  options:      typeof row.options === 'string' ? JSON.parse(row.options) : row.options,
-  correctIdx:   row.correct_idx,
-  explanation:  row.explanation ?? '',
-  order:        row.order_index,
-  audioGroupId: row.audio_group_id ?? null,
-});
+const questionToApp = (row) => {
+  const parsedOptions = typeof row.options === 'string' ? JSON.parse(row.options) : row.options;
+  const isRichObject = parsedOptions && typeof parsedOptions === 'object' && parsedOptions.type;
+  
+  if (isRichObject) {
+    // Nếu options chính là full UI object được đóng gói, ta trải nó ra, nhưng ghi đè id bằng id thật từ DB
+    return {
+      ...parsedOptions,
+      id: row.id, // Id từ Supabase (UUID)
+      // Các trường phụ trợ nếu cần
+      audioGroupId: row.audio_group_id ?? parsedOptions.audioGroupId ?? null,
+    };
+  }
+
+  // Fallback cấu trúc cũ
+  return {
+    id: row.id,
+    text: row.text,
+    options: parsedOptions,
+    correctIdx: row.correct_idx,
+    explanation: row.explanation ?? '',
+    order: row.order_index,
+    audioGroupId: row.audio_group_id ?? null,
+  };
+};
 
 /** Map một audio_group row từ DB về dạng app dùng */
 const audioGroupToApp = (row, questions) => ({
-  id:          row.id,
-  label:       row.label,
-  script:      row.script ?? '',
-  order:       row.order_index,
+  id: row.id,
+  label: row.label,
+  script: row.script ?? '',
+  order: row.order_index,
   questionIds: questions
     .filter((q) => q.audio_group_id === row.id)
     .map((q) => q.id),
@@ -26,7 +42,7 @@ const audioGroupToApp = (row, questions) => ({
 
 /** Map một assignment row từ DB về dạng app dùng */
 const assignmentToApp = (row) => {
-  const questions   = (row.questions   ?? []).map(questionToApp);
+  const questions = (row.questions ?? []).map(questionToApp);
   const audioGroups = (row.audio_groups ?? []).map((g) =>
     audioGroupToApp(g, row.questions ?? [])
   );
@@ -34,37 +50,65 @@ const assignmentToApp = (row) => {
   // Lấy danh sách class đã được giao
   const assignedClassIds = (row.assignment_classes ?? []).map((ac) => ac.class_id);
 
+  // Decode all settings (status + test config) from subject field
+  let settings = {};
+  if (row.subject && row.subject.startsWith('{')) {
+    try {
+      settings = JSON.parse(row.subject);
+    } catch (e) { }
+  }
+
   return {
-    id:               row.id,
-    courseId:         row.course_id,
-    chapterId:        row.chapter_id ?? null,
-    type:             row.type,
-    audioMode:        row.audio_mode ?? 'single',
-    title:            row.title,
-    subject:          row.subject ?? '',
-    classGroup:       row.class_group ?? '',
-    dueDate:          row.due_date ?? null,
-    script:           row.script ?? '',
-    status:           'published',
+    id: row.id,
+    courseId: row.course_id,
+    chapterId: row.chapter_id ?? null,
+    type: row.type,
+    audioMode: row.audio_mode ?? 'single',
+    title: row.title,
+    classGroup: row.class_group ?? '',
+    dueDate: row.due_date ?? null,
+    script: row.script ?? '',
+    // status and test settings decoded from subject JSON
+    status: settings.status ?? 'published',
+    isTest: settings.isTest ?? false,
+    timeLimitMin: settings.timeLimitMin ?? null,
+    maxAttempts: settings.maxAttempts ?? 1,
+    showAnswer: settings.showAnswer ?? 'Có',
+    shuffle: settings.shuffle ?? false,
     questions,
-    audioGroups:      audioGroups.length ? audioGroups : undefined,
+    audioGroups: audioGroups.length ? audioGroups : undefined,
     assignedClassIds,
-    createdAt:        row.created_at,
+    createdAt: row.created_at,
   };
 };
 
-const assignmentToDB = (data) => ({
-  id:          data.id,
-  course_id:   data.courseId ?? null,
-  chapter_id:  data.chapterId ?? null,
-  type:        data.type,
-  audio_mode:  data.audioMode ?? 'single',
-  title:       data.title,
-  subject:     data.subject ?? null,
-  class_group: data.classGroup ?? null,
-  due_date:    data.dueDate ?? null,
-  script:      data.script ?? null,
-});
+const assignmentToDB = (data) => {
+  // Encode ALL settings (status + test config) into subject JSON
+  // because the DB is missing status, is_test, time_limit_min, etc.
+  const settingsObj = {
+    status: data.status ?? 'published',
+    isTest: data.isTest ?? false,
+    timeLimitMin: data.timeLimitMin ?? null,
+    maxAttempts: data.maxAttempts ?? 1,
+    showAnswer: data.showAnswer ?? 'Có',
+    shuffle: data.shuffle ?? false,
+  };
+
+  return {
+    id: data.id,
+    course_id: data.courseId ?? null,
+    chapter_id: data.chapterId ?? null,
+    type: data.type ?? 'quiz',
+    audio_mode: data.audioMode ?? 'single',
+    title: data.title,
+    subject: JSON.stringify(settingsObj),
+    class_group: data.classGroup ?? null,
+    due_date: data.dueDate ?? null,
+    script: data.script ?? null,
+    // NOTE: status, is_test, time_limit_min, max_attempts, show_answer, shuffle
+    // do NOT exist as columns - they live inside subject JSON above
+  };
+};
 
 /* ── SELECT fragment used in every query ─────────────────────────────────── */
 const ASSIGNMENT_SELECT = `
@@ -123,15 +167,32 @@ export const assignmentApi = {
   /** Cập nhật thông tin bài tập (title, dueDate, v.v.) */
   async updateAssignment(id, patch) {
     const dbPatch = {};
-    if (patch.title      !== undefined) dbPatch.title       = patch.title;
-    if (patch.dueDate    !== undefined) dbPatch.due_date     = patch.dueDate;
-    if (patch.chapterId  !== undefined) dbPatch.chapter_id   = patch.chapterId;
-    if (patch.courseId   !== undefined) dbPatch.course_id    = patch.courseId;
-    if (patch.subject    !== undefined) dbPatch.subject      = patch.subject;
-    if (patch.classGroup !== undefined) dbPatch.class_group  = patch.classGroup;
-    if (patch.script     !== undefined) dbPatch.script       = patch.script;
-    if (patch.audioMode  !== undefined) dbPatch.audio_mode   = patch.audioMode;
-    if (patch.type       !== undefined) dbPatch.type         = patch.type;
+    if (patch.title !== undefined) dbPatch.title = patch.title;
+    if (patch.dueDate !== undefined) dbPatch.due_date = patch.dueDate;
+    if (patch.chapterId !== undefined) dbPatch.chapter_id = patch.chapterId;
+    if (patch.courseId !== undefined) dbPatch.course_id = patch.courseId;
+    if (patch.classGroup !== undefined) dbPatch.class_group = patch.classGroup;
+    if (patch.script !== undefined) dbPatch.script = patch.script;
+    if (patch.audioMode !== undefined) dbPatch.audio_mode = patch.audioMode;
+    if (patch.type !== undefined) dbPatch.type = patch.type;
+    // NOTE: status, is_test, time_limit_min, etc. do NOT exist as real columns.
+    // They are encoded into the subject JSON field.
+
+    // Encode status + test settings into subject JSON whenever any of them changes
+    const needSubjectUpdate = patch.status !== undefined || patch.isTest !== undefined ||
+                              patch.timeLimitMin !== undefined || patch.maxAttempts !== undefined ||
+                              patch.showAnswer !== undefined || patch.shuffle !== undefined;
+    if (needSubjectUpdate) {
+      const settingsObj = {
+        status: patch.status ?? 'published',
+        isTest: patch.isTest ?? false,
+        timeLimitMin: patch.timeLimitMin ?? null,
+        maxAttempts: patch.maxAttempts ?? 1,
+        showAnswer: patch.showAnswer ?? 'Có',
+        shuffle: patch.shuffle ?? false,
+      };
+      dbPatch.subject = JSON.stringify(settingsObj);
+    }
 
     const { data, error } = await supabase
       .from('assignments')

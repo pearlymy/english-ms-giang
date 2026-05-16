@@ -7,8 +7,8 @@
 .page {
   display: flex;
   flex-direction: column;
-  gap: var(--spacing-xl);
-  padding: var(--spacing-2xl) var(--spacing-2xl) var(--spacing-3xl);
+  gap: 1.25rem;
+  padding: 2rem 1.5rem;
   max-width: 1200px;
   margin: 0 auto;
   /* CENTER horizontally */
@@ -20,19 +20,18 @@
 .hero {
   display: flex;
   align-items: center;
-  gap: var(--spacing-xl);
+  gap: 1.25rem;
   background: var(--gradient-primary);
   border-radius: var(--radius-2xl);
-  padding: 1.75rem 2.25rem;
+  padding: 1.25rem 1.5rem;
   color: #fff;
   box-shadow: var(--shadow-primary-glow);
 }
 
 .heroIconWrap {
-  width: 56px;
-  height: 56px;
-  background: rgba(255, 255, 255, 0.18);
-  border: 1px solid rgba(255, 255, 255, 0.28);
+  width: 48px;
+  height: 48px;
+  background: rgba(255, 255, 255, 0.15);
   border-radius: var(--radius-xl);
   display: flex;
   align-items: center;
@@ -42,12 +41,12 @@
 }
 
 .heroTitle {
-  font-size: var(--font-size-2xl);
+  font-size: 1.3rem;
   font-weight: var(--font-weight-bold);
-  letter-spacing: -0.025em;
-  margin: 0 0 0.25rem;
+  margin: 0 0 0.2rem;
+  letter-spacing: -0.01em;
   color: #fff;
-  font-family: var(--font-family-display, var(--font-family-base));
+  font-family: var(--font-family-display);
 }
 
 .heroSub {
@@ -186,6 +185,7 @@
 .headerFilterTrigger {
   display: inline-flex;
   align-items: center;
+  flex-wrap: nowrap;
   gap: 4px;
   cursor: pointer;
   padding: 2px 4px;
@@ -198,16 +198,16 @@
 }
 
 .headerFilterLabel {
-  font-size: 11px;
-  font-weight: var(--font-weight-bold);
-  color: rgba(255, 255, 255, 0.82);
-  text-transform: uppercase;
-  letter-spacing: 0.08em;
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: #4f46e5;
+  text-transform: none;
+  letter-spacing: 0;
   white-space: nowrap;
 }
 
 .headerFilterChevron {
-  color: rgba(255, 255, 255, 0.65);
+  color: #6b7280;
   flex-shrink: 0;
   transition: transform var(--motion-duration-fast);
 }
@@ -222,9 +222,9 @@
   width: 6px;
   height: 6px;
   border-radius: 50%;
-  background: #fff;
+  background: var(--color-primary);
   flex-shrink: 0;
-  box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.35);
+  box-shadow: 0 0 0 2px rgba(79, 70, 229, 0.2);
   animation: dotPopIn 0.22s cubic-bezier(0.34, 1.56, 0.64, 1) both;
 }
 
@@ -364,7 +364,8 @@
 /* ── Column definitions ──────────────────────────────────────────────── */
 .tableRow {
   display: grid;
-  grid-template-columns: 32px 44px minmax(0, 2fr) minmax(0, 1fr) minmax(0, 0.9fr) minmax(0, 1.3fr) minmax(0, 0.85fr) minmax(0, 1.1fr) 90px;
+  /* checkbox | STT | Học viên | Username | SĐT | Mã Lớp | Tên Lớp | Trạng thái | Thao tác */
+  grid-template-columns: 32px 44px minmax(0, 2fr) minmax(0, 1fr) minmax(140px, 1fr) minmax(0, 1fr) minmax(0, 1.4fr) minmax(0, 1.1fr) 90px;
   align-items: center;
   gap: var(--spacing-md);
   padding: 0.9rem 1.5rem;
@@ -384,15 +385,15 @@
 
 /* ── Header row — gradient ───────────────────────────────────────────── */
 .tableHeader {
-  background: var(--gradient-primary);
-  padding-top: 0.7rem;
-  padding-bottom: 0.7rem;
-  font-size: 11px;
-  font-weight: var(--font-weight-bold);
-  color: rgba(255, 255, 255, 0.82);
-  text-transform: uppercase;
-  letter-spacing: 0.08em;
-  border-bottom: none;
+  background: #eff6ff;
+  padding-top: 0.75rem;
+  padding-bottom: 0.75rem;
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: #4f46e5;
+  text-transform: none;
+  letter-spacing: 0;
+  border-bottom: 1px solid var(--color-border);
   border-top-left-radius: calc(var(--radius-2xl) - 1px);
   border-top-right-radius: calc(var(--radius-2xl) - 1px);
 }
@@ -411,6 +412,56 @@
   opacity: 0.8;
   display: block;
   width: 100%;
+}
+
+/* ── Mã lớp column: filter + sort button ─────────────────────────────── */
+.codeSortHeader {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  min-width: 0;
+}
+
+.sortDirBtn {
+  flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 22px;
+  height: 22px;
+  border-radius: var(--radius-md);
+  border: 1px solid rgba(255, 255, 255, 0.28);
+  background: rgba(255, 255, 255, 0.12);
+  color: rgba(255, 255, 255, 0.85);
+  cursor: pointer;
+  transition: all var(--motion-duration-fast) var(--motion-easing-standard);
+  padding: 0;
+}
+
+.sortDirBtn:hover {
+  background: rgba(255, 255, 255, 0.25);
+  border-color: rgba(255, 255, 255, 0.5);
+  color: #fff;
+}
+
+/* Sort chevron inside HeaderFilter trigger (Option B) */
+.sortInlineBtn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: rgba(255, 255, 255, 0.7);
+  cursor: pointer;
+  padding: 2px;
+  flex-shrink: 0;
+  background: transparent;
+  border: none;
+  border-radius: 4px;
+  transition: color var(--motion-duration-fast), background var(--motion-duration-fast);
+}
+
+.sortInlineBtn:hover {
+  color: #fff;
+  background: rgba(255, 255, 255, 0.15);
 }
 
 
@@ -1333,7 +1384,7 @@
 .tableHeader .sttCell {
   font-size: 11px;
   font-weight: var(--font-weight-bold);
-  color: rgba(255, 255, 255, 0.82);
+  color: #4f46e5;
   text-transform: uppercase;
   letter-spacing: 0.08em;
 }
@@ -1606,6 +1657,29 @@
   flex-wrap: wrap;
   gap: 6px;
   margin: var(--spacing-xs) 0;
+  max-height: 160px;
+  overflow-y: auto;
+  padding-right: 4px;
+  /* Custom scrollbar */
+  scrollbar-width: thin;
+  scrollbar-color: rgba(239, 68, 68, 0.3) transparent;
+}
+
+.bulkBlockedList::-webkit-scrollbar {
+  width: 4px;
+}
+
+.bulkBlockedList::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.bulkBlockedList::-webkit-scrollbar-thumb {
+  background: rgba(239, 68, 68, 0.3);
+  border-radius: 99px;
+}
+
+.bulkBlockedList::-webkit-scrollbar-thumb:hover {
+  background: rgba(239, 68, 68, 0.5);
 }
 
 .bulkBlockedTag {

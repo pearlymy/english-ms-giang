@@ -19,16 +19,24 @@ export const questionApi = {
     if (!questions || questions.length === 0) return [];
 
     // 3. Insert câu hỏi mới
-    const rows = questions.map((q, idx) => ({
-      id:             q.id,
-      assignment_id:  assignmentId,
-      audio_group_id: q.audioGroupId ?? null,
-      text:           q.text,
-      options:        Array.isArray(q.options) ? q.options : JSON.parse(q.options),
-      correct_idx:    q.correctIdx,
-      explanation:    q.explanation ?? null,
-      order_index:    idx + 1,
-    }));
+    const rows = questions.map((q, idx) => {
+      // Bảo toàn toàn bộ cấu trúc câu hỏi phong phú của UI vào column options dạng JSON
+      const fullQ = { ...q };
+      
+      // Nếu id là số (từ UI tạo tạm), bỏ đi để Supabase tự sinh UUID
+      const dbId = (typeof q.id === 'string' && q.id.length > 10) ? q.id : undefined;
+
+      return {
+        id: dbId,
+        assignment_id: assignmentId,
+        audio_group_id: q.audioGroupId ?? null,
+        text: q.content || q.text || '(Không có nội dung)',
+        options: fullQ, // Lưu TOÀN BỘ object vào options để không mất field nào (type, pairs, orderItems, v.v.)
+        correct_idx: q.correctIdx ?? 0,
+        explanation: q.explanation ?? null,
+        order_index: idx + 1,
+      };
+    });
 
     const { data, error } = await supabase
       .from('questions')
@@ -54,11 +62,11 @@ export const questionApi = {
 
     // 2. Insert groups mới
     const rows = audioGroups.map((g, idx) => ({
-      id:            g.id,
+      id: g.id,
       assignment_id: assignmentId,
-      label:         g.label,
-      script:        g.script ?? null,
-      order_index:   idx + 1,
+      label: g.label,
+      script: g.script ?? null,
+      order_index: idx + 1,
     }));
 
     const { data, error } = await supabase
@@ -78,3 +86,4 @@ export const questionApi = {
     if (error) throw error;
   },
 };
+

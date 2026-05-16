@@ -1,17 +1,19 @@
-/* Sidebar.module.css */
+/* Sidebar.module.css — Dark theme with Grade Accordion */
 
+/* ── Shell ── */
 .sidebar {
   width: 240px;
   height: 100vh;
   position: fixed;
   top: 0;
   left: 0;
-  background-color: var(--color-surface);
-  border-right: 1px solid var(--color-border);
+  background: var(--sidebar-bg);
+  border-right: none;
   display: flex;
   flex-direction: column;
   z-index: 50;
   gap: 0;
+  box-shadow: 4px 0 24px rgba(0, 0, 0, 0.18);
 }
 
 /* ── Logo ── */
@@ -20,8 +22,9 @@
   align-items: center;
   gap: var(--spacing-sm);
   padding: var(--spacing-xl) var(--spacing-lg);
-  border-bottom: 1px solid var(--color-border);
+  border-bottom: 1px solid var(--sidebar-border);
 }
+
 .logoIcon {
   width: 34px;
   height: 34px;
@@ -31,12 +34,14 @@
   align-items: center;
   justify-content: center;
   flex-shrink: 0;
+  box-shadow: 0 4px 12px rgba(77, 201, 230, 0.35);
 }
+
 .logoText {
   font-family: var(--font-family-base);
   font-size: var(--font-size-md);
   font-weight: var(--font-weight-bold);
-  color: var(--color-text-primary);
+  color: var(--sidebar-text-active);
   letter-spacing: -0.2px;
 }
 
@@ -48,8 +53,13 @@
   display: flex;
   flex-direction: column;
   gap: 2px;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(255,255,255,0.12) transparent;
 }
+.nav::-webkit-scrollbar { width: 4px; }
+.nav::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.12); border-radius: 4px; }
 
+/* ── Top-level nav item ── */
 .item {
   display: flex;
   align-items: center;
@@ -59,159 +69,218 @@
   font-family: var(--font-family-base);
   font-size: var(--font-size-sm);
   font-weight: var(--font-weight-medium);
-  color: var(--color-text-secondary);
+  color: var(--sidebar-text);
   text-decoration: none;
   cursor: pointer;
   transition: background 0.15s ease, color 0.15s ease;
   user-select: none;
-}
-.item:hover {
-  background: var(--color-surface-alt);
-  color: var(--color-text-primary);
-}
-/* Active: gradient pill */
-.itemActive {
-  background: var(--gradient-primary) !important;
-  color: #fff !important;
-  font-weight: var(--font-weight-semibold);
-}
-.itemActive:hover {
-  opacity: 0.92;
+  border: 1px solid transparent;
 }
 
-/* ── SubMenu ── */
+.item:hover {
+  background: var(--sidebar-item-hover);
+  color: var(--sidebar-text-hover);
+}
+
+.itemActive {
+  background: var(--sidebar-item-active) !important;
+  color: var(--sidebar-text-active) !important;
+  font-weight: var(--font-weight-semibold);
+  border-color: transparent !important;
+  border-left: 3px solid var(--sidebar-accent) !important;
+  padding-left: calc(var(--spacing-md) - 3px);
+}
+
+.itemActive:hover { opacity: 0.95; }
+
+/* ── Chevron (top-level) ── */
 .chevron {
   margin-left: auto;
   transition: transform 0.2s ease;
-  opacity: 0.6;
+  opacity: 0.4;
+  color: var(--sidebar-text);
 }
-.item:hover .chevron {
-  opacity: 1;
-}
-.itemActive .chevron {
-  opacity: 1;
-}
-.chevronOpen {
-  transform: rotate(90deg);
-}
+.item:hover .chevron { opacity: 0.8; }
+.itemActive .chevron { opacity: 0.7; }
+.chevronOpen { transform: rotate(90deg); }
 
+/* ── SubMenu container ── */
 .subMenuWrap {
   display: flex;
   flex-direction: column;
-  gap: 1px;
-  margin-bottom: 6px;
+  gap: 2px;
+  padding: 2px 0 4px 0;
 }
 
-.subMenuGroup {
+/* ═══════════════════════════════════════════════════════════════════════
+   GRADE ACCORDION — mỗi khối lớp là 1 accordion riêng
+═══════════════════════════════════════════════════════════════════════ */
+
+.gradeAccordion {
+  border-radius: 8px;
+  overflow: hidden;
+  margin-bottom: 2px;
+}
+
+/* ── Grade Header Button: "Tiếng Anh Lớp 1" ── */
+.gradeHeader {
+  width: 100%;
   display: flex;
   align-items: center;
-  gap: 6px;
-  padding: 10px 12px 3px 12px;
-  font-size: 10px;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.8px;
-  color: var(--color-text-tertiary);
-  margin-top: 6px;
-  border-top: 1px solid var(--color-border);
+  gap: 7px;
+  padding: 7px 10px 7px 12px;
+  border-radius: 8px;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  text-align: left;
+  transition: background 0.15s ease;
+  user-select: none;
 }
 
-.subMenuGroup:first-child {
-  margin-top: 0;
-  border-top: none;
-  padding-top: 4px;
+.gradeHeader:hover {
+  background: rgba(255, 255, 255, 0.05);
 }
 
-.subMenuGroupDot {
+.gradeHeaderOpen {
+  background: rgba(255, 255, 255, 0.06);
+}
+
+.gradeHeaderDot {
   width: 7px;
   height: 7px;
   border-radius: 50%;
   flex-shrink: 0;
+  opacity: 0.75;
+  transition: opacity 0.15s;
 }
+.gradeHeader:hover .gradeHeaderDot { opacity: 1; }
 
-.subMenuGroupBadge {
-  margin-left: auto;
+.gradeHeaderLabel {
+  font-size: 12px;
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.65);
+  letter-spacing: 0.1px;
+  flex: 1;
+  transition: color 0.15s;
+}
+.gradeHeader:hover .gradeHeaderLabel { color: rgba(255, 255, 255, 0.9); }
+.gradeHeaderOpen .gradeHeaderLabel   { color: rgba(255, 255, 255, 0.85); }
+
+/* Badge số lớp */
+.gradeHeaderCount {
   font-size: 10px;
   font-weight: 600;
-  background: var(--color-border);
+  color: rgba(255, 255, 255, 0.22);
+  background: rgba(255, 255, 255, 0.07);
   border-radius: 20px;
   padding: 1px 6px;
-  color: var(--color-text-tertiary);
+  transition: color 0.15s, background 0.15s;
+}
+.gradeHeader:hover .gradeHeaderCount { color: rgba(255,255,255,0.4); background: rgba(255,255,255,0.10); }
+.gradeHeaderOpen .gradeHeaderCount   { color: rgba(255,255,255,0.4); background: rgba(255,255,255,0.10); }
+
+/* Chevron của grade accordion */
+.gradeChevron {
+  flex-shrink: 0;
+  color: rgba(255, 255, 255, 0.25);
+  transition: transform 0.22s ease, color 0.15s;
+}
+.gradeHeader:hover .gradeChevron { color: rgba(255, 255, 255, 0.5); }
+.gradeChevronOpen {
+  transform: rotate(90deg);
+  color: rgba(255, 255, 255, 0.5) !important;
 }
 
-.subItem {
+/* ── Collapsible children container ── */
+.gradeChildren {
+  display: grid;
+  grid-template-rows: 0fr;
+  transition: grid-template-rows 0.22s ease;
+}
+
+.gradeChildrenOpen {
+  grid-template-rows: 1fr;
+}
+
+.gradeChildrenInner {
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  padding: 0 0 0 0;
+}
+
+/* ── Class item: "Lớp 1 - Public" ── */
+.classItem {
   display: flex;
   align-items: center;
   gap: 8px;
-  padding: 5px 12px 5px 12px;
-  border-radius: var(--radius-md);
+  padding: 5px 10px 5px 20px;
+  border-radius: 7px;
   font-family: var(--font-family-base);
-  font-size: var(--font-size-sm);
-  font-weight: var(--font-weight-medium);
-  color: var(--color-text-secondary);
+  font-size: 12.5px;
+  font-weight: 450;
+  color: rgba(255, 255, 255, 0.42);
   text-decoration: none;
-  transition: background 0.15s ease, color 0.15s ease;
+  transition: background 0.13s ease, color 0.13s ease;
   border-left: 2px solid transparent;
-}
-.subItem:hover {
-  background: var(--color-surface-alt);
-  color: var(--color-text-primary);
+  margin: 0 4px;
 }
 
-.subItemDot {
-  width: 6px;
-  height: 6px;
-  border-radius: 50%;
+.classItem:hover {
+  background: rgba(255, 255, 255, 0.06);
+  color: rgba(255, 255, 255, 0.80);
+}
+
+/* Vertical line / dash indicator */
+.classItemLine {
+  width: 12px;
+  height: 1.5px;
+  border-radius: 2px;
   flex-shrink: 0;
-  opacity: 0.4;
-  transition: opacity 0.15s;
+  opacity: 0.2;
+  transition: opacity 0.13s, width 0.13s;
 }
-.subItem:hover .subItemDot {
-  opacity: 0.7;
+.classItem:hover .classItemLine { opacity: 0.55; width: 14px; }
+
+.classItemName {
+  flex: 1;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
-.subItemActive {
-  background: var(--color-primary-subtle);
-  color: var(--color-primary);
-  font-weight: var(--font-weight-bold);
-  border-left-color: var(--color-primary);
+/* Active */
+.classItemActive {
+  background: rgba(var(--sidebar-accent-rgb, 99, 202, 253), 0.10) !important;
+  color: var(--sidebar-accent) !important;
+  font-weight: 600;
+  border-left-color: var(--sidebar-accent);
 }
-.subItemActive .subItemDot {
-  opacity: 1;
-}
-
+.classItemActive .classItemLine { opacity: 1; width: 14px; }
 
 /* ── Footer ── */
 .foot {
   padding: var(--spacing-sm);
-  border-top: 1px solid var(--color-border);
+  border-top: 1px solid var(--sidebar-border);
 }
+
 .itemSmall {
   font-size: var(--font-size-xs);
-  color: var(--color-text-tertiary);
-  opacity: 0.75;
-}
-.itemSmall:hover {
+  color: rgba(255, 255, 255, 0.30);
   opacity: 1;
 }
+.itemSmall:hover { color: var(--sidebar-text-hover); }
 
 /* ══════════════════════════════════════════════════════
    MOBILE BOTTOM NAVIGATION BAR
-   Chỉ hiện trên mobile (≤768px), sidebar bị ẩn đi
 ══════════════════════════════════════════════════════ */
-
-/* Ẩn bottom nav mặc định trên desktop */
-.bottomNav {
-  display: none;
-}
+.bottomNav { display: none; }
 
 @media (max-width: 768px) {
-  /* Ẩn sidebar trên mobile */
-  .sidebar {
-    display: none;
-  }
+  .sidebar { display: none; }
 
-  /* Hiện bottom nav bar */
   .bottomNav {
     display: flex;
     position: fixed;
@@ -219,11 +288,12 @@
     left: 0;
     right: 0;
     z-index: 100;
-    background: var(--color-surface);
-    border-top: 1px solid var(--color-border);
-    /* Hỗ trợ iPhone notch/safe area */
+    background: rgba(15, 15, 35, 0.95);
+    border-top: 1px solid rgba(255, 255, 255, 0.08);
     padding-bottom: env(safe-area-inset-bottom, 0px);
-    box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.08);
+    box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.25);
+    backdrop-filter: var(--glass-blur-sm);
+    -webkit-backdrop-filter: var(--glass-blur-sm);
   }
 
   .bottomNavItem {
@@ -235,23 +305,52 @@
     gap: 3px;
     padding: 10px 4px;
     text-decoration: none;
-    color: var(--color-text-tertiary);
+    color: rgba(255, 255, 255, 0.40);
     font-size: 10px;
     font-weight: var(--font-weight-medium);
     font-family: var(--font-family-base);
     transition: color 0.15s ease;
     min-height: 56px;
-    /* Vùng chạm đủ rộng cho ngón tay */
     min-width: 44px;
   }
-
-  .bottomNavItem:hover {
-    color: var(--color-text-secondary);
-  }
-
+  .bottomNavItem:hover { color: rgba(255, 255, 255, 0.70); }
   .bottomNavItemActive {
-    color: var(--color-primary);
+    color: var(--sidebar-accent);
     font-weight: var(--font-weight-semibold);
   }
 }
 
+/* ── Old subItem styles kept for backward compat ── */
+.subMenuGroup {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 10px 12px 3px 12px;
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+  color: rgba(255, 255, 255, 0.28);
+  margin-top: 6px;
+  border-top: 1px solid var(--sidebar-border);
+}
+.subMenuGroup:first-child { margin-top: 0; border-top: none; padding-top: 4px; }
+.subMenuGroupDot { width: 7px; height: 7px; border-radius: 50%; flex-shrink: 0; }
+.subMenuGroupBadge {
+  margin-left: auto; font-size: 10px; font-weight: 600;
+  background: rgba(255,255,255,0.10); border-radius: 20px;
+  padding: 1px 6px; color: rgba(255,255,255,0.40);
+}
+.subItem {
+  display: flex; align-items: center; gap: 8px;
+  padding: 5px 12px; border-radius: var(--radius-md);
+  font-family: var(--font-family-base); font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-medium); color: var(--sidebar-text);
+  text-decoration: none; transition: background 0.15s ease, color 0.15s ease;
+  border-left: 2px solid transparent;
+}
+.subItem:hover { background: var(--sidebar-item-hover); color: var(--sidebar-text-hover); }
+.subItemDot { width: 6px; height: 6px; border-radius: 50%; flex-shrink: 0; opacity: 0.3; transition: opacity 0.15s; }
+.subItem:hover .subItemDot { opacity: 0.7; }
+.subItemActive { background: var(--sidebar-item-active); color: var(--sidebar-accent) !important; font-weight: var(--font-weight-bold); border-left-color: var(--sidebar-accent); }
+.subItemActive .subItemDot { opacity: 1; }

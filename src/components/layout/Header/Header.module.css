@@ -1,7 +1,8 @@
 .header {
   height: 64px;
-  background-color: var(--color-surface);
-  border-bottom: 1px solid var(--color-border);
+  background: #ffffff;
+  border-bottom: 1px solid #e5e7eb;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.06);
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -23,8 +24,8 @@
   margin: 0;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  text-rendering: optimizeSpeed; /* Fix ClearType artifacts on Windows */
-  transform: translateZ(0); /* Force hardware acceleration to clean up text edges */
+  text-rendering: optimizeSpeed;
+  transform: translateZ(0);
 }
 
 .right {
@@ -45,7 +46,7 @@
 
 .iconBtn {
   background: transparent;
-  border: none;
+  border: 1px solid var(--color-border);
   cursor: pointer;
   color: var(--color-text-secondary);
   display: flex;
@@ -53,11 +54,13 @@
   justify-content: center;
   padding: var(--spacing-xs);
   border-radius: var(--radius-pill);
+  transition: background 0.15s ease, color 0.15s ease, border-color 0.15s ease;
 }
 
 .iconBtn:hover {
-  background-color: var(--color-surface-alt);
+  background: var(--color-surface-alt);
   color: var(--color-text-primary);
+  border-color: var(--color-border-strong);
 }
 
 /* ── Mobile responsive ── */

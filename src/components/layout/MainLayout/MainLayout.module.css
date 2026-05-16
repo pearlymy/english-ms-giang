@@ -1,7 +1,7 @@
 .layout {
   display: flex;
   min-height: 100vh;
-  background-color: var(--color-background);
+  background: var(--color-background);
   overflow-x: hidden;
 }
 
@@ -21,6 +21,7 @@
   min-height: 0;
   overflow-x: hidden;
   box-sizing: border-box;
+  background: transparent;
 }
 
 /* ── Mobile: ẩn sidebar, content full-width ── */

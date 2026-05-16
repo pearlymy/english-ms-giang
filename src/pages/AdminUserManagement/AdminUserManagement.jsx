@@ -10,9 +10,10 @@ import * as XLSX from 'xlsx';
 import {
   Users, BookOpen, Plus, Search,
   Eye, EyeOff, Pencil, KeyRound,
-  ToggleLeft, ToggleRight, ChevronDown, Trash2, X,
+  ToggleLeft, ToggleRight, ChevronDown, ChevronUp, Trash2, X,
   Upload, Download, FileSpreadsheet, CheckCircle2, AlertCircle, Loader2, Info,
   ArrowRightLeft, Lightbulb, Lock, Zap,
+  ArrowUp, ArrowDown, ArrowUpDown,
 } from 'lucide-react';
 
 import { Button } from '../../design-system/components/Button/Button';
@@ -61,8 +62,8 @@ const getInitials = (name) =>
 const removeDiacritics = (str) =>
   str ? str.normalize('NFD').replace(/\p{Diacritic}/gu, '').toLowerCase() : '';
 
-const AV_COLORS = ['#dbeafe', '#ede9fe', '#d1fae5', '#fce7f3', '#cffafe', '#fef3c7'];
-const AV_TEXT = ['#1d4ed8', '#6d28d9', '#065f46', '#9d174d', '#0e7490', '#92400e'];
+const AV_COLORS = ['#dbeafe', '#ede9fe', '#d1fae5', '#e0f2fe', '#cffafe', '#fef3c7'];
+const AV_TEXT = ['#1d4ed8', '#6d28d9', '#065f46', '#0369a1', '#0e7490', '#92400e'];
 
 
 /* ════════════════════════════════════════════════════════════════════════════
@@ -323,11 +324,12 @@ const StudentModal = ({ open, student, onClose, classes }) => {
 
     setSaving(true);
     try {
+      const payload = { ...form, classId: form.classId || null };
       if (isEdit) {
-        await updateStudent(student.id, form);
+        await updateStudent(student.id, payload);
         toast?.success(`Cập nhật thông tin học viên thành công`);
       } else {
-        await createStudent({ ...form, username: autoUsername || form.username });
+        await createStudent({ ...payload, username: autoUsername || form.username });
         toast?.success('Tạo học viên thành công');
       }
       onClose();
@@ -339,7 +341,10 @@ const StudentModal = ({ open, student, onClose, classes }) => {
     }
   };
 
-  const classOptions = classes.map((c) => ({ value: c.id, label: `${c.code} — ${c.name}` }));
+  const classOptions = [
+    { value: '', label: '— Không có lớp —' },
+    ...classes.map((c) => ({ value: c.id, label: `${c.code} — ${c.name}` })),
+  ];
 
   /* ── Render ── */
   return (
@@ -525,7 +530,7 @@ const RowMenu = ({ student, onEdit, onPassword, onToggle, onDelete }) => {
 /* ════════════════════════════════════════════════════════════════════════════
    INLINE HEADER FILTER — searchable dropdown
 ════════════════════════════════════════════════════════════════════════════ */
-const HeaderFilter = ({ label, options, value, onChange, searchable = false }) => {
+const HeaderFilter = ({ label, options, value, onChange, searchable = false, sortDir, onSortToggle }) => {
   const [open, setOpen] = useState(false);
   const [query, setQuery] = useState('');
   const [panelPos, setPanelPos] = useState({ top: 0, left: 0 });
@@ -562,6 +567,18 @@ const HeaderFilter = ({ label, options, value, onChange, searchable = false }) =
         className={`${styles.headerFilterTrigger} ${isFiltered ? styles.headerFilterActive : ''}`}
         onClick={handleOpen}
       >
+        {/* Sort indicator — hiện thị trước label khi có sortDir prop */}
+        {sortDir && onSortToggle && (
+          <button
+            className={styles.sortInlineBtn}
+            onClick={e => { e.stopPropagation(); onSortToggle(); }}
+            title={sortDir === 'asc' ? 'Đang tăng dần — nhấn để giảm dần' : 'Đang giảm dần — nhấn để tăng dần'}
+          >
+            {sortDir === 'asc'
+              ? <ChevronUp size={11} strokeWidth={2} />
+              : <ChevronDown size={11} strokeWidth={2} />}
+          </button>
+        )}
         <span className={styles.headerFilterLabel}>{label}</span>
         {isFiltered && <span className={styles.headerFilterDot} />}
         <ChevronDown size={11} className={styles.headerFilterChevron} />
@@ -912,6 +929,8 @@ const TabStudents = () => {
   const [importOpen, setImportOpen] = useState(false);
   const [editStudent, setEditStudent] = useState(null);
   const [pwStudent, setPwStudent] = useState(null);
+  const [deleteStudentObj, setDeleteStudentObj] = useState(null);
+  const [singleDeleting, setSingleDeleting] = useState(false);
 
   /* ── Selection (bulk delete) ─────────────────────────────────────────── */
   const [selectedIds, setSelectedIds] = useState(new Set());
@@ -946,18 +965,21 @@ const TabStudents = () => {
     { value: 'inactive', label: 'Vô hiệu' },
   ];
 
-  const filtered = useMemo(() => students.filter(s => {
-    const q = removeDiacritics(search.trim());
-    const matchQ = !q ||
-      removeDiacritics(s.name ?? '').includes(q) ||
-      removeDiacritics(s.username ?? '').includes(q) ||
-      removeDiacritics(s.email ?? '').includes(q) ||
-      (s.phone ?? '').includes(q);
-    const matchClass = filterClass === 'all' || s.classId === filterClass;
-    const matchStatus = filterStatus === 'all' ||
-      (filterStatus === 'active' ? s.isActive : !s.isActive);
-    return matchQ && matchClass && matchStatus;
-  }), [students, search, filterClass, filterStatus]);
+  const processedStudents = useMemo(() => students.map(s => ({
+    ...s,
+    _searchStr: removeDiacritics(`${s.name ?? ''} ${s.username ?? ''} ${s.email ?? ''} ${s.phone ?? ''}`).toLowerCase()
+  })), [students]);
+
+  const filtered = useMemo(() => {
+    const q = removeDiacritics(search.trim()).toLowerCase();
+    return processedStudents.filter(s => {
+      const matchQ = !q || s._searchStr.includes(q);
+      const matchClass = filterClass === 'all' || s.classId === filterClass;
+      const matchStatus = filterStatus === 'all' ||
+        (filterStatus === 'active' ? s.isActive : !s.isActive);
+      return matchQ && matchClass && matchStatus;
+    });
+  }, [processedStudents, search, filterClass, filterStatus]);
 
   const totalPages = Math.max(1, Math.ceil(filtered.length / pageSize));
   const safePage = Math.min(page, totalPages);
@@ -965,15 +987,31 @@ const TabStudents = () => {
 
   const getClass = (classId) => classes.find(c => c.id === classId);
 
-  const handleToggle = (s) => {
-    toggleActive(s.id);
-    toast?.info(s.isActive ? `Đã vô hiệu hóa ${s.name}` : `Đã kích hoạt ${s.name}`);
+  const handleToggle = async (s) => {
+    try {
+      await toggleActive(s.id);
+      toast?.info(s.isActive ? `Đã vô hiệu hóa ${s.name}` : `Đã kích hoạt ${s.name}`);
+    } catch (err) {
+      toast?.error(err.message || 'Lỗi khi cập nhật trạng thái');
+    }
   };
 
   const handleDelete = (s) => {
-    if (!window.confirm(`Xóa học viên ${s.name}? Thao tác này không thể hoàn tác.`)) return;
-    deleteStudent(s.id);
-    toast?.success(`Đã xóa học viên ${s.name}`);
+    setDeleteStudentObj(s);
+  };
+
+  const confirmSingleDelete = async () => {
+    if (!deleteStudentObj) return;
+    setSingleDeleting(true);
+    try {
+      await deleteStudent(deleteStudentObj.id);
+      toast?.success(`Đã xóa học viên ${deleteStudentObj.name}`);
+      setDeleteStudentObj(null);
+    } catch (err) {
+      toast?.error(err.message || 'Không thể xóa học viên này');
+    } finally {
+      setSingleDeleting(false);
+    }
   };
 
   /* ── Checkbox helpers ─────────────────────────────────────────────────── */
@@ -1092,25 +1130,33 @@ const TabStudents = () => {
       </div>
 
       {/* ── Bulk action bar (hiện khi có chọn) ── */}
-      {selectedIds.size > 0 && (
-        <div className={styles.bulkBar}>
-          <span className={styles.bulkBarCount}>
-            Đã chọn <strong>{selectedIds.size}</strong> học viên
-          </span>
-          <button
-            className={styles.bulkDeleteBtn}
-            onClick={() => setBulkDelOpen(true)}
-          >
-            <Trash2 size={14} /> Xóa đã chọn
-          </button>
-          <button
-            className={styles.bulkClearBtn}
-            onClick={() => setSelectedIds(new Set())}
-          >
-            <X size={13} /> Bỏ chọn
-          </button>
-        </div>
-      )}
+      {selectedIds.size > 0 && (() => {
+        const selectedOnOtherPages = selectedIds.size - pagedIds.filter(id => selectedIds.has(id)).length;
+        return (
+          <div className={styles.bulkBar}>
+            <span className={styles.bulkBarCount}>
+              Đã chọn <strong>{selectedIds.size}</strong> học viên
+              {selectedOnOtherPages > 0 && (
+                <span style={{ color: 'var(--color-warning)', marginLeft: '6px', fontSize: '0.8rem', fontWeight: '500' }}>
+                  (Cẩn thận: Có {selectedOnOtherPages} học viên đang chọn ở trang khác)
+                </span>
+              )}
+            </span>
+            <button
+              className={styles.bulkDeleteBtn}
+              onClick={() => setBulkDelOpen(true)}
+            >
+              <Trash2 size={14} /> Xóa đã chọn
+            </button>
+            <button
+              className={styles.bulkClearBtn}
+              onClick={() => setSelectedIds(new Set())}
+            >
+              <X size={13} /> Bỏ chọn
+            </button>
+          </div>
+        );
+      })()}
 
       {/* Table panel */}
       <div className={styles.tablePanel}>
@@ -1131,6 +1177,7 @@ const TabStudents = () => {
           <span className={styles.sttCell}>STT</span>
           <span>Học viên</span>
           <span>Username</span>
+          <span>SĐT</span>
           <HeaderFilter
             label="Mã Lớp"
             options={classFilterOptions}
@@ -1139,7 +1186,6 @@ const TabStudents = () => {
             searchable
           />
           <span>Tên Lớp</span>
-          <span>SĐT</span>
           <HeaderFilter
             label="Trạng thái"
             options={statusFilterOptions}
@@ -1189,6 +1235,8 @@ const TabStudents = () => {
 
               <span className={styles.cellText}>{s.username}</span>
 
+              <span className={styles.cellText}>{s.phone || '—'}</span>
+
               <span className={styles.cellText}>
                 {cls ? cls.code : '—'}
               </span>
@@ -1196,8 +1244,6 @@ const TabStudents = () => {
               <span className={styles.cellText}>
                 {cls ? cls.name : '—'}
               </span>
-
-              <span className={styles.cellText}>{s.phone || '—'}</span>
 
               <button className={styles.statusToggle}
                 onClick={() => handleToggle(s)}
@@ -1322,6 +1368,29 @@ const TabStudents = () => {
           </span>
         </div>
       </Modal>
+
+      {/* ── Confirm Single Delete Modal ────────────────────────────────────── */}
+      <Modal
+        open={!!deleteStudentObj}
+        onOpenChange={(v) => { if (!v) setDeleteStudentObj(null); }}
+        title="Xác nhận xóa học viên"
+        description="Thao tác này không thể hoàn tác."
+        primaryAction={{
+          label: singleDeleting ? 'Đang xóa...' : 'Xóa học viên',
+          danger: true,
+          onClick: confirmSingleDelete,
+          disabled: singleDeleting,
+        }}
+        secondaryAction={{ label: 'Hủy' }}
+      >
+        <div className={styles.deleteWarning}>
+          <Trash2 size={16} />
+          <span>
+            Học viên <strong>{deleteStudentObj?.name}</strong> sẽ bị xóa vĩnh viễn khỏi hệ thống cùng với mọi dữ liệu liên quan.
+          </span>
+        </div>
+      </Modal>
+
     </div>
   );
 };
@@ -1523,7 +1592,7 @@ const SkeletonRow = () => (
     <div className={styles.skeletonBox} style={{ width: 60, height: 14, borderRadius: 4 }} />
     <div className={styles.skeletonBox} style={{ width: 36, height: 14, borderRadius: 4 }} />
     <div style={{ display: 'flex', gap: 6, justifyContent: 'center' }}>
-      {[1,2,3].map(i => <div key={i} className={styles.skeletonBox} style={{ width: 30, height: 28, borderRadius: 6 }} />)}
+      {[1, 2, 3].map(i => <div key={i} className={styles.skeletonBox} style={{ width: 30, height: 28, borderRadius: 6 }} />)}
     </div>
   </div>
 );
@@ -1554,10 +1623,11 @@ const TabClasses = () => {
     setDeleteCls(null);
   };
 
-  /* ── Search filter ─────────────────────────────────────────────────────── */
+  /* ── Search + sort filter ────────────────────────────────────────── */
   const [searchQuery, setSearchQuery] = useState('');
   const [filterCode, setFilterCode] = useState('all');
   const [filterName, setFilterName] = useState('all');
+  const [sortCodeDir, setSortCodeDir] = useState('desc'); // mặc định giảm dần
 
   const LS_CLASSES_PAGE_SIZE_KEY = 'hg_classes_page_size';
   const [page, setPage] = useState(1);
@@ -1588,18 +1658,28 @@ const TabClasses = () => {
     ...classes.map(c => ({ value: c.id, label: c.name })),
   ], [classes]);
 
-  // Danh sách lớp sau khi lọc (search + column filters)
+  // Pre-calculate diacritic-free strings to optimize search
+  const processedClasses = useMemo(() => classes.map(c => ({
+    ...c,
+    _searchStr: removeDiacritics(`${c.code ?? ''} ${c.name ?? ''}`).toLowerCase()
+  })), [classes]);
+
+  // Danh sách lớp sau khi lọc (search + column filters) rồi sắp xếp
   const filteredClasses = useMemo(() => {
-    const q = removeDiacritics(searchQuery.trim());
-    return classes.filter(c => {
+    const q = removeDiacritics(searchQuery.trim()).toLowerCase();
+    const result = processedClasses.filter(c => {
       const matchCode = filterCode === 'all' || c.id === filterCode;
       const matchName = filterName === 'all' || c.id === filterName;
-      const matchSearch = !q ||
-        removeDiacritics(c.code ?? '').includes(q) ||
-        removeDiacritics(c.name ?? '').includes(q);
+      const matchSearch = !q || c._searchStr.includes(q);
       return matchCode && matchName && matchSearch;
     });
-  }, [classes, filterCode, filterName, searchQuery]);
+    // Sắp xếp theo mã lớp
+    result.sort((a, b) => {
+      const ca = (a.code ?? '').localeCompare(b.code ?? '', 'vi');
+      return sortCodeDir === 'asc' ? ca : -ca;
+    });
+    return result;
+  }, [classes, filterCode, filterName, searchQuery, sortCodeDir]);
 
   const totalPages = Math.max(1, Math.ceil(filteredClasses.length / pageSize));
   const safePage = Math.min(page, totalPages);
@@ -1733,30 +1813,33 @@ const TabClasses = () => {
       </div>
 
       {/* Bulk action bar */}
-      {selectedIds.size > 0 && (
-        <div className={styles.bulkBar}>
-          <span className={styles.bulkBarCount}>
-            Đã chọn <strong>{selectedIds.size}</strong> lớp
-            {bulkStudentCount > 0 && (
-              <span style={{ color: 'var(--color-text-tertiary)', marginLeft: 6 }}>
-                ({bulkStudentCount} học viên sẽ bị xóa theo)
-              </span>
-            )}
-          </span>
-          <button
-            className={styles.bulkDeleteBtn}
-            onClick={() => setBulkDelOpen(true)}
-          >
-            <Trash2 size={14} /> Xóa đã chọn
-          </button>
-          <button
-            className={styles.bulkClearBtn}
-            onClick={() => setSelectedIds(new Set())}
-          >
-            <X size={13} /> Bỏ chọn
-          </button>
-        </div>
-      )}
+      {selectedIds.size > 0 && (() => {
+        const selectedOnOtherPages = selectedIds.size - pagedIds.filter(id => selectedIds.has(id)).length;
+        return (
+          <div className={styles.bulkBar}>
+            <span className={styles.bulkBarCount}>
+              Đã chọn <strong>{selectedIds.size}</strong> lớp
+              {selectedOnOtherPages > 0 && (
+                <span style={{ color: 'var(--color-warning)', marginLeft: '6px', fontSize: '0.8rem', fontWeight: '500' }}>
+                  (Cẩn thận: Có {selectedOnOtherPages} lớp đang chọn ở trang khác)
+                </span>
+              )}
+            </span>
+            <button
+              className={styles.bulkDeleteBtn}
+              onClick={() => setBulkDelOpen(true)}
+            >
+              <Trash2 size={14} /> Xóa đã chọn
+            </button>
+            <button
+              className={styles.bulkClearBtn}
+              onClick={() => setSelectedIds(new Set())}
+            >
+              <X size={13} /> Bỏ chọn
+            </button>
+          </div>
+        );
+      })()}
 
       {/* Table */}
       <div className={styles.tablePanel}>
@@ -1779,6 +1862,8 @@ const TabClasses = () => {
             value={filterCode}
             onChange={handleFilterCode}
             searchable
+            sortDir={sortCodeDir}
+            onSortToggle={() => setSortCodeDir(d => d === 'asc' ? 'desc' : 'asc')}
           />
           <HeaderFilter
             label="Tên lớp"
@@ -1794,7 +1879,7 @@ const TabClasses = () => {
 
         {/* Loading skeleton */}
         {classesLoading && (
-          [1,2,3,4,5].map(i => <SkeletonRow key={i} />)
+          [1, 2, 3, 4, 5].map(i => <SkeletonRow key={i} />)
         )}
 
         {/* Empty state */}

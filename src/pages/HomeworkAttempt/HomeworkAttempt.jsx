@@ -11,6 +11,7 @@ import { Stack } from '../../design-system/primitives/Stack';
 import { Text } from '../../design-system/primitives/Text';
 import { useHomework } from '../../contexts/HomeworkContext';
 import { useTeacher } from '../../contexts/TeacherContext';
+import { OrderingEditor } from '../AdminCourseDetail/components/OrderingEditor';
 import styles from './HomeworkAttempt.module.css';
 
 /* ─────────────────────────────────────────────────────
@@ -35,6 +36,95 @@ const getGdriveId = (url) => {
   const m = url.match(/drive\.google\.com\/file\/d\/([a-zA-Z0-9_-]+)/);
   return m ? m[1] : null;
 };
+
+/* ─────────────────────────────────────────────────────
+   normalizeAssignment
+   Chuyển đổi format optA/B/C/D + content (manual editor)
+   sang format options[] + text (HomeworkAttempt expects)
+───────────────────────────────────────────────────── */
+const normalizeQuestion = (q) => {
+  if (!q) return q;
+
+  // Luôn resolve text từ content/question nếu chưa có
+  const text = q.text ?? q.content ?? q.question ?? '';
+
+  // Nếu đã có options[] (từ file Excel/parser): chỉ bổ sung text còn thiếu
+  if (Array.isArray(q.options) && q.options.length > 0) {
+    return {
+      ...q,
+      text,
+      // Đảm bảo correctIndex có — Excel format thường dùng detectedAnswer hoặc answer
+      correctIndex: q.correctIndex
+        ?? (typeof q.detectedAnswer === 'string' && ['A','B','C','D'].includes(q.detectedAnswer)
+          ? ['A','B','C','D'].indexOf(q.detectedAnswer)
+          : ['A','B','C','D'].indexOf(q.answer) !== -1
+            ? ['A','B','C','D'].indexOf(q.answer)
+            : null),
+    };
+  }
+
+  // Format thủ công: optA/optB/optC/optD + content
+  const opts = [q.optA, q.optB, q.optC, q.optD].filter(Boolean);
+  return {
+    ...q,
+    text,
+    options: opts.length > 0 ? opts : null, // null = không phải trắc nghiệm
+    correctIndex: q.correctIndex ?? (['A','B','C','D'].indexOf(q.answer) !== -1
+      ? ['A','B','C','D'].indexOf(q.answer)
+      : null),
+  };
+};
+
+const normalizeAssignment = (a) => {
+  if (!a) return a;
+
+  const flatQuestions = [];
+  (a.questions ?? []).forEach(q => {
+    if (q.type === 'listening' && Array.isArray(q.subQuestions) && q.subQuestions.length > 0) {
+      // Flatten: mỗi sub-question trở thành 1 câu riêng, giữ audioUrl để player hiển thị
+      q.subQuestions.forEach((sq, idx) => {
+        // Build options array từ sq.options object {A, B, C, D}
+        let options = null;
+        if (sq.type === 'multiple_choice' && sq.options && typeof sq.options === 'object') {
+          options = ['A','B','C','D']
+            .map(l => sq.options[l] ? `${l}. ${sq.options[l]}` : null)
+            .filter(Boolean);
+        } else if (sq.type === 'true_false') {
+          options = ['Đúng', 'Sai'];
+        }
+
+        flatQuestions.push({
+          id: sq.id ?? `${q.id}_sq${idx}`,
+          type: sq.type === 'fill_blank' ? 'fill_in' : sq.type,
+          text: sq.content ?? sq.text ?? '',
+          options,
+          correctIndex: sq.answer
+            ? (options
+              ? options.findIndex(o => o.startsWith(sq.answer + '.') || o === sq.answer)
+              : null)
+            : null,
+          answer: sq.answer ?? '',
+          explanation: sq.explanation ?? '',
+          // Đính kèm audioUrl của câu listening cha để player hiển thị
+          audioUrl: q.audioUrl ?? null,
+          audioFile: q.audioFile ?? null,
+          contentType: 'audio',
+          _listeningParentId: q.id,
+          _listeningSubIdx: idx,
+          _listeningLabel: q.content ?? `Bài nghe ${q.id}`,
+        });
+      });
+    } else {
+      flatQuestions.push(normalizeQuestion(q));
+    }
+  });
+
+  return {
+    ...a,
+    questions: flatQuestions,
+  };
+};
+
 
 const AudioPlayer = ({ script, audioUrl }) => {
   const [playing, setPlaying] = useState(false);
@@ -78,8 +168,12 @@ const AudioPlayer = ({ script, audioUrl }) => {
             width="100%" height="60" style={{ border: 'none' }} allow="autoplay"
           />
         </div>
-      ) : audioUrl ? (
+      ) : audioUrl && !audioUrl.startsWith('blob:') ? (
         <audio controls src={audioUrl} style={{ width: '100%', height: 40, outline: 'none' }} />
+      ) : audioUrl && audioUrl.startsWith('blob:') ? (
+        <div style={{ padding: '10px 14px', background: '#fff7ed', border: '1px solid #fed7aa', borderRadius: 8, fontSize: 13, color: '#92400e' }}>
+          ⚠️ File audio chỉ khả dụng trong phiên làm việc này. Vui lòng liên hệ giáo viên để dùng link Google Drive thay thế.
+        </div>
       ) : (
         <Stack gap="sm">
           {/* Player controls */}
@@ -127,6 +221,185 @@ const AudioPlayer = ({ script, audioUrl }) => {
 const findGroup = (audioGroups, questionId) =>
   audioGroups?.find((g) => g.questionIds.includes(questionId)) ?? null;
 
+/* ══════════════════════════════════════════════════
+   Student Answer Editors
+══════════════════════════════════════════════════ */
+const StudentEditorMC = ({ q, value, onChange }) => {
+  return (
+    <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
+      {(q.options ?? []).map((opt, idx) => {
+        const label = ['A', 'B', 'C', 'D', 'E'][idx];
+        const isSelected = value === idx;
+        return (
+          <button
+            key={idx}
+            className={`${styles.option} ${isSelected ? styles.optionSelected : ''}`}
+            onClick={() => onChange(idx)}
+          >
+            <span className={`${styles.optLabel} ${isSelected ? styles.optLabelActive : ''}`}>{label}</span>
+            <span className={styles.optText}>{opt}</span>
+          </button>
+        );
+      })}
+    </div>
+  );
+};
+
+const StudentEditorMR = ({ q, value, onChange }) => {
+  const selected = Array.isArray(value) ? value : [];
+  return (
+    <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
+      {(q.options ?? []).map((opt, idx) => {
+        const letter = ['A', 'B', 'C', 'D', 'E'][idx];
+        const checked = selected.includes(letter);
+        return (
+          <button
+            key={letter}
+            className={`${styles.option} ${styles.optBtnMR} ${checked ? styles.optionSelected : ''}`}
+            onClick={() => {
+              const next = checked ? selected.filter(x => x !== letter) : [...selected, letter];
+              onChange(next);
+            }}
+          >
+            <span className={`${styles.checkbox} ${checked ? styles.checkboxActive : ''}`}>
+              {checked ? '✓' : ''}
+            </span>
+            <span className={styles.optText}>{opt.replace(/^[A-E]\.\s*/, '')}</span>
+          </button>
+        );
+      })}
+    </div>
+  );
+};
+
+const StudentEditorTF = ({ value, onChange }) => (
+  <div className={styles.tfRow}>
+    {['Đúng', 'Sai'].map(opt => (
+      <button key={opt}
+        className={`${styles.tfBtn} ${value === opt ? (opt === 'Đúng' ? styles.tfBtnTrue : styles.tfBtnFalse) : ''}`}
+        onClick={() => onChange(value === opt ? '' : opt)}>
+        {opt === 'Đúng' ? '✓' : '✗'} {opt}
+      </button>
+    ))}
+  </div>
+);
+
+const StudentEditorFill = ({ value, onChange }) => (
+  <input className={styles.fillInput}
+    placeholder="Nhập câu trả lời..."
+    value={value ?? ''}
+    onChange={e => onChange(e.target.value)} />
+);
+
+const StudentEditorShortAnswer = ({ value, onChange }) => (
+  <textarea className={styles.shortAnswerTextarea}
+    placeholder="Nhập câu trả lời tự luận..."
+    value={value ?? ''}
+    onChange={e => onChange(e.target.value)} />
+);
+
+const StudentEditorMatching = ({ q, value, onChange }) => {
+  const matchVal = (typeof value === 'object' && !Array.isArray(value) && value !== null) ? value : {};
+  // Shuffle right-side items once on mount so correct order is not obvious
+  const [shuffledRight] = useState(() => {
+    const rights = (q.pairs ?? []).map(p => p.right);
+    const arr = [...rights];
+    for (let i = arr.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [arr[i], arr[j]] = [arr[j], arr[i]];
+    }
+    return arr;
+  });
+  return (
+    <div className={styles.matchingWrap}>
+      {(q.pairs ?? []).map(pair => (
+        <div key={pair.left} className={styles.matchRow}>
+          <span className={styles.matchLeft}>{pair.left}</span>
+          <span className={styles.matchArrow}>→</span>
+          <select className={styles.matchSelect}
+            value={matchVal[pair.left] ?? ''}
+            onChange={e => onChange({ ...matchVal, [pair.left]: e.target.value })}>
+            <option value="">-- Chọn đáp án --</option>
+            {shuffledRight.map(r => <option key={r} value={r}>{r}</option>)}
+          </select>
+        </div>
+      ))}
+    </div>
+  );
+};
+
+const StudentEditorOrdering = ({ q, value, onChange }) => {
+  // Xáo trộn 1 lần khi mount dựa theo q.id để mỗi câu hỏi có shuffle riêng
+  const [initItems] = useState(() => {
+    if (Array.isArray(value) && value.length > 0) return value;
+
+    const sourceItems = Array.isArray(q.orderItems) && q.orderItems.length > 0
+      ? q.orderItems.map(x => (x == null ? '' : String(x)))
+      : Array.isArray(q.detectedAnswer) && q.detectedAnswer.length > 0
+        ? q.detectedAnswer.map(x => (x == null ? '' : String(x)))
+        : [];
+
+    if (sourceItems.length > 0) {
+      const shuffled = [...sourceItems];
+      let tries = 0;
+      while (tries < 8) {
+        for (let i = shuffled.length - 1; i > 0; i--) {
+          const j = Math.floor(Math.random() * (i + 1));
+          [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+        }
+        if (!shuffled.every((v, idx) => v === sourceItems[idx])) break;
+        tries++;
+      }
+      return shuffled;
+    }
+    return [];
+  });
+
+  // Sync initial shuffle lên parent nếu chưa có value
+  useEffect(() => {
+    if (!value && initItems.length > 0 && initItems[0] !== '') {
+      onChange(initItems);
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  const displayItems = Array.isArray(value) && value.length > 0 ? value : initItems;
+  return <OrderingEditor key={`ordering-${q.id}`} items={displayItems} onChange={onChange} mode="student" />;
+};
+
+const StudentEditorLikert = ({ q, value, onChange }) => {
+  const scale = q.scale ?? 5;
+  const labels = q.labels ?? [];
+  return (
+    <div className={styles.likertWrap}>
+      {Array.from({ length: scale }, (_, i) => i + 1).map(val => (
+        <button key={val}
+          className={`${styles.likertBtn} ${value === val ? styles.likertBtnActive : ''}`}
+          onClick={() => onChange(value === val ? null : val)}>
+          <span className={styles.likertNum}>{val}</span>
+          {labels[val - 1] && <span className={styles.likertLabel}>{labels[val - 1]}</span>}
+        </button>
+      ))}
+    </div>
+  );
+};
+
+const StudentAnswerEditor = ({ q, value, onChange }) => {
+  switch (q.type) {
+    case 'multiple_choice':   return <StudentEditorMC q={q} value={value} onChange={onChange} />;
+    case 'multiple_response': return <StudentEditorMR q={q} value={value} onChange={onChange} />;
+    case 'true_false':        return <StudentEditorTF value={value} onChange={onChange} />;
+    case 'fill_blank':        return <StudentEditorFill value={value} onChange={onChange} />;
+    case 'short_answer':      return <StudentEditorShortAnswer value={value} onChange={onChange} />;
+    case 'matching':          return <StudentEditorMatching q={q} value={value} onChange={onChange} />;
+    case 'ordering':          return <StudentEditorOrdering q={q} value={value} onChange={onChange} />;
+    case 'likert':            return <StudentEditorLikert q={q} value={value} onChange={onChange} />;
+    default:                  
+      if (q.options) return <StudentEditorMC q={q} value={value} onChange={onChange} />;
+      return <StudentEditorFill value={value} onChange={onChange} />;
+  }
+};
+
 
 /* ─────────────────────────────────────────────────────
    HomeworkAttempt — main page
@@ -139,9 +412,10 @@ export const HomeworkAttempt = () => {
   const { assignments, submitAttempt, getAttempts } = useHomework();
   const { assignments: teacherAssignments } = useTeacher();
 
-  const assignment = isPreview
+  const rawAssignment = isPreview
     ? teacherAssignments.find((a) => a.id === id)
     : assignments.find((a) => a.id === id);
+  const assignment = normalizeAssignment(rawAssignment);
   const prevAttempts = getAttempts(id);
   const attemptNumber = prevAttempts.length + 1;
 
@@ -176,9 +450,16 @@ export const HomeworkAttempt = () => {
     );
   }
 
+  const isStudentAnswered = (a) => {
+    if (a === null || a === undefined || a === '') return false;
+    if (Array.isArray(a) && a.length === 0) return false;
+    if (typeof a === 'object' && Object.keys(a).every(k => !a[k])) return false;
+    return true;
+  };
+
   const q = assignment.questions[currentQ];
   const total = assignment.questions.length;
-  const answered = answers.filter((a) => a !== null).length;
+  const answered = answers.filter(isStudentAnswered).length;
   const allAnswered = answered === total;
 
   // For grouped mode: derive the active group
@@ -199,7 +480,10 @@ export const HomeworkAttempt = () => {
       return;
     }
 
-    submitAttempt(id, answers);
+    const result = submitAttempt(id, answers);
+    if (!result) {
+      console.warn('[HomeworkAttempt] submitAttempt returned null — bài tập không tìm thấy trong danh sách học sinh');
+    }
     navigate(`/app/homework/${id}/result`);
   };
 
@@ -264,7 +548,7 @@ export const HomeworkAttempt = () => {
               key={i}
               className={`${styles.dot}
                 ${i === currentQ ? styles.dotActive : ''}
-                ${answers[i] !== null ? styles.dotAnswered : ''}
+                ${isStudentAnswered(answers[i]) ? styles.dotAnswered : ''}
               `}
               onClick={() => setCurrentQ(i)}
               aria-label={`Câu ${i + 1}`}
@@ -282,7 +566,7 @@ export const HomeworkAttempt = () => {
       <Card padding="lg" variant="elevated">
         <Stack gap="xl">
           <Stack gap="sm">
-            <Stack direction="row" align="center" gap="sm">
+            <Stack direction="row" align="center" gap="sm" style={{ flexWrap: 'wrap' }}>
               <Text as="span" size="xs" weight="semibold" color="textSecondary"
                 style={{ textTransform: 'uppercase', letterSpacing: '0.5px' }}>
                 Câu {currentQ + 1} / {total}
@@ -290,6 +574,11 @@ export const HomeworkAttempt = () => {
               {isGrouped && activeGroup && (
                 <Badge variant="primary" style={{ fontSize: '10px' }}>
                   {activeGroup.label}
+                </Badge>
+              )}
+              {q._listeningParentId && (
+                <Badge variant="default" style={{ fontSize: '10px', background: '#eef2ff', color: '#4338ca', border: '1px solid #c7d2fe' }}>
+                  <Headphones size={10} style={{ marginRight: 3 }} /> Bài nghe
                 </Badge>
               )}
             </Stack>
@@ -316,27 +605,56 @@ export const HomeworkAttempt = () => {
 
           {/* Per-question audio (contentType = 'audio' or individual audioUrl) */}
           {(() => {
-            // Check per-question audio group first, then individual audioUrl
             const qAudioGroup = !isGrouped
               ? assignment.audioGroups?.find(g => g.questionIds?.includes(q.id))
               : null;
-            const audioSrc = qAudioGroup?.audioUrl || (q.contentType === 'audio' ? q.audioUrl : null);
+            const audioSrc = qAudioGroup?.audioUrl || (q.contentType === 'audio' || q.type === 'listening' ? q.audioUrl : null);
             if (!audioSrc) return null;
             const gdriveId = getGdriveId(audioSrc);
             return (
-              <div style={{ borderRadius: 10, overflow: 'hidden', background: 'rgba(99,102,241,0.04)', border: '1px solid rgba(99,102,241,0.12)', padding: '10px' }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 8, fontSize: 12, fontWeight: 600, color: 'var(--color-primary)', textTransform: 'uppercase', letterSpacing: '0.3px' }}>
-                  <Headphones size={13} /> Đoạn nghe
+              <div style={{
+                borderRadius: 14, overflow: 'hidden',
+                background: 'linear-gradient(135deg, #eef2ff 0%, #f5f3ff 100%)',
+                border: '1.5px solid #c7d2fe',
+                padding: '12px 14px',
+              }}>
+                {/* Header */}
+                <div style={{ display: 'flex', alignItems: 'center', gap: 7, marginBottom: 10 }}>
+                  <div style={{
+                    width: 28, height: 28, borderRadius: '50%',
+                    background: 'linear-gradient(135deg, #6366f1, #8b5cf6)',
+                    display: 'flex', alignItems: 'center', justifyContent: 'center',
+                    flexShrink: 0,
+                  }}>
+                    <Headphones size={14} color="white" />
+                  </div>
+                  <span style={{ fontSize: 12, fontWeight: 700, color: '#4338ca', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
+                    Đoạn nghe
+                  </span>
                 </div>
+
+                {/* Player */}
                 {gdriveId ? (
-                  <iframe
-                    src={`https://drive.google.com/file/d/${gdriveId}/preview`}
-                    width="100%" height="60"
-                    style={{ border: 'none', borderRadius: 8, display: 'block' }}
-                    allow="autoplay"
-                  />
+                  <div style={{ borderRadius: 10, overflow: 'hidden', background: 'white', border: '1px solid #e0e7ff' }}>
+                    <iframe
+                      src={`https://drive.google.com/file/d/${gdriveId}/preview`}
+                      width="100%" height="56"
+                      style={{ border: 'none', display: 'block' }}
+                      allow="autoplay"
+                    />
+                  </div>
                 ) : (
-                  <audio controls src={audioSrc} style={{ width: '100%', height: 40, outline: 'none', display: 'block' }} />
+                  <div style={{
+                    background: 'white', borderRadius: 10,
+                    border: '1px solid #e0e7ff', padding: '6px 10px',
+                    display: 'flex', alignItems: 'center', gap: 8,
+                  }}>
+                    <audio
+                      controls
+                      src={audioSrc}
+                      style={{ width: '100%', height: 36, outline: 'none', display: 'block', accentColor: '#6366f1' }}
+                    />
+                  </div>
                 )}
               </div>
             );
@@ -355,22 +673,12 @@ export const HomeworkAttempt = () => {
           })()}
 
           <Stack gap="sm">
-            {q.options.map((opt, idx) => {
-              const label = ['A', 'B', 'C', 'D'][idx];
-              const isSelected = answers[currentQ] === idx;
-              return (
-                <button
-                  key={idx}
-                  className={`${styles.option} ${isSelected ? styles.optionSelected : ''}`}
-                  onClick={() => selectOption(idx)}
-                >
-                  <span className={`${styles.optLabel} ${isSelected ? styles.optLabelActive : ''}`}>
-                    {label}
-                  </span>
-                  <span className={styles.optText}>{opt}</span>
-                </button>
-              );
-            })}
+            <StudentAnswerEditor
+              key={q.id ?? currentQ}
+              q={q}
+              value={answers[currentQ]}
+              onChange={(val) => setAnswers(prev => { const n = [...prev]; n[currentQ] = val; return n; })}
+            />
           </Stack>
         </Stack>
       </Card>

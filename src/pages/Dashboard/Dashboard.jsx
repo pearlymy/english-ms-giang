@@ -21,7 +21,12 @@ const fmtDate = (d) =>
 /* ── HwRow — clean, minimal ── */
 const HwRow = ({ assignment, best, attempts, unlocked, isPending, navigate }) => {
   const overdue = isPending && isOverdue(assignment.dueDate);
-  const scoreColor = best >= 9 ? '#059669' : best >= 7 ? '#d97706' : '#dc2626';
+  const total = assignment.questions?.length ?? 10;
+  const bestScore10 = (best !== null && best !== undefined)
+    ? (typeof best === 'number' ? best.toFixed(1).replace(/\.0$/, '') : best)
+    : 0;
+
+  const scoreColor = Number(bestScore10) >= 9 ? '#059669' : Number(bestScore10) >= 7 ? '#d97706' : '#dc2626';
 
   const handleClick = () =>
     navigate(
@@ -41,7 +46,7 @@ const HwRow = ({ assignment, best, attempts, unlocked, isPending, navigate }) =>
           style={{ margin: 0 }}>
           {isPending
             ? `${overdue ? '⚠️ Quá hạn' : 'Hạn'}: ${fmtDate(assignment.dueDate)}`
-            : `${best}/10 điểm · ${attempts.length} lần làm`}
+            : `${bestScore10}/10 điểm · ${attempts.length} lần làm`}
         </Text>
       </div>
 
@@ -115,57 +120,32 @@ export const Dashboard = () => {
         <div className={styles.blob2} />
 
         <div className={styles.heroTop}>
-          <Stack gap="xs">
-            <Text as="p" size="sm" weight="medium"
-              style={{ margin: 0, color: 'rgba(255,255,255,0.72)' }}>
-              {getGreeting()}, {firstName}!
-            </Text>
-            <Text as="h1" weight="bold"
-              style={{
-                margin: 0,
-                color: '#fff',
-                fontSize: '1.75rem',
-                letterSpacing: '-0.4px',
-                fontFamily: 'var(--font-family-base)',
-              }}>
-              Tổng quan học tập
-            </Text>
-          </Stack>
+          <div className={styles.heroContent}>
+            <Stack gap="xs">
+              <Text as="h1" weight="bold"
+                style={{
+                  margin: 0,
+                  color: '#fff',
+                  fontSize: '1.75rem',
+                  letterSpacing: '-0.4px',
+                  fontFamily: 'var(--font-family-base)',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '8px'
+                }}>
+                Xin chào, {firstName} <span className={styles.waveHand}>👋</span>
+              </Text>
+              <Text as="p" size="sm" weight="medium"
+                style={{ margin: 0, color: 'rgba(255,255,255,0.85)' }}>
+                Hôm nay bạn có {stats.pending} bài tập cần hoàn thành
+              </Text>
+            </Stack>
+          </div>
 
-          <button
-            className={styles.heroBtn}
-            onClick={() => navigate('/app/homework')}
-          >
-            Tất cả bài tập →
-          </button>
+          <div className={styles.heroIllustration}>
+             <img src="/src/assets/hero.png" alt="Hero illustration" className={styles.heroImage} onError={(e) => e.target.style.display = 'none'} />
+          </div>
         </div>
-
-        {/* Inline stat strip */}
-        <div className={styles.heroStats}>
-          {[
-            { num: stats.total, label: 'Tổng bài' },
-            { num: stats.done, label: 'Đã xong' },
-            { num: stats.pending, label: 'Chưa làm' },
-            { num: stats.avgScore != null ? `${stats.avgScore}` : '—', label: 'Điểm TB' },
-          ].map((s, i) => (
-            <React.Fragment key={i}>
-              {i > 0 && <div className={styles.statDiv} />}
-              <div className={styles.statItem}>
-                <span className={styles.statNum}>{s.num}</span>
-                <span className={styles.statLabel}>{s.label}</span>
-              </div>
-            </React.Fragment>
-          ))}
-        </div>
-
-        {/* Progress bar */}
-        <div className={styles.heroProgress}>
-          <div className={styles.heroFill} style={{ width: `${progressPct}%` }} />
-        </div>
-        <Text as="p" size="xs"
-          style={{ margin: 0, color: 'rgba(255,255,255,0.6)', textAlign: 'right' }}>
-          {stats.done}/{stats.total} bài hoàn thành — {progressPct}%
-        </Text>
       </div>
 
       {/* ── Two-column panels ── */}

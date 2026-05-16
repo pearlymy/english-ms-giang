@@ -1,410 +1,718 @@
-/* AdminCoursesPage.module.css — Table layout, design-system aligned */
+/* AdminCoursesPage.module.css — Modernized with design tokens */
 
-/* ── Page wrapper ────────────────────────────────────────────────────────── */
-.page {
-  display: flex;
-  flex-direction: column;
-  gap: var(--spacing-xl);
-  padding: var(--spacing-2xl);
-  max-width: 1200px;
-  margin: 0 auto;
-  width: 100%;
+/* ── Dashboard Grid ── */
+.dashboard {
+  display: grid;
+  grid-template-columns: 1fr 320px;
+  gap: 24px;
+  margin: calc(-1 * var(--spacing-2xl));
+  padding: 28px 32px;
+  background: var(--gradient-page-bg);
+  min-height: 100vh;
+  font-family: var(--font-family-base);
+  color: var(--color-text-primary);
   box-sizing: border-box;
 }
 
-/* ── Hero banner ─────────────────────────────────────────────────────────── */
-.hero {
-  display: flex;
-  align-items: center;
-  gap: var(--spacing-lg);
-  background: var(--gradient-primary);
-  border-radius: var(--radius-2xl);
-  padding: 1.75rem 2rem;
-  min-height: 100px;
+@media (max-width: 1100px) {
+  .dashboard {
+    grid-template-columns: 1fr;
+  }
 }
 
-.heroIconWrap {
-  width: 48px;
-  height: 48px;
-  background: rgba(255, 255, 255, 0.18);
-  border-radius: var(--radius-xl);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  backdrop-filter: blur(6px);
-  flex-shrink: 0;
+@media (max-width: 768px) {
+  .dashboard {
+    padding: 16px;
+    padding-bottom: 80px;
+    margin: calc(-1 * var(--spacing-lg));
+  }
 }
 
-.heroTitle {
-  font-size: 1.6rem;
+/* ── HEADER ── */
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 24px;
+}
+
+.pageTitle {
+  font-size: 22px;
   font-weight: var(--font-weight-bold);
-  color: #fff;
-  margin: 0 0 0.2rem;
-  letter-spacing: -0.02em;
+  margin: 0 0 4px 0;
+  color: var(--color-text-primary);
+  letter-spacing: -0.025em;
+  font-family: var(--font-family-display);
 }
 
-.heroSub {
+.pageSub {
   font-size: var(--font-size-sm);
-  color: rgba(255, 255, 255, 0.72);
+  color: var(--color-text-secondary);
   margin: 0;
 }
 
-.heroRight {
-  margin-left: auto;
-}
-
-.heroStat {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  background: rgba(255, 255, 255, 0.18);
-  border: 1px solid rgba(255, 255, 255, 0.25);
-  border-radius: var(--radius-pill);
-  padding: 0.3rem 0.9rem;
-  font-size: var(--font-size-sm);
-  font-weight: var(--font-weight-semibold);
-  color: #fff;
-  backdrop-filter: blur(4px);
-}
-
-/* ── Toolbar ─────────────────────────────────────────────────────────────── */
-.toolbar {
+.headerActions {
   display: flex;
   align-items: center;
-  gap: var(--spacing-md);
+  gap: 12px;
 }
 
-/* ── Section group ───────────────────────────────────────────────────────── */
-.section {
-  display: flex;
-  flex-direction: column;
-  gap: var(--spacing-md);
-}
-
-.sectionHeader {
-  display: flex;
-  align-items: center;
-  gap: var(--spacing-sm);
-}
-
-.sectionTitle {
-  font-size: 1rem;
-  font-weight: var(--font-weight-bold);
-  color: var(--color-text-primary);
-  letter-spacing: -0.01em;
-}
-
-.sectionBadge {
-  display: inline-flex;
-  align-items: center;
-  padding: 0.18rem 0.6rem;
-  background: var(--color-surface-alt);
+.iconBtn {
+  position: relative;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
   border: 1px solid var(--color-border);
-  border-radius: var(--radius-pill);
-  font-size: 0.72rem;
-  font-weight: var(--font-weight-semibold);
-  color: var(--color-text-secondary);
-}
-
-/* ── Table panel ─────────────────────────────────────────────────────────── */
-.tablePanel {
   background: var(--color-surface);
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius-2xl);
-  box-shadow: 0 1px 6px rgba(0, 0, 0, 0.05);
-}
-
-/* ── Table rows ─────────────────────────────────────────────────────────── */
-.tableRow {
-  display: grid;
-  grid-template-columns: 2fr 1fr 1fr 1fr 80px;
-  align-items: center;
-  padding: 0.75rem 1.25rem;
-  gap: var(--spacing-md);
-}
-
-/* Header */
-.tableHeader {
-  background: var(--gradient-primary);
-  padding-top: 0.65rem;
-  padding-bottom: 0.65rem;
-  font-size: 11px;
-  font-weight: var(--font-weight-bold);
-  color: rgba(255, 255, 255, 0.82);
-  text-transform: uppercase;
-  letter-spacing: 0.08em;
-  border-top-left-radius: calc(var(--radius-2xl) - 1px);
-  border-top-right-radius: calc(var(--radius-2xl) - 1px);
-}
-
-/* Data rows */
-.dataRow {
-  border-bottom: 1px solid var(--color-border);
-  transition: background var(--motion-duration-fast) var(--motion-easing-standard);
-}
-
-.dataRow:last-child {
-  border-bottom: none;
-  border-bottom-left-radius: calc(var(--radius-2xl) - 1px);
-  border-bottom-right-radius: calc(var(--radius-2xl) - 1px);
-}
-
-.dataRow:hover {
-  background: var(--color-surface-hover);
-}
-
-/* ── Course cell ─────────────────────────────────────────────────────────── */
-.courseCell {
   display: flex;
   align-items: center;
-  gap: var(--spacing-md);
+  justify-content: center;
+  color: var(--color-text-secondary);
+  cursor: pointer;
+  transition: all 0.2s;
+  box-shadow: var(--shadow-xs);
 }
 
-.courseIcon {
-  width: 32px;
-  height: 32px;
-  border-radius: var(--radius-md);
+.iconBtn:hover {
+  background: var(--color-surface-hover);
+  color: var(--color-text-primary);
+  border-color: var(--color-border-strong);
+}
+
+.badge {
+  position: absolute;
+  top: -2px;
+  right: -2px;
+  background: var(--gradient-error);
+  color: #fff;
+  font-size: 10px;
+  font-weight: var(--font-weight-bold);
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 2px solid var(--color-surface);
+}
+
+/* ── KPI GRID ── */
+.kpiGrid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 16px;
+  margin-bottom: 28px;
+}
+
+@media (max-width: 1400px) {
+  .kpiGrid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 500px) {
+  .kpiGrid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.kpiCard {
+  background: var(--gradient-primary);
+  border-radius: var(--radius-xl);
+  padding: 20px;
+  display: flex;
+  align-items: flex-start;
+  gap: 16px;
+  box-shadow: var(--card-shadow);
+  border: 1px solid var(--color-border);
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.kpiCard:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--card-shadow-hover);
+}
+
+.kpiIconWrap {
+  width: 48px;
+  height: 48px;
+  border-radius: var(--radius-lg);
   display: flex;
   align-items: center;
   justify-content: center;
   flex-shrink: 0;
+  background: rgba(255, 255, 255, 0.2);
+  color: #fff;
 }
 
-.courseName {
-  font-size: var(--font-size-sm);
-  font-weight: var(--font-weight-semibold);
-  color: var(--color-text-primary);
+.kpiInfo {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
 }
 
-/* ── Generic cell text ───────────────────────────────────────────────────── */
-.cellText {
-  font-size: var(--font-size-sm);
-  color: var(--color-text-secondary);
+.kpiLabel {
+  font-size: 13px;
+  color: rgba(255, 255, 255, 0.85);
   font-weight: var(--font-weight-medium);
 }
 
-/* ── Hover-only row actions ─────────────────────────────────────────────── */
-.rowActions {
-  display: flex;
-  align-items: center;
-  justify-content: flex-end;
-  gap: var(--spacing-xs);
-  opacity: 0;
-  transition: opacity var(--motion-duration-fast) var(--motion-easing-standard);
+.kpiValue {
+  font-size: 26px;
+  font-weight: var(--font-weight-bold);
+  color: #fff;
+  line-height: 1;
 }
 
-.dataRow:hover .rowActions {
+.kpiTrend {
+  font-size: 12px;
+  color: rgba(255, 255, 255, 0.9);
+  font-weight: var(--font-weight-medium);
+}
+
+/* ── TOOLBAR ── */
+.toolbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.searchBox {
+  position: relative;
+  width: 320px;
+  max-width: 100%;
+}
+
+.searchIcon {
+  position: absolute;
+  left: 14px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--color-text-tertiary);
+}
+
+.searchInput {
+  width: 100%;
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-pill);
+  padding: 10px 16px 10px 40px;
+  font-size: var(--font-size-sm);
+  color: var(--color-text-primary);
+  font-family: var(--font-family-base);
+  outline: none;
+  transition: all 0.2s;
+  box-sizing: border-box;
+}
+
+.searchInput:focus {
+  border-color: var(--color-primary-accent);
+  box-shadow: 0 0 0 3px rgba(77, 201, 230, 0.15);
+}
+
+.filters {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.filterSelect {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  padding: 8px 14px;
+  border-radius: var(--radius-md);
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-medium);
+  color: var(--color-text-secondary);
+  font-family: var(--font-family-base);
+  cursor: pointer;
+  white-space: nowrap;
+  transition: all 0.2s;
+}
+
+select.filterSelect {
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='%2364748b' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
+  background-repeat: no-repeat;
+  background-position: right 10px center;
+  background-size: 14px;
+  padding-right: 32px;
+}
+
+.filterSelect:hover {
+  background: var(--color-surface-hover);
+  border-color: var(--color-border-strong);
+  color: var(--color-text-primary);
+}
+
+/* ── COURSE GRID ── */
+.courseGrid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 20px;
+}
+
+@media (max-width: 900px) {
+  .courseGrid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.courseCard {
+  background: var(--gradient-card);
+  border-radius: var(--card-border-radius);
+  padding: 20px;
+  box-shadow: var(--card-shadow);
+  border: 1px solid var(--color-border);
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  transition: transform 0.2s, box-shadow 0.2s, border-color 0.2s;
+  position: relative;
+  overflow: hidden;
+}
+
+.courseCard::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: var(--gradient-primary);
+  opacity: 0;
+  transition: opacity 0.2s;
+}
+
+.courseCard:hover {
+  transform: translateY(-3px);
+  box-shadow: var(--card-shadow-hover);
+  border-color: rgba(77, 201, 230, 0.25);
+}
+
+.courseCard:hover::before {
   opacity: 1;
 }
 
-.rowActionBtn {
-  width: 28px;
-  height: 28px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background: transparent;
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius-md);
-  color: var(--color-text-secondary);
-  cursor: pointer;
-  transition: all var(--motion-duration-fast) var(--motion-easing-standard);
-}
-
-.rowActionBtn:hover {
-  background: var(--color-primary-subtle);
-  border-color: var(--color-primary-accent-border);
-  color: var(--color-primary);
-}
-
-.rowActionDelete:hover {
-  background: rgba(239, 68, 68, 0.08);
-  border-color: rgba(239, 68, 68, 0.3);
-  color: var(--color-error, #ef4444);
-}
-
-/* ── Delete warning ─────────────────────────────────────────────────────── */
-.deleteWarning {
+.courseHeader {
   display: flex;
   align-items: flex-start;
-  gap: var(--spacing-sm);
-  padding: var(--spacing-md) var(--spacing-lg);
+  gap: 14px;
+}
+
+.courseVisual {
+  width: 68px;
+  height: 68px;
   border-radius: var(--radius-lg);
-  background: rgba(239, 68, 68, 0.07);
-  border: 1px solid rgba(239, 68, 68, 0.2);
-  color: var(--color-text-primary);
-  font-size: var(--font-size-sm);
-  line-height: 1.55;
-}
-
-.deleteWarning svg {
-  flex-shrink: 0;
-  margin-top: 2px;
-  color: #ef4444;
-}
-
-/* ── Empty state ─────────────────────────────────────────────────────────── */
-.empty {
-  text-align: center;
-  padding: var(--spacing-3xl);
-  color: var(--color-text-tertiary);
-  font-size: var(--font-size-sm);
-}
-
-/* ── Create form grid ────────────────────────────────────────────────────── */
-.formGrid {
   display: flex;
-  flex-direction: column;
-  gap: var(--spacing-md);
-}
-
-/* Desktop: mobileInfo is invisible wrapper */
-.mobileInfo { display: contents; }
-
-/* ═══════════════════════════════════════════════════════════════════════════
-   SWIPE-TO-DELETE
-═══════════════════════════════════════════════════════════════════════════ */
-.swipeContainer {
-  position: relative;
-  overflow: hidden;
-  border-bottom: 1px solid var(--color-border);
-}
-.swipeContainer:last-child { border-bottom: none; }
-
-.swipeAction {
-  position: absolute;
-  top: 0; right: 0; bottom: 0;
-  width: 70px;
-  display: flex;
-  flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 4px;
-  background: #ef4444;
-  color: #fff;
-  font-size: 0.7rem;
+  flex-shrink: 0;
+  border-width: 1.5px;
+  border-style: solid;
+}
+
+.courseTitleArea {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.courseName {
+  font-size: 15px;
   font-weight: var(--font-weight-bold);
+  color: var(--color-text-primary);
+  margin: 0;
+  line-height: 1.3;
+  letter-spacing: -0.01em;
+}
+
+.courseBadge {
+  display: inline-block;
+  padding: 3px 10px;
+  border-radius: var(--radius-pill);
+  font-size: 11.5px;
+  font-weight: 600;
+  align-self: flex-start;
+  border-width: 1px;
+  border-style: solid;
+  background: #fff;
+}
+
+.moreBtn {
+  background: transparent;
+  border: none;
+  color: var(--color-text-tertiary);
+  cursor: pointer;
+  padding: 4px;
+  border-radius: var(--radius-sm);
+  flex-shrink: 0;
+  transition: all 0.15s;
+}
+
+.moreBtn:hover {
+  background: var(--color-surface-hover);
+  color: var(--color-text-primary);
+}
+
+.courseStats {
+  display: flex;
+  gap: 20px;
+}
+
+.statItem {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--color-text-secondary);
+  font-size: 12.5px;
+  font-weight: var(--font-weight-medium);
+}
+
+/* ── ASSIGN ROW ── */
+.assignRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  padding-top: 14px;
+  border-top: 1px solid var(--color-border);
+  margin-top: auto;
+}
+
+.assignLeft {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.assignRowLabel {
+  font-size: 12px;
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-text-secondary);
+  flex-shrink: 0;
+}
+
+.assignChip {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 4px 12px;
+  border-radius: 100px;
+  font-size: 12.5px;
+  font-weight: 600;
+  background: #fff !important;
+  border: 1px solid currentColor;
+}
+
+.assignNoneBadge {
+  font-size: 11.5px;
+  font-style: italic;
+  color: var(--color-text-tertiary);
+}
+
+/* Keep old task styles for backward compatibility */
+.courseTask {
+  padding-top: 14px;
+  border-top: 1px solid var(--color-border);
+}
+
+.taskLabel {
+  display: block;
+  font-size: 12px;
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-text-primary);
+  margin-bottom: 8px;
+}
+
+.taskItem {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.taskDot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--color-border-strong);
+  flex-shrink: 0;
+}
+
+.taskText {
+  flex: 1;
+  font-size: 13px;
+  color: var(--color-text-secondary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.taskDate {
+  font-size: 12px;
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-warning);
+}
+
+.urgent {
+  color: var(--color-error);
+}
+
+.btnXem {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 18px;
+  background: var(--gradient-primary);
+  color: #fff;
+  border: none;
+  border-radius: 100px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  box-shadow: 0 2px 6px rgba(33, 12, 174, 0.15);
+  transition: all 0.2s;
+}
+
+.btnXem:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 10px rgba(33, 12, 174, 0.25);
+}
+
+/* Keep old courseActions for other stuff if needed, or remove later */
+
+.actionBtnOutline:hover {
+  background: var(--color-surface-hover);
+  border-color: var(--color-border-strong);
+  color: var(--color-text-primary);
+}
+
+.actionBtnPrimary {
+  flex: 1.2;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 8px;
+  background: var(--gradient-primary);
+  border: none;
+  border-radius: var(--radius-md);
+  font-size: 13px;
+  font-weight: var(--font-weight-semibold);
+  color: #fff;
   font-family: var(--font-family-base);
   cursor: pointer;
-  z-index: 0;
+  transition: all 0.2s;
+  box-shadow: var(--btn-primary-shadow);
 }
 
-.swipeContent {
-  position: relative;
-  z-index: 1;
+.actionBtnPrimary:hover {
+  box-shadow: var(--btn-primary-shadow-hover);
+  transform: translateY(-1px);
+}
+
+.loadMoreWrap {
+  display: flex;
+  justify-content: center;
+  margin-top: 28px;
+}
+
+.loadMoreBtn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
   background: var(--color-surface);
-  will-change: transform;
+  border: 1px solid var(--color-border);
+  padding: 10px 24px;
+  border-radius: var(--radius-pill);
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-primary);
+  font-family: var(--font-family-base);
+  cursor: pointer;
+  transition: all 0.2s;
 }
 
-/* ═══════════════════════════════════════════════════════════════════════════
-   MOBILE RESPONSIVE — clean card layout
-═══════════════════════════════════════════════════════════════════════════ */
-@media (max-width: 768px) {
-  /* ── Page ── */
-  .page {
-    padding: var(--spacing-sm);
-    gap: var(--spacing-md);
-  }
+.loadMoreBtn:hover {
+  background: var(--color-primary-subtle);
+  border-color: var(--color-primary-accent-border);
+}
 
-  /* ── Hero — compact 1-liner ── */
-  .hero {
-    flex-direction: row;
-    align-items: center;
-    padding: 1rem 1.25rem;
-    gap: var(--spacing-md);
-    min-height: auto;
-  }
+/* ── RIGHT PANEL ── */
+.rightPanel {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
 
-  .heroIconWrap {
-    width: 40px;
-    height: 40px;
-  }
+.panelSection {
+  background: var(--glass-bg-strong);
+  border-radius: var(--card-border-radius);
+  padding: 22px;
+  box-shadow: var(--card-shadow);
+  border: 1px solid var(--color-border);
+  backdrop-filter: var(--glass-blur-xs);
+  -webkit-backdrop-filter: var(--glass-blur-xs);
+}
 
-  .heroTitle {
-    font-size: 1.1rem;
-    margin: 0;
-  }
+.panelHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 18px;
+}
 
-  .heroSub {
-    display: none;
-  }
+.panelTitle {
+  font-size: 15px;
+  font-weight: var(--font-weight-bold);
+  color: var(--color-text-primary);
+  margin: 0;
+  letter-spacing: -0.01em;
+  font-family: var(--font-family-display);
+}
 
-  .heroRight {
-    margin-left: auto;
-  }
+.panelLink {
+  font-size: 13px;
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-primary);
+  text-decoration: none;
+  transition: color 0.15s;
+}
 
-  .heroStat {
-    font-size: var(--font-size-xs);
-    padding: 0.2rem 0.6rem;
-  }
+.panelLink:hover {
+  color: var(--color-primary-hover);
+  text-decoration: underline;
+}
 
-  /* ── Toolbar ── */
-  .toolbar {
-    flex-wrap: wrap;
-    gap: var(--spacing-sm);
-  }
+/* Timeline */
+.timeline {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
 
-  /* ── Table panel ── */
-  .tablePanel {
-    border-radius: var(--radius-xl);
-    overflow: hidden;
-  }
+.timelineItem {
+  display: flex;
+  gap: 14px;
+}
 
-  /* ── Hide table header row ── */
-  .tableRow.tableHeader {
-    display: none !important;
-  }
+.timelineIcon {
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  background: #fff;
+  border-width: 1px;
+  border-style: solid;
+}
 
-  /* ── Data row = compact card ── */
-  .dataRow.tableRow {
-    display: flex !important;
-    align-items: flex-start;
-    flex-wrap: wrap;
-    gap: 0.35rem 0.75rem;
-    padding: 0.75rem 1rem;
-    grid-template-columns: none;
-  }
+.icon_success {
+  border-color: #a7f3d0;
+  color: var(--color-success);
+}
 
-  /* Course cell — takes full width row 1 */
-  .courseCell {
-    gap: var(--spacing-sm);
-    width: 100%;
-  }
+.icon_purple {
+  border-color: #ddd6fe;
+  color: #8b5cf6;
+}
 
-  .courseIcon {
-    width: 28px;
-    height: 28px;
-  }
+.icon_blue {
+  border-color: #bae6fd;
+  color: #0ea5e9;
+}
 
-  .courseName {
-    font-size: var(--font-size-sm);
-    font-weight: var(--font-weight-bold);
-  }
+.icon_warning {
+  border-color: #fde68a;
+  color: var(--color-warning);
+}
 
-  /* Info chips — row 2, horizontal */
-  .mobileInfo {
-    display: flex !important;
-    align-items: center;
-    gap: 0.35rem;
-    flex-wrap: wrap;
-    width: 100%;
-    padding-left: 36px; /* align with course name (28px icon + 8px gap) */
-  }
+.timelineContent {
+  flex: 1;
+}
 
-  .mobileInfo .cellText {
-    display: inline-flex;
-    align-items: center;
-    font-size: 0.68rem;
-    color: var(--color-text-secondary);
-    background: var(--color-surface-alt);
-    border: 1px solid var(--color-border);
-    border-radius: var(--radius-pill);
-    padding: 0.12rem 0.5rem;
-    white-space: nowrap;
-  }
+.timelineText {
+  font-size: 13px;
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-text-primary);
+  margin: 0 0 2px;
+}
 
-  /* Hide hover delete on mobile — swipe replaces it */
-  .rowActions {
-    display: none !important;
-  }
+.timelineSub {
+  font-size: 12px;
+  color: var(--color-text-secondary);
+  margin: 0 0 3px;
+}
+
+.timelineTime {
+  font-size: 11px;
+  color: var(--color-text-tertiary);
+  margin: 0;
+}
+
+/* Suggestions */
+.suggestionsList {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.suggestionCard {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 12px;
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--color-border);
+  cursor: pointer;
+  transition: background 0.2s, border-color 0.2s, transform 0.15s;
+}
+
+.suggestionCard:hover {
+  background: var(--color-surface-hover);
+  border-color: rgba(77, 201, 230, 0.25);
+  transform: translateX(3px);
+}
+
+.suggestionIcon {
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  background: #fff !important;
+  border-width: 1px;
+  border-style: solid;
+}
+
+.suggestionInfo {
+  flex: 1;
+}
+
+.suggestionTitle {
+  font-size: 13px;
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-text-primary);
+  margin: 0 0 2px;
+}
+
+.suggestionSub {
+  font-size: 12px;
+  color: var(--color-text-secondary);
+  margin: 0;
 }

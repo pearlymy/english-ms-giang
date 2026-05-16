@@ -6,36 +6,59 @@ import {
 } from 'lucide-react';
 import { useAuth } from '../../../contexts/AuthContext';
 import { useTeacher } from '../../../contexts/TeacherContext';
+import { useUserManagement } from '../../../contexts/UserManagementContext';
 import styles from './Sidebar.module.css';
 
 const STUDENT_NAV = [
   { to: '/app/dashboard', icon: LayoutDashboard, label: 'Tổng quan', end: true },
-  { to: '/app/homework',  icon: ClipboardList,   label: 'Bài tập'   },
-  { to: '/app/settings',  icon: Settings,        label: 'Cài đặt'   },
+  { to: '/app/homework', icon: ClipboardList, label: 'Bài tập' },
+  { to: '/app/settings', icon: Settings, label: 'Cài đặt' },
 ];
 
 const ADMIN_NAV = [
-  { to: '/app/dashboard',  icon: LayoutDashboard, label: 'Tổng quan',  end: true },
-  { to: '/app/courses',    icon: GraduationCap,   label: 'Khóa học',   isCourseMenu: true },
-  { to: '/app/students',   icon: Users,           label: 'Học viên'    },
-  { to: '/app/users',      icon: UserCog,         label: 'Người dùng'  },
-  { to: '/app/settings',   icon: Settings,        label: 'Cài đặt'     },
+  { to: '/app/dashboard', icon: LayoutDashboard, label: 'Tổng quan', end: true },
+  { to: '/app/courses', icon: GraduationCap, label: 'Khóa học', isCourseMenu: true },
+  { to: '/app/students', icon: Users, label: 'Học viên' },
+  { to: '/app/users', icon: UserCog, label: 'Người dùng' },
+  { to: '/app/settings', icon: Settings, label: 'Cài đặt' },
 ];
 
-// Bottom nav chỉ hiện các mục quan trọng nhất (tối đa 4)
 const STUDENT_BOTTOM_NAV = [
   { to: '/app/dashboard', icon: LayoutDashboard, label: 'Tổng quan', end: true },
-  { to: '/app/homework',  icon: ClipboardList,   label: 'Bài tập'   },
-  { to: '/app/settings',  icon: Settings,        label: 'Cài đặt'   },
+  { to: '/app/homework', icon: ClipboardList, label: 'Bài tập' },
+  { to: '/app/settings', icon: Settings, label: 'Cài đặt' },
 ];
 
 const ADMIN_BOTTOM_NAV = [
   { to: '/app/dashboard', icon: LayoutDashboard, label: 'Tổng quan', end: true },
-  { to: '/app/courses',   icon: GraduationCap,   label: 'Khóa học'  },
-  { to: '/app/students',  icon: Users,           label: 'Học viên'  },
-  { to: '/app/settings',  icon: Settings,        label: 'Cài đặt'   },
+  { to: '/app/courses', icon: GraduationCap, label: 'Khóa học' },
+  { to: '/app/students', icon: Users, label: 'Học viên' },
+  { to: '/app/settings', icon: Settings, label: 'Cài đặt' },
 ];
 
+/* ── CourseNavItem: Link to a Course ─────────────────────── */
+const CourseNavItem = ({ grade }) => {
+  const isPrimary = grade <= 5;
+  const dotColor = isPrimary ? '#3b82f6' : '#7c3aed';
+  const dest = `/app/courses/course-lop${grade}`;
+
+  return (
+    <NavLink
+      to={dest}
+      className={({ isActive }) =>
+        `${styles.gradeHeader} ${isActive ? styles.gradeHeaderOpen : ''}`
+      }
+      style={{ textDecoration: 'none', marginBottom: '2px' }}
+    >
+      <span className={styles.gradeHeaderDot} style={{ background: dotColor }} />
+      <span className={styles.gradeHeaderLabel} style={{ fontWeight: 600 }}>
+        Tiếng Anh Lớp {grade}
+      </span>
+    </NavLink>
+  );
+};
+
+/* ── Sidebar ─────────────────────────────────────────────────────────── */
 export const Sidebar = () => {
   const location = useLocation();
   const navigate = useNavigate();
@@ -44,29 +67,38 @@ export const Sidebar = () => {
   const BOTTOM_NAV = user?.role === 'admin' ? ADMIN_BOTTOM_NAV : STUDENT_BOTTOM_NAV;
 
   const { courses } = useTeacher();
-  
+  const { classes } = useUserManagement();
+
   const isCoursesActive = location.pathname.startsWith('/app/courses');
   const [isCoursesOpen, setIsCoursesOpen] = useState(isCoursesActive);
 
   useEffect(() => {
-    if (isCoursesActive) {
-      setIsCoursesOpen(true);
-    }
+    if (isCoursesActive) setIsCoursesOpen(true);
   }, [isCoursesActive]);
 
-  const courseGroups = useMemo(() => {
-    if (!courses) return {};
-    const groups = {};
-    courses.forEach(c => {
-      const g = c.classGroup || 'Khác';
-      if (!groups[g]) groups[g] = [];
-      groups[g].push(c);
+  /* Nhóm classes theo gradeLevel, sắp xếp A→Z trong mỗi khối */
+  const gradeGroups = useMemo(() => {
+    if (!classes || classes.length === 0) return [];
+    const map = new Map();
+    classes.forEach(cls => {
+      const g = cls.gradeLevel || 0;
+      if (!map.has(g)) map.set(g, []);
+      map.get(g).push(cls);
     });
-    Object.keys(groups).forEach(g => {
-      groups[g].sort((a, b) => (a.gradeLevel || 0) - (b.gradeLevel || 0));
-    });
-    return groups;
-  }, [courses]);
+    map.forEach(arr => arr.sort((a, b) => a.name.localeCompare(b.name, 'vi')));
+    return [...map.entries()]
+      .sort(([a], [b]) => a - b)
+      .map(([grade, clsList]) => ({ grade, clsList }));
+  }, [classes]);
+
+  /* Tìm grade đang active (từ URL) để auto-open đúng accordion */
+  const activeGrade = useMemo(() => {
+    if (!isCoursesActive) return null;
+    const courseId = location.pathname.split('/app/courses/')[1];
+    if (!courseId) return null;
+    const activeClass = classes?.find(c => c.courseId === courseId);
+    return activeClass?.gradeLevel ?? null;
+  }, [location.pathname, classes, isCoursesActive]);
 
   return (
     <>
@@ -87,35 +119,31 @@ export const Sidebar = () => {
             if (isCourseMenu) {
               return (
                 <div key={to}>
-                  <div 
+                  {/* "Khóa học" top-level toggle */}
+                  <div
                     className={`${styles.item} ${isCoursesActive && !isCoursesOpen ? styles.itemActive : ''}`}
                     onClick={() => {
-                      if (!isCoursesOpen) {
-                        navigate(to);
-                      }
-                      setIsCoursesOpen(!isCoursesOpen);
+                      if (!isCoursesOpen) navigate(to);
+                      setIsCoursesOpen(v => !v);
                     }}
                   >
                     <Icon size={17} />
                     {label}
-                    <ChevronRight size={14} className={`${styles.chevron} ${isCoursesOpen ? styles.chevronOpen : ''}`} />
+                    <ChevronRight
+                      size={14}
+                      className={`${styles.chevron} ${isCoursesOpen ? styles.chevronOpen : ''}`}
+                    />
                   </div>
+
+                  {/* List of courses derived from grade groups */}
                   {isCoursesOpen && (
                     <div className={styles.subMenuWrap}>
-                      {['Cấp 1', 'Cấp 2', 'Khác'].flatMap(groupName => {
-                        if (!courseGroups[groupName] || courseGroups[groupName].length === 0) return [];
-                        const dotColor = groupName === 'Cấp 1' ? '#3b82f6' : groupName === 'Cấp 2' ? '#7c3aed' : '#64748b';
-                        return courseGroups[groupName].map(c => (
-                          <NavLink
-                            key={c.id}
-                            to={`/app/courses/${c.id}`}
-                            className={({ isActive }) => `${styles.subItem} ${isActive ? styles.subItemActive : ''}`}
-                          >
-                            <span className={styles.subItemDot} style={{ background: dotColor }} />
-                            {c.name.includes('Lớp') ? `Lớp ${c.gradeLevel}` : c.name}
-                          </NavLink>
-                        ));
-                      })}
+                      {gradeGroups.map(({ grade }) => (
+                        <CourseNavItem
+                          key={grade}
+                          grade={grade}
+                        />
+                      ))}
                     </div>
                   )}
                 </div>

@@ -1,0 +1,420 @@
+/* OrderingEditor.module.css */
+
+/* ── Wrapper ── */
+.editorWrap {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 14px;
+  background: #faf5ff;
+  border: 1.5px solid #e9d5ff;
+  border-radius: 12px;
+  margin-top: 8px;
+}
+
+/* ── Preview/Student toggle button ── */
+.previewToggleBtn {
+  font-size: 11.5px;
+  font-weight: 600;
+  padding: 4px 10px;
+  border-radius: 7px;
+  border: 1px solid #c4b5fd;
+  background: #fff;
+  color: #7c3aed;
+  cursor: pointer;
+  font-family: inherit;
+  transition: all 0.15s;
+  white-space: nowrap;
+}
+.previewToggleBtn:hover { background: #ede9fe; }
+.previewToggleBtnActive {
+  background: #7c3aed;
+  color: #fff;
+  border-color: #7c3aed;
+}
+.previewToggleBtnActive:hover { background: #6d28d9; }
+
+/* ── Preview panel ── */
+.previewPanel {
+  background: #fffbeb;
+  border: 1.5px solid #fcd34d;
+  border-radius: 10px;
+  padding: 12px 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.previewPanelHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 12.5px;
+  font-weight: 600;
+  color: #92400e;
+}
+.reshuffleBtn {
+  font-size: 11.5px;
+  font-weight: 600;
+  padding: 3px 9px;
+  border-radius: 6px;
+  border: 1px solid #fcd34d;
+  background: #fef3c7;
+  color: #b45309;
+  cursor: pointer;
+  font-family: inherit;
+  transition: all 0.15s;
+}
+.reshuffleBtn:hover { background: #fde68a; }
+
+.previewPills {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+.previewPill {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 4px 10px;
+  background: #fff;
+  border: 1.5px solid #fcd34d;
+  border-radius: 20px;
+  font-size: 12.5px;
+  color: #78350f;
+  font-weight: 500;
+}
+.previewPillIdx {
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: #f59e0b;
+  color: #fff;
+  font-size: 10px;
+  font-weight: 800;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+.previewNote {
+  font-size: 11px;
+  color: #a16207;
+  margin: 0;
+  font-style: italic;
+}
+
+/* ── Student mode badge (không có gradient) ── */
+.orderBadgeStudent {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background: #f3f4f6;
+  border: 1.5px solid #d1d5db;
+  color: #6b7280;
+  font-size: 11px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+/* ── Preview mode: không có cursor grab ── */
+.itemRowPreview {
+  cursor: default !important;
+}
+.itemRowPreview .handle { display: none; }
+
+/* ── Wrapper ── */
+.editorWrap {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 14px;
+  background: #faf5ff;
+  border: 1.5px solid #e9d5ff;
+  border-radius: 12px;
+  margin-top: 8px;
+}
+
+.editorWrap[data-mode="student"] {
+  background: transparent;
+  border: none;
+  padding: 0;
+  margin-top: 0;
+}
+
+.editorWrap[data-mode="student"] .itemRow {
+  box-sizing: border-box;
+  width: 100%;
+  min-height: 58px;
+  padding: 12px 16px;
+  border: 1.5px solid var(--color-border, #e2e8f0);
+  border-radius: 12px;
+  background: var(--color-background, #fff);
+  gap: 12px;
+  transition: border-color 0.15s ease, background 0.15s ease, transform 0.1s ease;
+}
+.editorWrap[data-mode="student"] .itemRow:hover {
+  border-color: var(--color-primary, #4f46e5);
+  background: var(--color-primary-subtle, #f8faff);
+  box-shadow: none;
+  transform: translateX(3px);
+}
+.editorWrap[data-mode="student"] .orderBadgeStudent {
+  width: 32px;
+  height: 32px;
+  font-size: 14px;
+  font-weight: 700;
+  background: var(--color-border, #e2e8f0);
+  border: none;
+  color: var(--color-text-secondary, #475569);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+.editorWrap[data-mode="student"] .itemText {
+  font-size: 16px;
+  color: var(--color-text-primary, #0f172a);
+  line-height: 1.4;
+}
+
+/* ── Header ── */
+.header {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+}
+.headerIcon {
+  font-size: 20px;
+  flex-shrink: 0;
+  line-height: 1;
+}
+.headerText {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+.headerText strong {
+  font-size: 13px;
+  color: #5b21b6;
+}
+.headerText span {
+  font-size: 11.5px;
+  color: #7c3aed;
+}
+.validCount {
+  font-size: 11.5px;
+  font-weight: 700;
+  color: #7c3aed;
+  background: #ede9fe;
+  padding: 2px 8px;
+  border-radius: 12px;
+  flex-shrink: 0;
+  align-self: flex-start;
+}
+
+/* ── Drop indicator line ── */
+.dropLine {
+  height: 2px;
+  background: #7c3aed;
+  border-radius: 2px;
+  margin: -4px 0;
+}
+
+/* ── Item list ── */
+.itemList {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+/* ── Item row ── */
+.itemRow {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 10px;
+  background: #fff;
+  border: 1.5px solid #e9d5ff;
+  border-radius: 9px;
+  transition: all 0.15s;
+  position: relative;
+  user-select: none;
+}
+.itemRow:hover {
+  border-color: #c4b5fd;
+  box-shadow: 0 1px 4px rgba(124, 58, 237, 0.08);
+}
+
+/* Đang kéo */
+.itemRowDragging {
+  opacity: 0.4;
+  border-style: dashed;
+  border-color: #7c3aed;
+  background: #f5f3ff;
+}
+
+/* Drop target — indicator ở trên */
+.itemRowDropAbove::before {
+  content: '';
+  position: absolute;
+  top: -4px;
+  left: 8px;
+  right: 8px;
+  height: 2px;
+  background: #7c3aed;
+  border-radius: 2px;
+}
+/* Drop target — indicator ở dưới */
+.itemRowDropBelow::after {
+  content: '';
+  position: absolute;
+  bottom: -4px;
+  left: 8px;
+  right: 8px;
+  height: 2px;
+  background: #7c3aed;
+  border-radius: 2px;
+}
+
+/* ── Drag handle ── */
+.handle {
+  color: #c4b5fd;
+  cursor: grab;
+  display: flex;
+  align-items: center;
+  padding: 0 2px;
+  flex-shrink: 0;
+  transition: color 0.15s;
+}
+.handle:hover { color: #7c3aed; }
+.itemRow:active .handle { cursor: grabbing; }
+
+/* ── Order badge ── */
+.orderBadge {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #7c3aed 0%, #6366f1 100%);
+  color: #fff;
+  font-size: 11.5px;
+  font-weight: 800;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+/* ── Text input ── */
+.itemInput {
+  flex: 1;
+  border: none;
+  outline: none;
+  font-size: 13.5px;
+  color: #1e1b4b;
+  background: transparent;
+  font-family: inherit;
+  min-width: 0;
+}
+.itemInput::placeholder { color: #c4b5fd; }
+
+/* ── Read-only text ── */
+.itemText {
+  flex: 1;
+  font-size: 13.5px;
+  color: #1e1b4b;
+}
+
+/* ── Remove button ── */
+.removeBtn {
+  width: 24px;
+  height: 24px;
+  border-radius: 6px;
+  background: transparent;
+  border: 1px solid transparent;
+  color: #c4b5fd;
+  font-size: 16px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  transition: all 0.15s;
+  line-height: 1;
+}
+.removeBtn:hover {
+  background: #fef2f2;
+  border-color: #fca5a5;
+  color: #ef4444;
+}
+
+/* ── Add button ── */
+.addBtn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 8px 14px;
+  background: #fff;
+  border: 1.5px dashed #c4b5fd;
+  border-radius: 9px;
+  font-size: 13px;
+  font-weight: 600;
+  color: #7c3aed;
+  cursor: pointer;
+  font-family: inherit;
+  transition: all 0.15s;
+  align-self: flex-start;
+}
+.addBtn span {
+  font-size: 16px;
+  font-weight: 700;
+  line-height: 1;
+}
+.addBtn:hover {
+  background: #ede9fe;
+  border-color: #7c3aed;
+}
+
+/* ── Summary ── */
+.orderSummary {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 10px 12px;
+  background: #ede9fe;
+  border: 1px solid #c4b5fd;
+  border-radius: 9px;
+}
+.orderSummaryLabel {
+  font-size: 11.5px;
+  font-weight: 700;
+  color: #5b21b6;
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
+}
+.orderPills {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px;
+}
+.orderPill {
+  display: inline-flex;
+  align-items: center;
+  padding: 3px 10px;
+  background: #fff;
+  border: 1.5px solid #c4b5fd;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 600;
+  color: #4c1d95;
+}
+.orderArrow {
+  font-size: 13px;
+  color: #7c3aed;
+  font-weight: 700;
+}

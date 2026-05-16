@@ -1,0 +1,8 @@
+c = open('src/pages/AdminCourseDetail/components/CreateTestDrawer.jsx', encoding='utf-8').read()
+print('Lines:', c.count('\n'))
+print('Has export CreateTestDrawer:', 'export const CreateTestDrawer' in c)
+print('Has modeTabs:', 'modeTabs' in c)
+print('Has ManualMode:', 'ManualMode' in c)
+print('Has showAnswer toggle:', 'Sau deadline' in c)
+print('Last 300 chars:')
+print(c[-300:])

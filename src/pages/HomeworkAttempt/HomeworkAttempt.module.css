@@ -171,3 +171,82 @@
   border-color: var(--color-warning) !important;
   background: rgba(245,158,11,0.05) !important;
 }
+
+/* ══════════════════════════════════
+   Multiple Response extra
+══════════════════════════════════ */
+.optBtnMR { }
+.checkbox {
+  width: 18px; height: 18px; border-radius: 4px;
+  border: 1.5px solid #cbd5e1; background: #fff;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 11px; font-weight: 700; color: #fff; flex-shrink: 0;
+}
+.checkboxActive { background: #2563eb; border-color: #2563eb; }
+.mrSummary { font-size: 12px; color: #2563eb; font-weight: 600; padding: 4px 0; }
+
+/* ══════════════════════════════════
+   True / False
+══════════════════════════════════ */
+.tfRow { display: flex; gap: 10px; width: 100%; }
+.tfBtn {
+  flex: 1; padding: 12px; border-radius: 8px;
+  border: 1.5px solid var(--color-border); background: var(--color-background);
+  font-size: 14px; font-weight: 700; cursor: pointer; color: var(--color-text-primary);
+  transition: all 0.12s; font-family: inherit;
+}
+.tfBtn:hover { border-color: var(--color-primary-accent); }
+.tfBtnTrue  { background: #d1fae5; border-color: #6ee7b7; color: #065f46; }
+.tfBtnFalse { background: #fee2e2; border-color: #fca5a5; color: #991b1b; }
+
+/* ══════════════════════════════════
+   Fill in the blank & Short Answer
+══════════════════════════════════ */
+.fillInput {
+  width: 100%; padding: 12px 16px;
+  border: 1.5px solid var(--color-border); border-radius: 8px;
+  font-size: 14px; color: var(--color-text-primary); outline: none; box-sizing: border-box;
+  font-family: inherit; background: #fafafa;
+}
+.fillInput:focus { border-color: var(--color-primary); background: #fff; box-shadow: 0 0 0 3px rgba(79,70,229,0.1); }
+
+.shortAnswerTextarea {
+  width: 100%; padding: 12px 16px;
+  border: 1.5px solid var(--color-border); border-radius: 8px;
+  font-size: 14px; color: var(--color-text-primary); outline: none; box-sizing: border-box;
+  font-family: inherit; background: #fafafa; resize: vertical; min-height: 100px; line-height: 1.5;
+}
+.shortAnswerTextarea:focus { border-color: var(--color-primary); background: #fff; box-shadow: 0 0 0 3px rgba(79,70,229,0.1); }
+
+/* ══════════════════════════════════
+   Matching
+══════════════════════════════════ */
+.matchingWrap { display: flex; flex-direction: column; gap: 10px; }
+.matchRow { display: flex; align-items: center; gap: 12px; }
+.matchLeft {
+  min-width: 140px; padding: 10px 14px;
+  background: #f0f9ff; border: 1px solid #bae6fd; border-radius: 8px;
+  font-size: 14px; font-weight: 600; color: #0369a1;
+}
+.matchArrow { color: #94a3b8; font-size: 18px; flex-shrink: 0; }
+.matchSelect {
+  flex: 1; padding: 10px 14px; border: 1.5px solid var(--color-border); border-radius: 8px;
+  font-size: 14px; color: var(--color-text-primary); background: #fff; outline: none; cursor: pointer; font-family: inherit;
+}
+.matchSelect:focus { border-color: var(--color-primary); }
+
+/* ══════════════════════════════════
+   Likert
+══════════════════════════════════ */
+.likertWrap { display: flex; gap: 10px; flex-wrap: wrap; }
+.likertBtn {
+  flex: 1; min-width: 64px;
+  display: flex; flex-direction: column; align-items: center; gap: 4px;
+  padding: 14px 6px; border: 1.5px solid var(--color-border); border-radius: 8px;
+  background: #fff; cursor: pointer; transition: all 0.12s; font-family: inherit;
+}
+.likertBtn:hover { border-color: #93c5fd; background: #eff6ff; }
+.likertBtnActive { border-color: var(--color-primary); background: var(--color-primary-subtle); }
+.likertNum { font-size: 18px; font-weight: 800; color: var(--color-text-primary); }
+.likertBtnActive .likertNum { color: var(--color-primary); }
+.likertLabel { font-size: 11px; color: var(--color-text-secondary); text-align: center; line-height: 1.2; }

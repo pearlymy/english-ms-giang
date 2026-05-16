@@ -11,6 +11,8 @@ import { AdminAssignmentEditor } from './pages/AdminAssignmentEditor/AdminAssign
 import { AdminAssignmentOverview } from './pages/AdminAssignmentOverview/AdminAssignmentOverview';
 import { AdminStudentsPage } from './pages/AdminStudentsPage/AdminStudentsPage';
 import { AdminStudentDetail } from './pages/AdminStudentDetail/AdminStudentDetail';
+import { AdminGradingQueue } from './pages/AdminGradingQueue/AdminGradingQueue';
+import { AdminGradingDetail } from './pages/AdminGradingDetail/AdminGradingDetail';
 import { AdminUserManagement } from './pages/AdminUserManagement/AdminUserManagement';
 import { DesignSystem } from './pages/DesignSystem/DesignSystem';
 import { LandingPage } from './pages/LandingPage/LandingPage';
@@ -51,22 +53,24 @@ function App() {
       >
         {/* Shared */}
         <Route path="dashboard" element={isAdmin ? <AdminDashboard /> : <Dashboard />} />
-        <Route path="settings"  element={<SettingsPage />} />
+        <Route path="settings" element={<SettingsPage />} />
 
         {/* Student routes */}
-        <Route path="homework"                      element={<ProtectedRoute allowedRoles={['student']}><HomeworkPage /></ProtectedRoute>} />
-        <Route path="homework/:id/attempt"          element={<ProtectedRoute allowedRoles={['student']}><HomeworkAttempt /></ProtectedRoute>} />
-        <Route path="homework/:id/result"           element={<ProtectedRoute allowedRoles={['student']}><HomeworkResult /></ProtectedRoute>} />
-        <Route path="homework/:id"                  element={<ProtectedRoute allowedRoles={['student']}><HomeworkResult /></ProtectedRoute>} />
+        <Route path="homework" element={<ProtectedRoute allowedRoles={['student']}><HomeworkPage /></ProtectedRoute>} />
+        <Route path="homework/:id/attempt" element={<ProtectedRoute allowedRoles={['student']}><HomeworkAttempt /></ProtectedRoute>} />
+        <Route path="homework/:id/result" element={<ProtectedRoute allowedRoles={['student']}><HomeworkResult /></ProtectedRoute>} />
+        <Route path="homework/:id" element={<ProtectedRoute allowedRoles={['student']}><HomeworkResult /></ProtectedRoute>} />
 
         {/* Admin routes */}
-        <Route path="courses"                        element={<ProtectedRoute allowedRoles={['admin']}><AdminCoursesPage /></ProtectedRoute>} />
-        <Route path="courses/:courseId"              element={<ProtectedRoute allowedRoles={['admin']}><AdminCourseDetail /></ProtectedRoute>} />
+        <Route path="courses" element={<ProtectedRoute allowedRoles={['admin']}><AdminCoursesPage /></ProtectedRoute>} />
+        <Route path="courses/:courseId" element={<ProtectedRoute allowedRoles={['admin']}><AdminCourseDetail /></ProtectedRoute>} />
         <Route path="courses/:courseId/assignments/:assignmentId" element={<ProtectedRoute allowedRoles={['admin']}><AdminAssignmentOverview /></ProtectedRoute>} />
         <Route path="courses/:courseId/assignments/:assignmentId/edit" element={<ProtectedRoute allowedRoles={['admin']}><AdminAssignmentEditor /></ProtectedRoute>} />
-        <Route path="students"                       element={<ProtectedRoute allowedRoles={['admin']}><AdminStudentsPage /></ProtectedRoute>} />
-        <Route path="students/:studentId"            element={<ProtectedRoute allowedRoles={['admin']}><AdminStudentDetail /></ProtectedRoute>} />
-        <Route path="users"                          element={<ProtectedRoute allowedRoles={['admin']}><AdminUserManagement /></ProtectedRoute>} />
+        <Route path="students" element={<ProtectedRoute allowedRoles={['admin']}><AdminStudentsPage /></ProtectedRoute>} />
+        <Route path="students/:studentId" element={<ProtectedRoute allowedRoles={['admin']}><AdminStudentDetail /></ProtectedRoute>} />
+        <Route path="users" element={<ProtectedRoute allowedRoles={['admin']}><AdminUserManagement /></ProtectedRoute>} />
+        <Route path="grading/:classId/:assignmentId" element={<ProtectedRoute allowedRoles={['admin']}><AdminGradingQueue /></ProtectedRoute>} />
+        <Route path="grading/:classId/:assignmentId/:studentId" element={<ProtectedRoute allowedRoles={['admin']}><AdminGradingDetail /></ProtectedRoute>} />
       </Route>
 
       <Route path="*" element={<Navigate to="/" replace />} />
